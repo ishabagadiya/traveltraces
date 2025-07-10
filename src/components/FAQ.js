@@ -81,7 +81,7 @@ export default function FAQ() {
   const [hoveredExperience, setHoveredExperience] = useState(null);
 
   return (
-    <section className="w-full py-6 sm:py-8 md:py-12 px-3 sm:px-6 md:px-16 bg-gradient-to-br from-[#003c3a] via-[#8c78d7] to-[#e1b9ff] relative overflow-hidden">
+    <section className="w-full py-8 md:py-12 px-3 sm:px-6 md:px-16 bg-gradient-to-br from-[#003c3a] via-[#8c78d7] to-[#e1b9ff] relative overflow-hidden">
       {/* Animated background particles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {[...Array(6)].map((_, i) => (

@@ -35,7 +35,7 @@ export default function Footer() {
       </a>
 
       {/* Full-width Cursive TravelTraces */}
-      <div className="w-full text-center overflow-hidden h-[320px] flex flex-col items-center justify-end relative p-0 mb-7 bg-[#6e11b0]">
+      <div className="w-full text-center overflow-hidden h-[320px] flex flex-col items-center justify-end relative p-0 mb-7 bg-[#6e11b01e]">
         <span
           style={{ fontFamily: "Dancing Script, cursive", fontWeight: 700 }}
           className="text-[22vw] text-gray-600 opacity-15 block leading-none"
@@ -95,7 +95,7 @@ export default function Footer() {
         </div>
         {/* Copyright */}
         <div className="absolute bottom-0 left-0 w-full text-center z-20">
-          <span className="text-white text-xs font-bold drop-shadow-sm rounded px-2 py-1 inline-block">
+          <span className="text-purple-700 text-xs font-bold drop-shadow-sm rounded px-2 py-1 inline-block">
             &copy; {new Date().getFullYear()} TravelTraces. All rights reserved.
           </span>
         </div>

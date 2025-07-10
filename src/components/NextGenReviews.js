@@ -152,7 +152,7 @@ function FloatingCard({ review, position }) {
           {/* Header */}
           <div className="flex items-center gap-2 sm:gap-4 mb-4 sm:mb-6">
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl blur-md opacity-30"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-300 to-pink-300 rounded-2xl blur-md opacity-30"></div>
               <Image
                 src={review.photo}
                 alt={review.name}
@@ -220,7 +220,7 @@ function FloatingCard({ review, position }) {
             </span>
           </div>
           {/* Trip Badge */}
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-medium shadow-lg">
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 to-purple-700 text-white px-3 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-medium shadow-lg">
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fillRule="evenodd"
