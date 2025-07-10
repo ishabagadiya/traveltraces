@@ -14,7 +14,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #6e11b0;
     --foreground: #ededed;
   }
 }
@@ -22,7 +22,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-manrope), Arial, Helvetica, sans-serif;
 }
 
 @keyframes pulse {
@@ -36,6 +36,7 @@ body {
   from { opacity: 0; }
   to { opacity: 1; }
 }
+
 .animate-fade-in-fast {
   animation: fade-in 0.7s ease forwards;
 }

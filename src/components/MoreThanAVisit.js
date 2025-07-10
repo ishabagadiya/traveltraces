@@ -54,8 +54,8 @@ const destinations = [
 
 function getVisibleCount() {
   if (typeof window === "undefined") return 1;
-  if (window.innerWidth >= 1280) return 4;
-  if (window.innerWidth >= 1024) return 3;
+  if (window.innerWidth >= 1400) return 4;
+  if (window.innerWidth >= 1100) return 3;
   if (window.innerWidth >= 640) return 2;
   return 1;
 }
@@ -101,7 +101,7 @@ export default function MoreThanAVisit() {
     }
   };
   return (
-    <section className="relative w-full mx-auto min-h-[600px] md:min-h-[700px] flex items-center justify-center py-28 px-18 md:py-20 overflow-hidden">
+    <section className="relative w-full mx-auto min-h-[400px] md:min-h-[550px] lg:min-h-[600px] flex items-center justify-center py-10 md:py-28 px-6 sm:px-10 md:px-18 overflow-hidden">
 
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-gradient-to-br from-purple-50 via-white to-indigo-50" />
@@ -111,12 +111,12 @@ export default function MoreThanAVisit() {
       {/* Background Gradient */}
       <div className="absolute inset-0 z-0 pointer-events-none" />
       <div className="relative z-10 flex flex-col w-full">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-8">
-          <div className="flex flex-col gap-6">
-            <h2 className="text-3xl md:text-5xl font-extrabold text-gray-900 mb-2 md:mb-0">Experience More Than Travel</h2>
-            <div className="h-1 w-60 bg-gradient-to-r from-purple-500 via-indigo-500 to-white rounded-full"></div>
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-5 mb-5 md:mb-8">
+          <div className="flex flex-col gap-1 md:gap-6">
+            <h2 className="text-3xl md:text-5xl font-extrabold text-gray-900 mb-0 md:mb-0">Experience More Than Travel</h2>
+            <div className="h-1 w-60 bg-gradient-to-r from-purple-500 via-indigo-500 to-[#eadffc] rounded-full"></div>
           </div>
-          <p className="text-gray-500 max-w-lg text-lg md:text-right">Uncover hidden gems and make memories that last a lifetime. Your next adventure starts here!</p>
+          <p className="text-gray-500 max-w-lg text-lg md:text-right my-4">Uncover hidden gems and make memories that last a lifetime. Your next adventure starts here!</p>
       </div>
       <div className="flex flex-col items-center">
         {/* Carousel Cards */}
@@ -126,7 +126,7 @@ export default function MoreThanAVisit() {
               const realIdx = (current + idx) % destinations.length;
               const slug = dest.name.toLowerCase().replace(/\s+/g, '');
               return (
-                <Link href={`/destinations/${slug}`} key={dest.name} className="relative rounded-2xl overflow-hidden shadow-lg group w-[400px] h-[400px] border-2 border-purple-200 ring-2 ring-purple-100 transition-transform duration-300 hover:shadow-2xl">
+                <Link href={`/destinations/${slug}`} key={dest.name} className="relative rounded-2xl overflow-hidden shadow-lg group w-[400px] h-[350px] md:h-[400px] border-2 border-purple-200 ring-2 ring-purple-100 transition-transform duration-300 hover:shadow-2xl">
                   {/* Favorite Heart Icon */}
                   <button
                     className="absolute top-4 right-4 z-30 p-2 rounded-full bg-white/80 hover:bg-purple-100 transition"
