@@ -1,12 +1,13 @@
-"use client"
-import { useEffect, useState } from 'react';
-import Header from '../components/Header';
-import AnimatedBackground from '../components/AnimatedBackground';
-import Destinations from '@/components/Destinations';
-import MoreThanAVisit from '@/components/MoreThanAVisit';
-import NextGenReviews from '@/components/NextGenReviews';
-import CallToAction from '@/components/CallToAction';
-import FAQ from '@/components/FAQ';
+"use client";
+import { useEffect, useState } from "react";
+import Header from "../components/Header";
+import AnimatedBackground from "../components/AnimatedBackground";
+import Destinations from "@/components/Destinations";
+import MoreThanAVisit from "@/components/MoreThanAVisit";
+import NextGenReviews from "@/components/NextGenReviews";
+import CallToAction from "@/components/CallToAction";
+import FAQ from "@/components/FAQ";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   const [showDestinations, setShowDestinations] = useState(false);
@@ -38,13 +39,13 @@ export default function Home() {
             <Destinations />
           </div>
         )}
-
       </div>
       {/* Other sections below, not affected by AnimatedBackground */}
       <MoreThanAVisit />
       <NextGenReviews />
       <CallToAction />
       <FAQ />
+      <Footer />
     </div>
   );
 }

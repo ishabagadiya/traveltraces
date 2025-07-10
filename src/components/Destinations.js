@@ -47,7 +47,7 @@ const Destinations = () => {
   return (
     <section className="flex flex-col items-center justify-center mt-[140px]">
       <div
-        className="relative ml-auto mt-[55px] overflow-hidden w-[80%] sm:w-[80%] h-[calc(100vh-300px)] sm:h-[calc(100vh-200px)] flex items-center justify-center rounded-l-xl sm:rounded-l-2xl shadow-lg"
+        className="relative ml-auto mt-[70px] overflow-hidden w-[85%] sm:w-[85%] h-[calc(100vh-300px)] sm:h-[calc(100vh-200px)] flex items-center justify-center rounded-l-xl sm:rounded-l-2xl shadow-lg"
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => { setHovered(false); setShowInfo(false); }}
       >

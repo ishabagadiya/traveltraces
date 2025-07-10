@@ -77,3 +77,45 @@ body {
 .animate-slide-in-br-fast {
   animation: slide-in-br 0.7s cubic-bezier(0.4, 0, 0.6, 1) forwards;
 }
+
+.boarding-pass {
+  box-shadow: 0 2px 12px 0 rgba(140,120,215,0.10);
+  border-style: dashed;
+  transition: box-shadow 0.3s, transform 0.3s;
+  border-radius: 16px;
+}
+.boarding-pass-selected {
+  box-shadow: 0 8px 32px 0 rgba(140,120,215,0.25), 0 1.5px 0 0 #e1b9ff;
+  transform: scale(1.05) rotate(-2deg);
+  border-radius: 16px;
+
+}
+.animate-bounce-once {
+  animation: bounce-once 0.7s;
+}
+@keyframes bounce-once {
+  0% { transform: translateY(0); }
+  30% { transform: translateY(-18px); }
+  60% { transform: translateY(2px); }
+  100% { transform: translateY(0); }
+}
+.animate-clouds ellipse {
+  animation-timing-function: linear;
+}
+
+@media (min-width: 640px) {
+  .thumbnail-gallery-btn {
+    width: 96px !important;
+    max-width: 120px !important;
+  }
+}
+
+/* Hide horizontal scrollbar for ticket selector and similar horizontal scroll areas */
+.join-us-scroll {
+  overflow-x: auto;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.join-us-scroll::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
