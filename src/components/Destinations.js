@@ -173,7 +173,7 @@ const Destinations = () => {
                   alt={dest.name}
                   fill
                   sizes="(max-width: 640px) 90vw, (max-width: 768px) 50vw, 33vw"
-                  className="object-cover"
+                  className="object-cover hover:scale-[1.02]"
                   priority={isActive}
                 />
                 {isActive && (
@@ -222,7 +222,7 @@ const Destinations = () => {
                 className="flex flex-col items-center"
               >
                 {pillar}
-                <div className="text-[8px] sm:text-sxs font-semibold text-gray-600 w-[40px] sm:w-[100px] lg:w-[120px] text-wrap text-center">
+                <div className="text-[8px] sm:text-xs font-semibold text-gray-600 w-[40px] sm:w-[100px] lg:w-[120px] text-wrap text-center">
                   Find Your Escape
                 </div>
                 <button className="mt-2 p-1.5 text-sm sm:text-xl sm:p-3 rounded-full border bg-secondary border-gray-400 text-gray-300 hover:scale-[1.01] transition-colors">

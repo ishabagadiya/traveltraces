@@ -4,7 +4,6 @@ import Link from "next/link";
 import { FaPhoneAlt } from "react-icons/fa";
 import { IoGlobeOutline, IoSearch, IoHeartOutline } from "react-icons/io5";
 import { client } from "../sanity/lib/client";
-import { urlFor } from "../sanity/lib/image";
 import logo from "@/assets/logo-white.svg";
 import Image from "next/image";
 
