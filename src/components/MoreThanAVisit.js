@@ -2,54 +2,8 @@
 import Image from "next/image";
 import React, { useState, useEffect, useRef } from "react";
 import Link from 'next/link';
-
-const destinations = [
-  {
-    name: "Saputara",
-    image: "/HeroImages/saputara.jpeg",
-    price: "4,500",
-    duration: "2 days",
-    description: "Gujarat's hill station with misty mountains and tribal culture",
-    rating: 4.5,
-    difficulty: "Easy"
-  },
-  {
-    name: "Andharban",
-    image: "/HeroImages/andharban.webp",
-    price: "3,200",
-    duration: "1 day",
-    description: "Dense forest trek with stunning valley views",
-    rating: 4.2,
-    difficulty: "Moderate"
-  },
-  {
-    name: "Matheran",
-    image: "/HeroImages/matheran.jpeg",
-    price: "5,000",
-    duration: "2 days",
-    description: "Peaceful hill station with toy train and sunset points",
-    rating: 4.3,
-    difficulty: "Easy"
-  },
-  {
-    name: "Manali",
-    image: "/HeroImages/manali.jpeg",
-    price: "12,000",
-    duration: "5 days",
-    description: "Adventure hub with snow peaks and river valleys",
-    rating: 4.6,
-    difficulty: "Moderate"
-  },
-  {
-    name: "Kedarnath",
-    image: "/HeroImages/kedarnath.jpeg",
-    price: "15,000",
-    duration: "6 days",
-    description: "Sacred pilgrimage trek to ancient Shiva temple",
-    rating: 4.8,
-    difficulty: "Challenging"
-  },
-];
+import { client } from '../sanity/lib/client';
+import { urlFor } from '../sanity/lib/image';
 
 
 function getVisibleCount() {
@@ -61,11 +15,33 @@ function getVisibleCount() {
 }
 
 export default function MoreThanAVisit() {
+  const [destinations, setDestinations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [current, setCurrent] = useState(0);
   const [visibleCount, setVisibleCount] = useState(getVisibleCount());
-  const total = destinations.length;
   const intervalRef = useRef();
-  const [favorites, setFavorites] = useState(Array(destinations.length).fill(false));
+  const [favorites, setFavorites] = useState([]);
+
+  useEffect(() => {
+    setLoading(true);
+    client.fetch(`*[_type == "featuredDestination"] | order(_createdAt asc){
+      name,
+      image,
+      price,
+      duration,
+      description,
+      rating,
+      difficulty
+    }`).then((data) => {
+      setDestinations(data);
+      setFavorites(Array(data.length).fill(false));
+      setLoading(false);
+    }).catch((err) => {
+      setError('Failed to load featured destinations.');
+      setLoading(false);
+    });
+  }, []);
 
   useEffect(() => {
     function handleResize() {
@@ -77,19 +53,22 @@ export default function MoreThanAVisit() {
 
   // Auto-rotate logic
   useEffect(() => {
+    if (destinations.length === 0) return;
     intervalRef.current = setInterval(() => {
-      setCurrent((c) => (c + 1) % total);
+      setCurrent((c) => (c + 1) % destinations.length);
     }, 3500);
     return () => clearInterval(intervalRef.current);
-  }, [total]);
+  }, [destinations.length]);
 
-  const prev = () => setCurrent((current - 1 + total) % total);
-  const next = () => setCurrent((current + 1) % total);
+  const prev = () => setCurrent((current - 1 + destinations.length) % destinations.length);
+  const next = () => setCurrent((current + 1) % destinations.length);
 
   // Get visible cards
   const visibleCards = [];
   for (let i = 0; i < visibleCount; i++) {
-    visibleCards.push(destinations[(current + i) % total]);
+    if (destinations.length > 0) {
+      visibleCards.push(destinations[(current + i) % destinations.length]);
+    }
   }
 
   const getDifficultyColor = (difficulty) => {
@@ -100,6 +79,28 @@ export default function MoreThanAVisit() {
       default: return 'text-gray-600 bg-gray-100';
     }
   };
+
+  if (loading) {
+    return (
+      <section className="w-full flex items-center justify-center min-h-[400px] py-10">
+        <div className="text-lg text-purple-600 font-semibold">Loading featured destinations...</div>
+      </section>
+    );
+  }
+  if (error) {
+    return (
+      <section className="w-full flex items-center justify-center min-h-[400px] py-10">
+        <div className="text-lg text-red-600 font-semibold">{error}</div>
+      </section>
+    );
+  }
+  if (destinations.length === 0) {
+    return (
+      <section className="w-full flex items-center justify-center min-h-[400px] py-10">
+        <div className="text-lg text-gray-600 font-semibold">No featured destinations found.</div>
+      </section>
+    );
+  }
   return (
     <section className="relative w-full mx-auto min-h-[400px] md:min-h-[550px] lg:min-h-[600px] flex items-center justify-center py-10 md:py-28 px-6 sm:px-10 md:px-18 overflow-hidden">
 
@@ -144,9 +145,8 @@ export default function MoreThanAVisit() {
                     {dest.difficulty}
                   </div>
 
-
                   <Image
-                    src={dest.image}
+                    src={dest.image ? urlFor(dest.image).width(675).height(390).url() : '/HeroImages/saputara.jpeg'}
                     alt={dest.name}
                     width={675}
                     height={390}

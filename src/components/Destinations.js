@@ -1,96 +1,247 @@
-"use client"
+"use client";
 import Image from "next/image";
 import React, { useState, useEffect, useRef } from "react";
-import { IoInformationCircle, IoLocationSharp } from "react-icons/io5";
+import {
+  FaFacebookF,
+  FaInstagram,
+  FaTwitter,
+  FaYoutube,
+  FaWhatsapp,
+} from "react-icons/fa";
+import { FiChevronRight, FiMapPin } from "react-icons/fi";
+import { MdTravelExplore, MdModeOfTravel, MdHiking } from "react-icons/md";
+import { WiTrain } from "react-icons/wi";
+import { GiRollingSuitcase } from "react-icons/gi";
+import { client } from "../sanity/lib/client";
+import { urlFor } from "../sanity/lib/image";
 
-const destinations = [
-  { name: "Saputara", image: "/HeroImages/saputara.jpeg", imageMobile: "/HeroImages/saputara.jpeg" },
-  { name: "Andharban", image: "/HeroImages/andharban.webp", imageMobile: "/HeroImages/andharban.webp" },
-  { name: "Matheran", image: "/HeroImages/matheran.jpeg", imageMobile: "/HeroImages/matheran.jpeg" },
-  { name: "Manali", image: "/HeroImages/manali.jpeg", imageMobile: "/HeroImages/manali.jpeg" },
-  { name: "Kedarnath", image: "/HeroImages/kedarnath.jpeg", imageMobile: "/HeroImages/kedarnath.jpeg" },
+const AUTO_ROTATE_INTERVAL = 3000;
+const VISIBLE_SLOTS_DESKTOP = 5;
+const VISIBLE_SLOTS_MOBILE = 5;
+
+const SocialIcons = () => (
+  <div className="flex items-center flex-col gap-1.5 sm:gap-3 text-xs sm:text-base">
+    <a
+      href="#"
+      aria-label="YouTube"
+      className="text-gray-600 hover:text-red-600"
+    >
+      <FaYoutube />
+    </a>
+    <a
+      href="#"
+      aria-label="Instagram"
+      className="text-gray-600 hover:text-pink-500"
+    >
+      <FaInstagram />
+    </a>
+    <a
+      href="#"
+      aria-label="WhatsApp"
+      className="text-gray-600 hover:text-green-500"
+    >
+      <FaWhatsapp />
+    </a>
+  </div>
+);
+
+const slideIcons = [
+  MdTravelExplore,
+  MdHiking,
+  MdModeOfTravel,
+  WiTrain,
+  GiRollingSuitcase,
 ];
 
-const AUTO_ROTATE_INTERVAL = 2000;
+const SlideIcon = ({ icon: Icon }) => (
+  <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 bg-white rounded-full w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center shadow-md">
+    <Icon className="text-secondary text-sm sm:text-2xl" />
+  </div>
+);
 
 const Destinations = () => {
+  const [destinations, setDestinations] = useState([]);
   const [current, setCurrent] = useState(0);
-  const [hovered, setHovered] = useState(false);
-  const [showInfo, setShowInfo] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const total = destinations.length;
-  const intervalRef = useRef();
+  const intervalRef = useRef(null);
 
-  // Detect mobile view
+  useEffect(() => {
+    client
+      .fetch(
+        `*[_type == "destination"] | order(_createdAt asc){ _id, name, location, image }`
+      )
+      .then((data) => {
+        setDestinations(data);
+        if (data.length > 0) {
+          setCurrent(0);
+        }
+      });
+  }, []);
+
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 640);
     };
     handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Autorotate logic
   useEffect(() => {
-    if (!hovered) {
+    if (!isHovered && destinations.length > 0) {
       intervalRef.current = setInterval(() => {
-        setCurrent((c) => (c + 1) % total);
+        setCurrent((prev) => (prev + 1) % destinations.length);
       }, AUTO_ROTATE_INTERVAL);
     }
     return () => clearInterval(intervalRef.current);
-  }, [hovered, total]);
+  }, [isHovered, destinations]);
 
-  const dest = destinations[current];
-  const imageSrc = isMobile && dest.imageMobile ? dest.imageMobile : dest.image;
+  if (destinations.length === 0) return null;
+
+  const VISIBLE_SLOTS = isMobile ? VISIBLE_SLOTS_MOBILE : VISIBLE_SLOTS_DESKTOP;
+
+  // Always render VISIBLE_SLOTS, wrapping around the destinations array
+  const getSlotIndex = (slot) => {
+    if (destinations.length === 0) return 0;
+    // Center slot is current, others are offsets
+    return (
+      (current + slot - Math.floor(VISIBLE_SLOTS / 2) + destinations.length) %
+      destinations.length
+    );
+  };
 
   return (
-    <section className="flex flex-col items-center justify-center mt-[140px]">
+    <section className="w-full flex items-center justify-center py-10 sm:py-14 px-1 sm:px-4 md:px-6 lg:px-8 overflow-x-auto overflow-y-visible pt-[110px] sm:pt-[180px]">
       <div
-        className="relative ml-auto mt-[70px] overflow-hidden w-[85%] sm:w-[85%] h-[calc(100vh-300px)] sm:h-[calc(100vh-200px)] flex items-center justify-center rounded-l-xl sm:rounded-l-2xl shadow-lg"
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => { setHovered(false); setShowInfo(false); }}
+        className="flex flex-grow items-end justify-center gap-1 sm:gap-4 w-full h-[180px] sm:h-[340px] lg:h-[380px]"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
-        <Image
-          src={imageSrc}
-          alt={dest.name}
-          width={isMobile ? 400 : 675}
-          height={isMobile ? 600 : 390}
-          className="object-cover w-full h-full transition-all duration-300"
-        />
+        {Array.from({ length: VISIBLE_SLOTS }, (_, slot) => {
+          const destIdx = getSlotIndex(slot);
+          const dest = destinations[destIdx];
+          const centerIndex = Math.floor(VISIBLE_SLOTS / 2);
+          if (!dest) return null;
+          const IconComponent = slideIcons[slot % slideIcons.length];
 
-        {/* Progress Indicator (dots) and Info Icon */}
-        <div className="absolute bottom-3 sm:bottom-8 left-3 sm:left-10 right-3 sm:right-10 flex items-center justify-between z-10">
-          <div className="flex gap-1 sm:gap-2">
-            {destinations.map((_, idx) => (
-              <span
-                key={idx}
-                onClick={() => setCurrent(idx)}
-                className={`rounded-full transition-all duration-200 cursor-pointer ${idx === current ? 'bg-[#316866] w-3 h-1.5 sm:w-4 sm:h-2' : 'bg-gray-300 w-1.5 h-1.5 sm:w-2 sm:h-2'}`}
-                style={{ display: 'inline-block' }}
-              />
-            ))}
-          </div>
-          <div className="relative ml-2 sm:ml-4">
-            <IoInformationCircle
-              className="text-base sm:text-lg text-white cursor-pointer hover:text-gray-300 transition drop-shadow-lg focus:outline-none focus:ring-0"
-              onMouseEnter={() => setShowInfo(true)}
-              onMouseLeave={() => setShowInfo(false)}
-              onFocus={() => setShowInfo(true)}
-              onBlur={() => setShowInfo(false)}
-              tabIndex={0}
-              aria-label="Show place name"
-            />
-            {showInfo && (
-              <div className="absolute opacity-90 -bottom-1 right-5 bg-white text-purple-800 px-2 py-1 rounded-md shadow-2xl text-xs font-bold whitespace-nowrap animate-fade-in z-20">
-                {dest.name}
+          // Slot type helpers
+          const isCenter = slot === centerIndex;
+          const isFirstLeft = slot === centerIndex - 1;
+          const isFirstRight = slot === centerIndex + 1;
+          const isSecondLeft = slot === centerIndex - 2;
+          const isSecondRight = slot === centerIndex + 2;
+          const isActive = isCenter;
+
+          // Responsive sizing and positioning logic
+          let pillarHeight = "h-[180px] sm:h-[340px] lg:h-[380px]"; // Responsive height
+          let pillarWidth = "w-[180px] sm:w-[340px] lg:w-[380px]"; // Center is square, responsive
+          let pillarTranslateY = "";
+          if (isCenter) {
+            pillarWidth = "w-[180px] sm:w-[340px] lg:w-[380px]";
+            pillarTranslateY = "";
+          } else if (isFirstLeft || isFirstRight) {
+            pillarWidth = "w-[45px] sm:w-[100px] lg:w-[120px]";
+            pillarTranslateY = "";
+          } else if (isSecondLeft || isSecondRight) {
+            pillarWidth = "w-[45px] sm:w-[100px] lg:w-[120px]";
+            pillarTranslateY = "-translate-y-4 md:-translate-y-10";
+          } else {
+            pillarWidth = "w-[50px] sm:w-[60px] sm:w-[80px] md:w-[100px]";
+            pillarTranslateY = "";
+          }
+
+          const zIndex = isActive
+            ? "z-20"
+            : isFirstLeft || isFirstRight
+            ? "z-10"
+            : "z-0";
+          const borderRadius = isActive ? "rounded-[20px] sm:rounded-[35px]" : "rounded-full";
+
+          // Pillar content
+          const pillar = (
+            <div
+              onClick={() => setCurrent(destIdx)}
+              className={`relative cursor-pointer transition-all duration-500 ease-in-out transform-gpu ${pillarHeight} ${pillarWidth} ${zIndex} ${pillarTranslateY}`}
+              style={{ minWidth: undefined }}
+            >
+              <div
+                className={`relative w-full h-full ${borderRadius} overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300`}
+              >
+                <Image
+                  src={urlFor(dest.image).url()}
+                  alt={dest.name}
+                  fill
+                  sizes="(max-width: 640px) 90vw, (max-width: 768px) 50vw, 33vw"
+                  className="object-cover"
+                  priority={isActive}
+                />
+                {isActive && (
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent p-2 sm:p-4 md:p-6 flex flex-col justify-end">
+                    {/* Center slot: icon + name + location row */}
+                    <div className="flex items-center gap-2 sm:gap-4">
+                      <div className="flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-white/90">
+                        <IconComponent className="text-secondary text-sm sm:text-2xl" />
+                      </div>
+                      <div>
+                        <h3 className="text-white text-base sm:text-xl md:text-xl font-bold">
+                          {dest.name}
+                        </h3>
+                        <p className="text-gray-200 text-xs sm:text-sm mt-0.5">
+                          {dest.location || "Explore this amazing destination"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {!isCenter && <SlideIcon icon={IconComponent} />}
               </div>
-            )}
-          </div>
-        </div>
+            </div>
+          );
+
+          // Special case: 2nd left (social icons below)
+          if (isSecondLeft) {
+            return (
+              <div
+                key={dest._id + "-" + slot}
+                className="flex flex-col items-center"
+              >
+                {pillar}
+                <div className="mt-2">
+                  <SocialIcons />
+                </div>
+              </div>
+            );
+          }
+
+          // Special case: 2nd right (find your escape + chevron below)
+          if (isSecondRight) {
+            return (
+              <div
+                key={dest._id + "-" + slot}
+                className="flex flex-col items-center"
+              >
+                {pillar}
+                <div className="text-[8px] sm:text-sxs font-semibold text-gray-600 w-[40px] sm:w-[100px] lg:w-[120px] text-wrap text-center">
+                  Find Your Escape
+                </div>
+                <button className="mt-2 p-1.5 text-sm sm:text-xl sm:p-3 rounded-full border bg-secondary border-gray-400 text-gray-300 hover:scale-[1.01] transition-colors">
+                  <FiChevronRight />
+                </button>
+              </div>
+            );
+          }
+
+          // Default: just the pillar
+          return (
+            <React.Fragment key={dest._id + "-" + slot}>
+              {pillar}
+            </React.Fragment>
+          );
+        })}
       </div>
     </section>
   );
 };
 
-export default Destinations; 
+export default Destinations;

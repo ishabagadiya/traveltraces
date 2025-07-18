@@ -37,7 +37,7 @@ export default function CallToAction() {
               <div className="flex -space-x-2">
                 <div className="w-6 md:w-8 h-6 md:h-8 text-xs md:text-base bg-[#8c78d7] rounded-full flex items-center justify-center text-white font-bold">A</div>
                 <div className="w-6 md:w-8 h-6 md:h-8 text-xs md:text-base bg-[rgba(225,185,255,0.8)] rounded-full flex items-center justify-center text-[#003c3a] font-bold">B</div>
-                <div className="w-6 md:w-8 h-6 md:h-8 text-xs md: text-base bg-[#003c3a] rounded-full flex items-center justify-center text-white font-bold">C</div>
+                <div className="w-6 md:w-8 h-6 md:h-8 text-xs md:text-base bg-[#003c3a] rounded-full flex items-center justify-center text-white font-bold">C</div>
               </div>
               <span className="text-sm text-gray-500">Join 500+ travelers who've shared their stories</span>
             </div>
