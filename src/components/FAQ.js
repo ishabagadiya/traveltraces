@@ -6,8 +6,6 @@ import {
   FaMapMarkedAlt,
   FaCreditCard,
   FaHeadset,
-  FaPlane,
-  FaHotel,
   FaCamera,
   FaCompass,
   FaLightbulb,
@@ -26,54 +24,54 @@ const allExperiences = [
     description:
       "Let our AI-powered recommendations find the perfect destinations that match your travel style and preferences.",
     tip: "Pro tip: Use our mood-based filters for personalized suggestions",
-    icon: <FaCompass className="text-base sm:text-lg text-[#003c3a]" />,
+    icon: <FaCompass className="text-base sm:text-lg text-[#ffffff]" />,
     tipIcon: <FaLightbulb className="text-base sm:text-lg text-[#003c3a]" />,
-    color: "from-[#2d133b] to-[#8c78d7]",
+    color: "from-[#384523] to-[#384523]",
   },
   {
     title: "Create Your Itinerary",
     description:
       "Build custom travel plans with our interactive timeline builder. Mix popular attractions with local secrets.",
     tip: "Save multiple itineraries for different seasons",
-    icon: <FaMapMarkedAlt className="text-base sm:text-lg text-[#003c3a]" />,
+    icon: <FaMapMarkedAlt className="text-base sm:text-lg text-[#ffffff]" />,
     tipIcon: <FaBullseye className="text-base sm:text-lg text-[#003c3a]" />,
-    color: "from-[#3a1857] to-[#5f4b8b]",
+    color: "from-[#384523] to-[#384523]",
   },
   {
     title: "Smart Booking System",
     description:
       "Our intelligent booking engine finds the best prices and automatically suggests optimal travel dates.",
     tip: "Enable price alerts for your dream destinations",
-    icon: <FaSuitcase className="text-base sm:text-lg text-[#e1b9ff]" />,
+    icon: <FaSuitcase className="text-base sm:text-lg text-[#ffffff]" />,
     tipIcon: <FaBolt className="text-base sm:text-lg text-[#003c3a]" />,
-    color: "from-[#4b206b] to-[#2d133b]",
+    color: "from-[#384523] to-[#384523]",
   },
   {
     title: "Travel Protection",
     description:
       "Comprehensive coverage that adapts to your trip type. From adventure sports to luxury retreats.",
     tip: "24/7 emergency assistance included",
-    icon: <FaCreditCard className="text-base sm:text-lg text-[#003c3a]" />,
+    icon: <FaCreditCard className="text-base sm:text-lg text-[#ffffff]" />,
     tipIcon: <FaShieldAlt className="text-base sm:text-lg text-[#003c3a]" />,
-    color: "from-[#2d133b] via-[#3a1857] to-[#8c78d7]",
+    color: "from-[#384523] via-[#384523] to-[#384523]",
   },
   {
     title: "Local Experiences",
     description:
       "Connect with authentic local guides and experience destinations like a true insider.",
     tip: "Book experiences that support local communities",
-    icon: <FaCamera className="text-base sm:text-lg text-[#003c3a]" />,
+    icon: <FaCamera className="text-base sm:text-lg text-[#ffffff]" />,
     tipIcon: <FaStar className="text-base sm:text-lg text-[#003c3a]" />,
-    color: "from-[#3a1857] to-[#8c78d7]",
+    color: "from-[#384523] to-[#384523]",
   },
   {
     title: "Real-time Support",
     description:
       "Get instant help from our travel experts through chat, voice, or video calls anytime, anywhere.",
     tip: "Download offline maps and guides before your trip",
-    icon: <FaHeadset className="text-base sm:text-lg text-[#e1b9ff]" />,
+    icon: <FaHeadset className="text-base sm:text-lg text-[#ffffff]" />,
     tipIcon: <FaComments className="text-base sm:text-lg text-[#003c3a]" />,
-    color: "from-[#4b206b] to-[#2d133b]",
+    color: "from-[#384523] to-[#384523]",
   },
 ];
 
@@ -81,7 +79,7 @@ export default function FAQ() {
   const [hoveredExperience, setHoveredExperience] = useState(null);
 
   return (
-    <section className="w-full py-8 md:py-12 px-3 sm:px-6 md:px-16 bg-gradient-to-br from-[#003c3a] via-[#8c78d7] to-[#e1b9ff] relative overflow-hidden">
+    <section className="w-full py-8 md:py-12 px-3 sm:px-6 md:px-16 relative overflow-hidden">
       {/* Animated background particles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {[...Array(6)].map((_, i) => (
@@ -100,10 +98,10 @@ export default function FAQ() {
 
       <div className="max-w-6xl mx-auto flex flex-col items-center relative z-10">
         <div className="text-center mb-6 sm:mb-8 md:mb-12">
-          <h2 className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-white mb-2 sm:mb-3 drop-shadow-lg tracking-tight">
+          <h2 className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-secondary mb-2 sm:mb-3 drop-shadow-lg tracking-tight">
             Your Travel Journey
           </h2>
-          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white/90 max-w-2xl mx-auto leading-relaxed px-2">
+          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-[384523b5] max-w-2xl mx-auto leading-relaxed px-2">
             Discover how we transform every trip into an unforgettable adventure
           </p>
         </div>
@@ -138,8 +136,8 @@ export default function FAQ() {
                 <div
                   className={`relative bg-white/95 backdrop-blur-sm rounded-xl sm:rounded-2xl border-2 transition-all duration-500 overflow-hidden cursor-pointer h-full ${
                     hoveredExperience === idx
-                      ? "border-[#003c3a] shadow-xl"
-                      : "border-white/30 hover:border-[#8c78d7]/60 shadow-lg"
+                      ? "border-[#384523b5] shadow-xl"
+                      : "border-white/30 hover:border-[#384523b5]/60 shadow-lg"
                   }`}
                 >
                   {/* Gradient header */}
@@ -158,12 +156,12 @@ export default function FAQ() {
 
                   {/* Content */}
                   <div className="p-3 sm:p-4 md:p-6 flex-1">
-                    <p className="text-xs sm:text-sm md:text-base leading-relaxed font-medium mb-3 sm:mb-4 text-[#003c3a]">
+                    <p className="text-xs sm:text-sm md:text-base leading-relaxed font-medium mb-3 sm:mb-4 text-secondary">
                       {experience.description}
                     </p>
 
                     {/* Pro tip */}
-                    <div className="bg-gradient-to-r from-[#003c3a]/10 to-[#8c78d7]/10 rounded-lg sm:rounded-xl p-2 sm:p-3 md:p-4 border-l-2 sm:border-l-3 border-[#8c78d7]">
+                    <div className="bg-gradient-to-r from-[#003c3a]/10 to-[#8c78d7]/10 rounded-lg sm:rounded-xl p-2 sm:p-3 md:p-4 border-l-2 sm:border-l-3 border-secondary">
                       <div className="flex items-start gap-2">
                         <div className="flex-shrink-0 mt-0.5">
                           {experience.tipIcon}
@@ -191,7 +189,7 @@ export default function FAQ() {
 
         {/* Call to Action */}
         <div className="mt-6 sm:mt-8 md:mt-12 text-center group">
-          <button className="font-bold flex items-center gap-2 bg-purple-900 hover:bg-purple-800 text-white text-sm sm:text-base md:text-lg px-4 py-2 sm:px-5 sm:py-3 md:px-6 md:py-3 rounded-full shadow-lg transition-colors duration-200 border border-purple-900">
+          <button className="font-bold flex items-center gap-2 bg-secondary hover:bg-[3845235b] text-white text-sm sm:text-base md:text-lg px-4 py-2 sm:px-5 sm:py-3 md:px-6 md:py-3 rounded-full shadow-lg transition-colors duration-200 border border-purple-900">
             Start Your Journey{" "}
             <FiArrowRight className="mt-0.5 sm:mt-1 group-hover:ml-1 transition-transform duration-200" />
           </button>

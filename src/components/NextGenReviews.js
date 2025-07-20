@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
-import { FaChevronRight } from "react-icons/fa";
+import { FaChevronRight, FaQuoteLeft } from "react-icons/fa";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 const reviews = [
@@ -154,7 +154,7 @@ function FloatingCard({ review, position }) {
           {/* Header */}
           <div className="flex items-center gap-2 sm:gap-4 mb-4 sm:mb-6">
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-300 to-pink-300 rounded-2xl blur-md opacity-30"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-[#3845237a] to-[#3845237a] rounded-2xl blur-md opacity-30"></div>
               <Image
                 src={review.photo}
                 alt={review.name}
@@ -182,7 +182,7 @@ function FloatingCard({ review, position }) {
               <h3 className="font-bold text-gray-800 text-sm sm:text-xl">
                 {review.name}
               </h3>
-              <p className="text-purple-600 text-xs sm:text-sm font-medium flex items-center gap-1">
+              <p className="text-secondary text-xs sm:text-sm font-medium flex items-center gap-1">
                 <svg
                   className="w-3 h-3"
                   fill="currentColor"
@@ -200,13 +200,7 @@ function FloatingCard({ review, position }) {
           </div>
           {/* Quote */}
           <blockquote className="text-gray-700 text-base sm:text-lg leading-relaxed mb-4 sm:mb-6 relative">
-            <svg
-              className="absolute -top-2 -left-2 w-6 h-6 sm:w-8 sm:h-8 text-purple-200"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path d="M7.17 8A4.17 4.17 0 0 0 3 12.17V21h7v-8.83A4.17 4.17 0 0 0 7.17 8zm9.66 0A4.17 4.17 0 0 0 12.83 12.17V21h7v-8.83A4.17 4.17 0 0 0 16.83 8z" />
-            </svg>
+            <FaQuoteLeft className="absolute -top-2.5 -left-2 w-4 h-4 sm:w-6 sm:h-6 text-secondary mr-2" />
             <span className="relative z-10 pl-6 text-xs sm:text-sm">
               "{review.comment}"
             </span>
@@ -224,7 +218,7 @@ function FloatingCard({ review, position }) {
             </span>
           </div>
           {/* Trip Badge */}
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 to-purple-700 text-white px-3 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-medium shadow-lg">
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#384523b5] to-[#384523] text-white px-3 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-medium shadow-lg">
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fillRule="evenodd"

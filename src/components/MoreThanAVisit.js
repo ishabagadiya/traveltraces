@@ -333,7 +333,7 @@ export default function MoreThanAVisit() {
               </button>
               <button
                 onClick={next}
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-white/80 hover:bg-secondary text-secondary shadow transition"
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-white/80 hover:bg-white/50 text-secondary shadow transition"
                 aria-label="Next destination"
               >
                 <svg
