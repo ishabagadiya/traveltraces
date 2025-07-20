@@ -1,6 +1,8 @@
 "use client";
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
+import { FaChevronRight } from "react-icons/fa";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 const reviews = [
   {
@@ -205,7 +207,9 @@ function FloatingCard({ review, position }) {
             >
               <path d="M7.17 8A4.17 4.17 0 0 0 3 12.17V21h7v-8.83A4.17 4.17 0 0 0 7.17 8zm9.66 0A4.17 4.17 0 0 0 12.83 12.17V21h7v-8.83A4.17 4.17 0 0 0 16.83 8z" />
             </svg>
-            <span className="relative z-10 pl-6 text-xs sm:text-sm">"{review.comment}"</span>
+            <span className="relative z-10 pl-6 text-xs sm:text-sm">
+              "{review.comment}"
+            </span>
           </blockquote>
           {/* Rating & Trip Info */}
           <div className="flex flex-row items-center justify-between gap-2 sm:gap-0 mb-3 sm:mb-4">
@@ -258,21 +262,21 @@ export default function NextGenReviews() {
   };
 
   return (
-    <section className="relative min-h-[70vh] md:min-h-screen py-10 sm:py-16 md:py-20 px-2 sm:px-4 bg-gradient-to-br from-purple-400 via-purple-600 to-purple-700 overflow-hidden">
-      <Blobs />
+    <section className="relative min-h-[70vh] md:min-h-screen py-10 sm:py-16 md:py-20 px-2 sm:px-4 overflow-hidden">
+      {/* <Blobs /> */}
       <div className="relative mx-auto">
         {/* Header */}
         <div className="text-center mb-10 sm:mb-16">
           <div className="inline-flex items-center gap-2 sm:gap-4 px-4 sm:px-8 py-1 sm:py-2">
-            <div className="w-2 h-2 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full animate-bounce"></div>
-            <div className="w-2 h-2 bg-gradient-to-r from-blue-400 to-indigo-400 rounded-full animate-bounce delay-500"></div>
+            <div className="w-2 h-2 bg-gradient-to-r from-[#3845237a] to-[#384523] rounded-full animate-bounce"></div>
+            <div className="w-2 h-2 bg-gradient-to-r from-[#384523] to-[#3845237a] rounded-full animate-bounce delay-500"></div>
           </div>
           <h2 className="text-3xl sm:text-5xl md:text-7xl font-black mb-4 sm:mb-6">
-            <span className="bg-gradient-to-r from-white via-purple-200 to-white bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#384523b5] via-[#384523] to-[#384523b5] bg-clip-text text-transparent">
               Traveler Stories
             </span>
           </h2>
-          <p className="text-base sm:text-xl text-white/70 max-w-xs sm:max-w-2xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-xl text-[#384523b5] max-w-xs sm:max-w-2xl mx-auto leading-relaxed">
             Experience the magic through the eyes of fellow travelers who've
             embarked on extraordinary journeys
           </p>
@@ -302,8 +306,8 @@ export default function NextGenReviews() {
                 onClick={() => setCurrentIndex(index)}
                 className={`cursor-pointer transition-all duration-300 ${
                   index === currentIndex
-                    ? "w-8 sm:w-12 h-2 sm:h-3 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full"
-                    : "w-2 sm:w-3 h-2 sm:h-3 bg-white/30 rounded-full hover:bg-white/50"
+                    ? "w-8 h-2 sm:h-3 bg-gradient-to-r from-[#384523d8] to-[#384523] rounded-full"
+                    : "w-2 sm:w-3 h-2 sm:h-3 bg-[#384523] rounded-full "
                 }`}
               />
             ))}
@@ -313,31 +317,15 @@ export default function NextGenReviews() {
               onClick={() =>
                 setCurrentIndex((prev) => (prev - 1 + total) % total)
               }
-              className="w-10 sm:w-14 h-10 sm:h-14 rounded-full bg-white/10 backdrop-blur-lg border border-white/20 text-white hover:bg-white/20 transition-all duration-300 flex items-center justify-center group"
+              className="mt-2 p-1.5 text-sm sm:text-xl sm:p-3 rounded-full border bg-secondary border-gray-400 text-gray-300 hover:scale-[1.03] transition-colors"
             >
-              <svg
-                className="w-5 sm:w-6 h-5 sm:h-6 group-hover:-translate-x-1 transition-transform"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-              >
-                <path d="M15 19l-7-7 7-7" />
-              </svg>
+              <FiChevronLeft />
             </button>
             <button
               onClick={() => setCurrentIndex((prev) => (prev + 1) % total)}
-              className="w-10 sm:w-14 h-10 sm:h-14 rounded-full bg-white/10 backdrop-blur-lg border border-white/20 text-white hover:bg-white/20 transition-all duration-300 flex items-center justify-center group"
+              className="mt-2 p-1.5 text-sm sm:text-xl sm:p-3 rounded-full border bg-secondary border-gray-400 text-gray-300 hover:scale-[1.03] transition-colors"
             >
-              <svg
-                className="w-5 sm:w-6 h-5 sm:h-6 group-hover:translate-x-1 transition-transform"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-              >
-                <path d="M9 5l7 7-7 7" />
-              </svg>
+              <FiChevronRight />
             </button>
           </div>
         </div>

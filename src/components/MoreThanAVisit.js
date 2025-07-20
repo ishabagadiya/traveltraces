@@ -115,16 +115,16 @@ export default function MoreThanAVisit() {
     );
   }
   return (
-    <section className="relative w-full mx-auto min-h-[400px] md:min-h-[550px] lg:min-h-[600px] flex items-center justify-center bg-secondary py-10 md:py-28 px-6 sm:px-10 md:px-18 overflow-hidden rounded-[4rem]">
+    <section className="relative w-full mx-auto min-h-[400px] md:min-h-[550px] lg:min-h-[600px] flex items-center justify-center bg-secondary py-14 md:py-28 px-6 sm:px-10 md:px-18 overflow-hidden rounded-[2rem] md:rounded-[4rem]">
       <div className="relative z-10 flex flex-col w-full">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-5 mb-5 md:mb-8">
           <div className="flex flex-col gap-1 md:gap-6">
-            <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-0 md:mb-0">
+            <h2 className="text-xl md:text-3xl lg:text-5xl font-extrabold text-white mb-0 md:mb-0">
               Experience More Than Travel
             </h2>
-            <div className="h-1 w-60 bg-gradient-to-r from-white to-secondary rounded-full"></div>
+            <div className="h-0.5 sm:h-1 w-60 bg-gradient-to-r from-white to-secondary rounded-full"></div>
           </div>
-          <p className="text-gray-300 max-w-lg text-lg md:text-right my-4">
+          <p className="text-gray-300 text-lg md:text-right my-4">
             Uncover hidden gems and make memories that last a lifetime. Your
             next adventure starts here!
           </p>
