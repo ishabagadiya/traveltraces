@@ -121,6 +121,25 @@ body {
   animation-timing-function: linear;
 }
 
+@keyframes shine {
+  0% {
+    background-position: -100% 0;
+  }
+  100% {
+    background-position: 100% 0;
+  }
+}
+
+.shiny-text {
+  background: linear-gradient(45deg, #ffffffb3, #ffffffce, #ffffff);
+  background-size: 200% auto;
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 10s alternate-reverse infinite;
+}
+
 @media (min-width: 640px) {
   .thumbnail-gallery-btn {
     width: 96px !important;

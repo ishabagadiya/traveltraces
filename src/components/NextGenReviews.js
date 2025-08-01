@@ -3,75 +3,8 @@ import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import { FaChevronRight, FaQuoteLeft } from "react-icons/fa";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
-
-const reviews = [
-  {
-    name: "Aarav Sharma",
-    location: "Mumbai, India",
-    photo: "/HeroImages/andharban.jpeg",
-    comment:
-      "Absolutely unforgettable! The guides were amazing and every moment felt magical. Can't wait for my next trip!",
-    rating: 5,
-    trip: "Andharban Trek",
-    date: "2 weeks ago",
-    verified: true,
-  },
-  {
-    name: "Priya Patel",
-    location: "Ahmedabad, India",
-    photo: "/HeroImages/saputara.jpeg",
-    comment:
-      "The best travel experience I've ever had. The hidden gems we explored were breathtaking! Highly recommended!",
-    rating: 5,
-    trip: "Saputara Adventure",
-    date: "1 month ago",
-    verified: true,
-  },
-  {
-    name: "Rahul Verma",
-    location: "Delhi, India",
-    photo: "/HeroImages/manali.jpeg",
-    comment:
-      "From start to finish, everything was perfect. The team made us feel like family. Thank you for the memories!",
-    rating: 5,
-    trip: "Manali Expedition",
-    date: "3 weeks ago",
-    verified: true,
-  },
-  {
-    name: "Sneha Reddy",
-    location: "Hyderabad, India",
-    photo: "/HeroImages/kedarnath.jpeg",
-    comment:
-      "Loved every bit of the journey! The attention to detail and care was beyond expectations. Will travel again!",
-    rating: 5,
-    trip: "Kedarnath Pilgrimage",
-    date: "1 week ago",
-    verified: true,
-  },
-  {
-    name: "Arjun Singh",
-    location: "Jaipur, India",
-    photo: "/HeroImages/andharban.jpeg",
-    comment:
-      "Professional service with a personal touch. The landscapes were stunning and the experience was seamless!",
-    rating: 5,
-    trip: "Rajasthan Desert Safari",
-    date: "5 days ago",
-    verified: true,
-  },
-  {
-    name: "Kavya Nair",
-    location: "Kochi, India",
-    photo: "/HeroImages/saputara.jpeg",
-    comment:
-      "An incredible journey that exceeded all expectations. The local insights made it truly special!",
-    rating: 5,
-    trip: "Western Ghats Trek",
-    date: "4 days ago",
-    verified: true,
-  },
-];
+import { client } from "../sanity/lib/client";
+import { urlFor } from "../sanity/lib/image";
 
 function StarRating({ rating }) {
   return (
@@ -132,7 +65,7 @@ function FloatingCard({ review, position }) {
   }
   return (
     <div
-      className="absolute  flex items-center justify-center transition-all duration-700 ease-out"
+      className="absolute min-w-[300px] md:min-w-[480px] flex items-center justify-center transition-all duration-700 ease-out"
       style={{
         transform,
         opacity,
@@ -145,7 +78,7 @@ function FloatingCard({ review, position }) {
         style={{ boxShadow: shadow }}
       >
         {/* Animated Background */}
-        <div className="absolute inset-0 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-purple-500/10 via-pink-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        <div className="absolute inset-0 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#3845235b] to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
         {/* Floating Elements */}
         <div className="absolute top-2 right-2 w-8 h-8 sm:w-16 sm:h-16 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-xl animate-pulse"></div>
         <div className="absolute bottom-2 left-2 w-6 h-6 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-400/20 to-indigo-400/20 rounded-full blur-lg animate-pulse delay-1000"></div>
@@ -235,17 +168,51 @@ function FloatingCard({ review, position }) {
 }
 
 export default function NextGenReviews() {
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const total = reviews.length;
 
   useEffect(() => {
-    if (!isAutoPlaying) return;
+    setLoading(true);
+    client
+      .fetch(
+        `*[_type == "travelerReview"] | order(_createdAt desc){
+          name,
+          location,
+          photo,
+          comment,
+          rating,
+          trip,
+          date,
+          verified
+        }`
+      )
+      .then((data) => {
+        // Map photo to url if present
+        setReviews(
+          data.map((r) => ({
+            ...r,
+            photo: r.photo ? urlFor(r.photo).width(365).height(400).url() : "/HeroImages/andharban.jpeg",
+          }))
+        );
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError("Failed to load traveler reviews.");
+        setLoading(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (!isAutoPlaying || reviews.length === 0) return;
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % total);
     }, 2000);
     return () => clearInterval(interval);
-  }, [isAutoPlaying, total]);
+  }, [isAutoPlaying, total, reviews.length]);
 
   // Determine which cards to show
   const getCardPosition = (idx) => {
@@ -254,6 +221,28 @@ export default function NextGenReviews() {
     if (idx === (currentIndex - 1 + total) % total) return "left";
     return "hidden";
   };
+
+  if (loading) {
+    return (
+      <section className="w-full flex items-center justify-center min-h-[400px] py-10">
+        <div className="text-lg text-secondary font-semibold">Loading traveler reviews...</div>
+      </section>
+    );
+  }
+  if (error) {
+    return (
+      <section className="w-full flex items-center justify-center min-h-[400px] py-10">
+        <div className="text-lg text-red-600 font-semibold">{error}</div>
+      </section>
+    );
+  }
+  if (reviews.length === 0) {
+    return (
+      <section className="w-full flex items-center justify-center min-h-[400px] py-10">
+        <div className="text-lg text-gray-600 font-semibold">No traveler reviews found.</div>
+      </section>
+    );
+  }
 
   return (
     <section className="relative min-h-[70vh] md:min-h-screen py-10 sm:py-16 md:py-20 px-2 sm:px-4 overflow-hidden">
