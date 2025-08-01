@@ -91,9 +91,68 @@ export default function MoreThanAVisit() {
 
   if (loading) {
     return (
-      <section className="w-full flex items-center justify-center min-h-[400px] py-10">
-        <div className="text-lg text-secondary font-semibold">
-          Loading featured destinations...
+      <section className="relative w-full mx-auto min-h-[400px] md:min-h-[550px] lg:min-h-[600px] flex items-center justify-center bg-secondary py-14 md:py-28 px-6 sm:px-10 md:px-18 overflow-hidden rounded-t-[2rem] md:rounded-t-[4rem] opacity-40">
+        <div className="relative z-10 flex flex-col w-full">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-5 mb-5 md:mb-8">
+            <div className="flex flex-col gap-1 md:gap-6">
+              <div className="h-8 md:h-12 lg:h-16 w-48 md:w-80 bg-gray-200 rounded animate-pulse mb-2" />
+              <div className="h-1 w-60 bg-gray-300 rounded-full animate-pulse" />
+            </div>
+            <div className="h-6 w-64 bg-gray-200 rounded animate-pulse my-4" />
+          </div>
+          <div className="flex flex-col items-center">
+            {/* Skeleton Carousel Cards */}
+            <div className="flex gap-10 w-full justify-center">
+              {Array.from({ length: visibleCount }).map((_, idx) => (
+                <div
+                  key={idx}
+                  className="relative rounded-2xl overflow-hidden shadow-lg w-[400px] h-[350px] md:h-[400px] border-2 border-white/20 ring-2 ring-white/10 bg-gray-200 animate-pulse opacity-40"
+                >
+                  {/* Favorite Heart Icon Skeleton */}
+                  <div className="absolute top-4 right-4 z-30 p-2 rounded-full bg-gray-300 w-8 h-8" />
+                  {/* Difficulty Skeleton */}
+                  <div className="absolute top-4 left-4 z-30 px-4 py-2 rounded-full bg-gray-300 w-20 h-6" />
+                  {/* Image Skeleton */}
+                  <div className="w-full h-full bg-gray-300" />
+                  {/* Bottom Overlay Skeleton */}
+                  <div className="absolute bottom-0 left-0 right-0 z-20 p-5 w-[90%] rounded-tr-2xl bg-gray-100 backdrop-blur-md shadow-md flex flex-col gap-2">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 bg-gray-300 rounded-full" />
+                        <div className="h-6 w-32 bg-gray-300 rounded" />
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <div className="w-4 h-4 bg-gray-300 rounded-full" />
+                        <div className="h-4 w-8 bg-gray-300 rounded" />
+                      </div>
+                    </div>
+                    <div className="h-4 w-full bg-gray-300 rounded mb-2" />
+                    <div className="h-4 w-2/3 bg-gray-200 rounded mb-2" />
+                    <div className="flex items-center gap-4 mt-4">
+                      <div className="w-20 h-4 bg-gray-300 rounded" />
+                      <div className="w-16 h-4 bg-gray-300 rounded" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {/* Skeleton Progress and Arrows */}
+            <div className="flex items-center justify-between gap-4 mt-6 w-full">
+              <div className="flex gap-2">
+                {Array.from({ length: visibleCount }).map((_, idx) => (
+                  <span
+                    key={idx}
+                    className="rounded-full bg-white/30 w-2 h-2 animate-pulse"
+                    style={{ display: "inline-block" }}
+                  />
+                ))}
+              </div>
+              <div className="flex items-center gap-6">
+                <div className="w-8 h-8 rounded-full bg-gray-300 animate-pulse" />
+                <div className="w-8 h-8 rounded-full bg-gray-300 animate-pulse" />
+              </div>
+            </div>
+          </div>
         </div>
       </section>
     );
@@ -115,7 +174,7 @@ export default function MoreThanAVisit() {
     );
   }
   return (
-    <section className="relative w-full mx-auto min-h-[400px] md:min-h-[550px] lg:min-h-[600px] flex items-center justify-center bg-secondary py-14 md:py-28 px-6 sm:px-10 md:px-18 overflow-hidden rounded-t-[2rem] md:rounded-t-[4rem]">
+    <section className="relative w-full mx-auto min-h-[400px] md:min-h-[550px] lg:min-h-[600px] flex items-center justify-center bg-secondary py-14 mt-14 md:py-28 px-6 sm:px-10 md:px-18 overflow-hidden rounded-[2rem] md:rounded-[4rem]">
       <div className="relative z-10 flex flex-col w-full">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-5 mb-5 md:mb-8">
           <div className="flex flex-col gap-1 md:gap-6">
@@ -131,7 +190,10 @@ export default function MoreThanAVisit() {
         </div>
         <div className="flex flex-col items-center">
           {/* Carousel Cards */}
-          <div className="flex gap-10 w-full justify-center">
+          <div
+            className="flex gap-10 w-full justify-center"
+            style={{ WebkitOverflowScrolling: 'touch' }}
+          >
             {visibleCards.map((dest, idx) => {
               // Find the real index in the destinations array
               const realIdx = (current + idx) % destinations.length;
