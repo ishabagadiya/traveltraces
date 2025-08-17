@@ -1,17 +1,21 @@
 "use client";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
 import React from "react";
 import { FaPhoneAlt, FaEnvelope, FaGlobe, FaExclamationTriangle, FaInfoCircle, FaClock, FaCreditCard, FaTrain, FaPlane, FaWallet, FaCalendarAlt } from "react-icons/fa";
 
 export default function PolicyPage() {
   return (
-    <main className="min-h-screen bg-gray-50 pt-20">
+    <div className="w-full overflow-hidden">
+      <Header />
+      <main className="min-h-screen bg-gray-50 pt-20">
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-secondary/10 to-secondary/5 py-16">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-black text-secondary mb-4">
+          <h1 className="text-2xl sm:text-4xl font-black text-secondary mb-4">
             Cancellation, Refund & Rescheduling Policy
           </h1>
-          <p className="text-xl text-gray-700 max-w-4xl mx-auto leading-relaxed">
+          <p className="text-xs sm:text-sm text-gray-700 max-w-4xl mx-auto leading-relaxed">
             At Travel Traces, your satisfaction and trust are our top priorities. Our transparent policies are designed to offer flexibility while maintaining fair operational standards.
           </p>
         </div>
@@ -27,10 +31,10 @@ export default function PolicyPage() {
               <div className="p-3 bg-red-100 rounded-full">
                 <FaExclamationTriangle className="text-red-600 text-xl" />
               </div>
-              <h2 className="text-3xl font-bold text-secondary">🔁 Cancellation Policy</h2>
+              <h2 className="text-2xl sm:text-4xl font-bold text-secondary">🔁 Cancellation Policy</h2>
             </div>
             
-            <p className="text-gray-700 mb-6">
+            <p className="text-xs sm:text-sm text-gray-700 mb-6">
               If you wish to cancel your booking for any reason, please refer to the table below to understand the applicable refund:
             </p>
 
@@ -78,7 +82,7 @@ export default function PolicyPage() {
               <div className="p-3 bg-blue-100 rounded-full">
                 <FaTrain className="text-blue-600 text-xl" />
               </div>
-              <h2 className="text-3xl font-bold text-secondary">🚆 Refund Policy for Train/Flight Bookings</h2>
+              <h2 className="text-2xl sm:text-4xl font-bold text-secondary">🚆 Refund Policy for Train/Flight Bookings</h2>
             </div>
 
             <div className="space-y-6">
@@ -112,7 +116,7 @@ export default function PolicyPage() {
               <div className="p-3 bg-purple-100 rounded-full">
                 <FaCreditCard className="text-purple-600 text-xl" />
               </div>
-              <h2 className="text-3xl font-bold text-secondary">💸 Important Financial Notes</h2>
+              <h2 className="text-2xl sm:text-4xl font-bold text-secondary">💸 Important Financial Notes</h2>
             </div>
 
             <div className="space-y-4">
@@ -148,7 +152,7 @@ export default function PolicyPage() {
               <div className="p-3 bg-green-100 rounded-full">
                 <FaCalendarAlt className="text-green-600 text-xl" />
               </div>
-              <h2 className="text-3xl font-bold text-secondary">🔄 Rescheduling Policy</h2>
+              <h2 className="text-2xl sm:text-4xl font-bold text-secondary">🔄 Rescheduling Policy</h2>
             </div>
 
             <p className="text-gray-700 mb-6">
@@ -183,7 +187,7 @@ export default function PolicyPage() {
 
           {/* How to Cancel or Reschedule */}
           <section className="bg-white rounded-2xl shadow-lg p-8">
-            <h2 className="text-3xl font-bold text-secondary mb-6">📞 How to Cancel or Reschedule</h2>
+            <h2 className="text-2xl sm:text-4xl font-bold text-secondary mb-6">📞 How to Cancel or Reschedule</h2>
             <p className="text-gray-700 mb-6">
               You can cancel or reschedule your trip easily through any of the following methods:
             </p>
@@ -214,7 +218,7 @@ export default function PolicyPage() {
 
           {/* Refund Processing Timeline */}
           <section className="bg-white rounded-2xl shadow-lg p-8">
-            <h2 className="text-3xl font-bold text-secondary mb-6">✅ Refund Processing Timeline</h2>
+            <h2 className="text-2xl sm:text-4xl font-bold text-secondary mb-6">✅ Refund Processing Timeline</h2>
 
             <div className="overflow-x-auto">
               <table className="w-full border-collapse border border-gray-300 rounded-lg overflow-hidden">
@@ -308,6 +312,8 @@ export default function PolicyPage() {
           </section>
         </div>
       </div>
-    </main>
+      </main>
+      <Footer />
+    </div>
   );
 }

@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import { FaClock, FaMountain, FaUserFriends, FaStar, FaMapPin } from "react-icons/fa";
 import { client } from "../../sanity/lib/client";
 import { urlFor } from "../../sanity/lib/image";
@@ -79,7 +81,9 @@ export default function DestinationsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 pt-20">
+    <div className="w-full overflow-hidden">
+      <Header />
+      <main className="min-h-screen bg-gray-50 pt-20">
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-secondary/10 to-secondary/5 py-16">
         <div className="container mx-auto px-4 text-center">
@@ -277,6 +281,8 @@ export default function DestinationsPage() {
           </div>
         </div>
       </section>
-    </main>
+      </main>
+      <Footer />
+    </div>
   );
 }

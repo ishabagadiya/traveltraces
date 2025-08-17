@@ -2,6 +2,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import {
   FaClock,
   FaMountain,
@@ -83,7 +85,9 @@ export default function TripDetailsPage() {
   if (!trip) return <div className="min-h-screen flex items-center justify-center">Not found</div>;
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <div className="w-full overflow-hidden">
+      <Header />
+      <main className="min-h-screen bg-gray-50">
       {/* Hero Section with Carousel */}
       <section className="relative h-[60vh] min-h-[400px] md:min-h-[500px] bg-black flex items-end">
         <div
@@ -447,6 +451,8 @@ export default function TripDetailsPage() {
           </a>
         </div>
       </div>
-    </main>
+      </main>
+      <Footer />
+    </div>
   );
 }

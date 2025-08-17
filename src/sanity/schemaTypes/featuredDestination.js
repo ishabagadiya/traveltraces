@@ -10,6 +10,13 @@ export default {
       validation: (Rule) => Rule.required(),
     },
     {
+      name: "slug",
+      title: "Slug",
+      type: "slug",
+      options: { source: "name", maxLength: 96 },
+      validation: (Rule) => Rule.required(),
+    },
+    {
       name: "image",
       title: "Image",
       type: "image",
@@ -64,7 +71,6 @@ export default {
     },
     { name: "videos", title: "Videos", type: "array", of: [{ type: "url" }] },
     { name: "ageAllowed", title: "Age Allowed", type: "string" },
-    { name: "maxGroupSize", title: "Max Group Size", type: "number" },
     { name: "reviews", title: "Reviews", type: "number" },
     { name: "about", title: "About", type: "text" },
     {
@@ -161,49 +167,7 @@ export default {
         { name: "roomType", title: "Room Type", type: "string" },
       ],
     },
-    {
-      name: "transport",
-      title: "Transport",
-      type: "object",
-      fields: [
-        { name: "type", title: "Type", type: "string" },
-        { name: "pickup", title: "Pickup", type: "string" },
-        { name: "departure", title: "Departure", type: "string" },
-        { name: "return", title: "Return", type: "string" },
-      ],
-    },
-    {
-      name: "cancellation",
-      title: "Cancellation",
-      type: "object",
-      fields: [
-        { name: "before7days", title: "Before 7 Days", type: "string" },
-        { name: "before3days", title: "Before 3 Days", type: "string" },
-        { name: "before1day", title: "Before 1 Day", type: "string" },
-        { name: "sameDay", title: "Same Day", type: "string" },
-      ],
-    },
+
     { name: "brochure", title: "Brochure", type: "file" },
-    {
-      name: "faq",
-      title: "FAQ",
-      type: "array",
-      of: [
-        {
-          type: "object",
-          fields: [
-            { name: "question", title: "Question", type: "string" },
-            { name: "answer", title: "Answer", type: "text" },
-          ],
-        },
-      ],
-    },
-    {
-      name: "slug",
-      title: "Slug",
-      type: "slug",
-      options: { source: "name", maxLength: 96 },
-      validation: (Rule) => Rule.required(),
-    },
   ],
 };

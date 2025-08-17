@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { client } from "../sanity/lib/client";
 import { urlFor } from "../sanity/lib/image";
@@ -21,14 +21,123 @@ export default function MoreThanAVisit() {
   const [visibleCount, setVisibleCount] = useState(getVisibleCount());
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [transitionDirection, setTransitionDirection] = useState('next');
-  const intervalRef = useRef();
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [isUserInteracting, setIsUserInteracting] = useState(false);
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
   const [favorites, setFavorites] = useState([]);
   
-  // Touch scrolling refs
+  // Refs for cleanup
+  const autoPlayRef = useRef(null);
+  const touchTimeoutRef = useRef(null);
   const carouselRef = useRef(null);
-  const touchStartX = useRef(0);
-  const touchEndX = useRef(0);
-  const isDragging = useRef(false);
+
+  // Minimum swipe distance (in px)
+  const minSwipeDistance = 50;
+
+  // Pause auto-play when user interacts
+  const pauseAutoPlay = useCallback(() => {
+    setIsUserInteracting(true);
+    setIsAutoPlaying(false);
+    
+    // Resume auto-play after 5 seconds of no interaction
+    if (touchTimeoutRef.current) {
+      clearTimeout(touchTimeoutRef.current);
+    }
+    touchTimeoutRef.current = setTimeout(() => {
+      setIsUserInteracting(false);
+      setIsAutoPlaying(true);
+    }, 5000);
+  }, []);
+
+  // Handle touch start
+  const onTouchStart = useCallback((e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  }, []);
+
+  // Handle touch move
+  const onTouchMove = useCallback((e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  }, []);
+
+  const handlePrev = useCallback(() => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    setTransitionDirection('prev');
+    
+    setTimeout(() => {
+      setCurrent((current - 1 + destinations.length) % destinations.length);
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 300);
+    }, 150);
+  }, [isTransitioning, current, destinations.length]);
+
+  const handleNext = useCallback(() => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    setTransitionDirection('next');
+    
+    setTimeout(() => {
+      setCurrent((current + 1) % destinations.length);
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 300);
+    }, 150);
+  }, [isTransitioning, current, destinations.length]);
+
+  // Handle touch end and determine swipe direction
+  const onTouchEnd = useCallback(() => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      // Swipe left - next card
+      handleNext();
+      pauseAutoPlay();
+    } else if (isRightSwipe) {
+      // Swipe right - previous card
+      handlePrev();
+      pauseAutoPlay();
+    }
+  }, [touchStart, touchEnd, handleNext, handlePrev, pauseAutoPlay]);
+
+  // Handle manual navigation
+  const handleManualNavigation = useCallback((direction) => {
+    if (direction === 'next') {
+      handleNext();
+    } else {
+      handlePrev();
+    }
+    pauseAutoPlay();
+  }, [handleNext, handlePrev, pauseAutoPlay]);
+
+  // Handle dot navigation
+  const handleDotNavigation = useCallback((index) => {
+    if (isTransitioning || index === current) return;
+    setIsTransitioning(true);
+    setTransitionDirection(index > current ? 'next' : 'prev');
+    
+    setTimeout(() => {
+      setCurrent(index);
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 300);
+    }, 150);
+    pauseAutoPlay();
+  }, [current, isTransitioning, pauseAutoPlay]);
+
+  // Get visible cards
+  const visibleCards = [];
+  for (let i = 0; i < visibleCount; i++) {
+    if (destinations.length > 0) {
+      visibleCards.push(destinations[(current + i) % destinations.length]);
+    }
+  }
 
   useEffect(() => {
     setLoading(true);
@@ -65,59 +174,32 @@ export default function MoreThanAVisit() {
 
   // Auto-rotate logic
   useEffect(() => {
-    if (destinations.length === 0 || isTransitioning) return;
-    intervalRef.current = setInterval(() => {
+    if (!isAutoPlaying || destinations.length === 0 || isTransitioning || isUserInteracting) return;
+    
+    autoPlayRef.current = setInterval(() => {
       handleNext();
     }, 5000);
-    return () => clearInterval(intervalRef.current);
-  }, [destinations.length, isTransitioning]);
 
-  const handlePrev = () => {
-    if (isTransitioning) return;
-    setIsTransitioning(true);
-    setTransitionDirection('prev');
-    
-    setTimeout(() => {
-      setCurrent((current - 1 + destinations.length) % destinations.length);
-      setTimeout(() => {
-        setIsTransitioning(false);
-      }, 300);
-    }, 150);
-  };
+    return () => {
+      if (autoPlayRef.current) {
+        clearInterval(autoPlayRef.current);
+      }
+    };
+  }, [destinations.length, isTransitioning, isAutoPlaying, isUserInteracting, handleNext]);
 
-  const handleNext = () => {
-    if (isTransitioning) return;
-    setIsTransitioning(true);
-    setTransitionDirection('next');
-    
-    setTimeout(() => {
-      setCurrent((current + 1) % destinations.length);
-      setTimeout(() => {
-        setIsTransitioning(false);
-      }, 300);
-    }, 150);
-  };
+  // Cleanup timeouts on unmount
+  useEffect(() => {
+    return () => {
+      if (touchTimeoutRef.current) {
+        clearTimeout(touchTimeoutRef.current);
+      }
+      if (autoPlayRef.current) {
+        clearInterval(autoPlayRef.current);
+      }
+    };
+  }, []);
 
-  const handleDotClick = (idx) => {
-    if (isTransitioning || idx === current) return;
-    setIsTransitioning(true);
-    setTransitionDirection(idx > current ? 'next' : 'prev');
-    
-    setTimeout(() => {
-      setCurrent(idx);
-      setTimeout(() => {
-        setIsTransitioning(false);
-      }, 300);
-    }, 150);
-  };
 
-  // Get visible cards
-  const visibleCards = [];
-  for (let i = 0; i < visibleCount; i++) {
-    if (destinations.length > 0) {
-      visibleCards.push(destinations[(current + i) % destinations.length]);
-    }
-  }
 
   const getDifficultyColor = (difficulty) => {
     switch (difficulty) {
@@ -217,49 +299,6 @@ export default function MoreThanAVisit() {
     );
   }
 
-  // Touch event handlers for mobile scrolling
-  const handleTouchStart = (e) => {
-    touchStartX.current = e.touches[0].clientX;
-    isDragging.current = true;
-    // Pause auto-rotation when user starts touching
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-    }
-  };
-
-  const handleTouchMove = (e) => {
-    if (!isDragging.current) return;
-    touchEndX.current = e.touches[0].clientX;
-  };
-
-  const handleTouchEnd = () => {
-    if (!isDragging.current) return;
-    
-    const swipeThreshold = 50; // Minimum distance for a swipe
-    const diff = touchStartX.current - touchEndX.current;
-    
-    if (Math.abs(diff) > swipeThreshold) {
-      if (diff > 0) {
-        // Swipe left - go to next
-        handleNext();
-      } else {
-        // Swipe right - go to previous
-        handlePrev();
-      }
-    }
-    
-    isDragging.current = false;
-    
-    // Resume auto-rotation after a short delay
-    setTimeout(() => {
-      if (destinations.length > 0 && !isTransitioning) {
-        intervalRef.current = setInterval(() => {
-          handleNext();
-        }, 3500);
-      }
-    }, 1000);
-  };
-
   return (
     <section className="relative w-full mx-auto min-h-[400px] md:min-h-[550px] lg:min-h-[600px] flex items-center justify-center bg-secondary py-14 mt-14 md:py-28 px-6 sm:px-10 md:px-18 overflow-hidden rounded-[2rem] md:rounded-[4rem]">
       <div className="relative z-10 flex flex-col w-full">
@@ -281,9 +320,11 @@ export default function MoreThanAVisit() {
             ref={carouselRef}
             className="flex gap-10 w-full justify-center touch-pan-x relative"
             style={{ WebkitOverflowScrolling: 'touch' }}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
+            onMouseEnter={() => setIsAutoPlaying(false)}
+            onMouseLeave={() => !isUserInteracting && setIsAutoPlaying(true)}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
           >
             {visibleCards.map((dest, idx) => {
               // Find the real index in the destinations array
@@ -468,7 +509,7 @@ export default function MoreThanAVisit() {
               {destinations.map((_, idx) => (
                 <span
                   key={idx}
-                  onClick={() => handleDotClick(idx)}
+                  onClick={() => handleDotNavigation(idx)}
                   className={`rounded-full transition-all duration-300 cursor-pointer hover:bg-white/50 ${
                     idx === current 
                       ? "bg-white w-4 h-2 shadow-lg" 
@@ -481,7 +522,7 @@ export default function MoreThanAVisit() {
             {/* Right Arrow */}
             <div className="flex items-center gap-6">
               <button
-                onClick={handlePrev}
+                onClick={() => handleManualNavigation('prev')}
                 disabled={isTransitioning}
                 className={`w-8 h-8 flex items-center justify-center rounded-full bg-white/80 hover:bg-white/50 text-secondary shadow transition-all duration-200 hover:scale-110 active:scale-95 ${
                   isTransitioning ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-lg'
@@ -499,7 +540,7 @@ export default function MoreThanAVisit() {
                 </svg>
               </button>
               <button
-                onClick={handleNext}
+                onClick={() => handleManualNavigation('next')}
                 disabled={isTransitioning}
                 className={`w-8 h-8 flex items-center justify-center rounded-full bg-white/80 hover:bg-white/50 text-secondary shadow transition-all duration-200 hover:scale-110 active:scale-95 ${
                   isTransitioning ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-lg'
