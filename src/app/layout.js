@@ -1,6 +1,5 @@
 import { Manrope } from "next/font/google";
 import "./globals.css";
-import Footer from '../components/Footer';
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -17,11 +16,12 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap"
+          rel="stylesheet"
+        />
       </head>
-      <body
-        className={`${manrope.variable} antialiased`}
-      >
+      <body className={`${manrope.variable} antialiased`}>
         {children}
       </body>
     </html>

@@ -1,17 +1,14 @@
 "use client";
 import Image from "next/image";
 import React, { useState, useEffect, useRef } from "react";
-import {
-  FaInstagram,
-  FaYoutube,
-  FaWhatsapp,
-} from "react-icons/fa";
-import { FiChevronRight, FiMapPin } from "react-icons/fi";
+import { FaInstagram, FaYoutube, FaWhatsapp } from "react-icons/fa";
+import { FiChevronRight } from "react-icons/fi";
 import { MdTravelExplore, MdModeOfTravel, MdHiking } from "react-icons/md";
 import { WiTrain } from "react-icons/wi";
 import { GiRollingSuitcase } from "react-icons/gi";
 import { client } from "../sanity/lib/client";
 import { urlFor } from "../sanity/lib/image";
+import Link from "next/link";
 
 const AUTO_ROTATE_INTERVAL = 3000;
 const VISIBLE_SLOTS_DESKTOP = 5;
@@ -20,23 +17,29 @@ const VISIBLE_SLOTS_MOBILE = 5;
 const SocialIcons = () => (
   <div className="flex items-center flex-col gap-1.5 sm:gap-3 text-xs sm:text-base">
     <a
-      href="#"
+      href="https://youtube.com/@traveltraces"
+      target="_blank"
+      rel="noopener noreferrer"
       aria-label="YouTube"
-      className="text-gray-600 hover:text-red-600"
+      className="text-gray-600 hover:text-red-600 transition-colors duration-200"
     >
       <FaYoutube />
     </a>
     <a
-      href="#"
+      href="https://instagram.com/travel_traces__"
+      target="_blank"
+      rel="noopener noreferrer"
       aria-label="Instagram"
-      className="text-gray-600 hover:text-pink-500"
+      className="text-gray-600 hover:text-pink-500 transition-colors duration-200"
     >
       <FaInstagram />
     </a>
     <a
-      href="#"
+      href="https://wa.me/918460146012"
+      target="_blank"
+      rel="noopener noreferrer"
       aria-label="WhatsApp"
-      className="text-gray-600 hover:text-green-500"
+      className="text-gray-600 hover:text-green-500 transition-colors duration-200"
     >
       <FaWhatsapp />
     </a>
@@ -57,7 +60,11 @@ const SlideIcon = ({ icon: Icon }) => (
   </div>
 );
 
-const SkeletonPillar = ({ isCenter, isFirstLeftOrRight, isSecondLeftOrRight }) => {
+const SkeletonPillar = ({
+  isCenter,
+  isFirstLeftOrRight,
+  isSecondLeftOrRight,
+}) => {
   let pillarHeight = "h-[180px] sm:h-[340px] lg:h-[380px]";
   let pillarWidth = "w-[180px] sm:w-[340px] lg:w-[380px]";
   let pillarTranslateY = "";
@@ -74,7 +81,9 @@ const SkeletonPillar = ({ isCenter, isFirstLeftOrRight, isSecondLeftOrRight }) =
     pillarWidth = "w-[50px] sm:w-[60px] sm:w-[80px] md:w-[100px]";
     pillarTranslateY = "";
   }
-  const borderRadius = isCenter ? "rounded-[20px] sm:rounded-[35px]" : "rounded-full";
+  const borderRadius = isCenter
+    ? "rounded-[20px] sm:rounded-[35px]"
+    : "rounded-full";
   return (
     <div
       className={`relative ${pillarHeight} ${pillarWidth} ${pillarTranslateY} ${borderRadius} overflow-hidden bg-gray-200 animate-pulse shadow-lg opacity-40`}
@@ -127,20 +136,28 @@ const Destinations = () => {
 
   if (destinations.length === 0) {
     // Render skeleton loader with 5 slots
-    const VISIBLE_SLOTS = isMobile ? VISIBLE_SLOTS_MOBILE : VISIBLE_SLOTS_DESKTOP;
+    const VISIBLE_SLOTS = isMobile
+      ? VISIBLE_SLOTS_MOBILE
+      : VISIBLE_SLOTS_DESKTOP;
     const centerIndex = Math.floor(VISIBLE_SLOTS / 2);
     return (
       <section className="w-full flex items-center justify-center py-10 sm:py-14 px-1 sm:px-4 md:px-6 lg:px-8 overflow-x-auto overflow-y-visible pt-[110px] sm:pt-[180px]">
         <div className="flex flex-grow items-end justify-center gap-1 sm:gap-4 w-full h-[180px] sm:h-[340px] lg:h-[380px]">
           {Array.from({ length: VISIBLE_SLOTS }, (_, slot) => {
             const isCenter = slot === centerIndex;
-            const isFirstLeftOrRight = slot === centerIndex - 1 || slot === centerIndex + 1;
-            const isSecondLeftOrRight = slot === centerIndex - 2 || slot === centerIndex + 2;
+            const isFirstLeftOrRight =
+              slot === centerIndex - 1 || slot === centerIndex + 1;
+            const isSecondLeftOrRight =
+              slot === centerIndex - 2 || slot === centerIndex + 2;
             // Social icons skeleton for 2nd left
             if (isSecondLeftOrRight && slot === centerIndex - 2) {
               return (
                 <div key={slot} className="flex flex-col items-center">
-                  <SkeletonPillar isCenter={isCenter} isFirstLeftOrRight={isFirstLeftOrRight} isSecondLeftOrRight={isSecondLeftOrRight} />
+                  <SkeletonPillar
+                    isCenter={isCenter}
+                    isFirstLeftOrRight={isFirstLeftOrRight}
+                    isSecondLeftOrRight={isSecondLeftOrRight}
+                  />
                   <div className="mt-2 flex flex-col gap-1.5 sm:gap-3">
                     <div className="w-6 h-6 bg-gray-300 rounded-full animate-pulse" />
                     <div className="w-6 h-6 bg-gray-300 rounded-full animate-pulse" />
@@ -153,7 +170,11 @@ const Destinations = () => {
             if (isSecondLeftOrRight && slot === centerIndex + 2) {
               return (
                 <div key={slot} className="flex flex-col items-center">
-                  <SkeletonPillar isCenter={isCenter} isFirstLeftOrRight={isFirstLeftOrRight} isSecondLeftOrRight={isSecondLeftOrRight} />
+                  <SkeletonPillar
+                    isCenter={isCenter}
+                    isFirstLeftOrRight={isFirstLeftOrRight}
+                    isSecondLeftOrRight={isSecondLeftOrRight}
+                  />
                   <div className="text-[8px] sm:text-xs font-semibold text-gray-400 w-[40px] sm:w-[100px] lg:w-[120px] text-wrap text-center mt-2 bg-gray-200 h-4 rounded animate-pulse" />
                   <div className="mt-2 w-8 h-8 sm:w-12 sm:h-12 bg-gray-300 rounded-full animate-pulse" />
                 </div>
@@ -161,7 +182,11 @@ const Destinations = () => {
             }
             return (
               <React.Fragment key={slot}>
-                <SkeletonPillar isCenter={isCenter} isFirstLeftOrRight={isFirstLeftOrRight} isSecondLeftOrRight={isSecondLeftOrRight} />
+                <SkeletonPillar
+                  isCenter={isCenter}
+                  isFirstLeftOrRight={isFirstLeftOrRight}
+                  isSecondLeftOrRight={isSecondLeftOrRight}
+                />
               </React.Fragment>
             );
           })}
@@ -225,9 +250,11 @@ const Destinations = () => {
           const zIndex = isActive
             ? "z-20"
             : isFirstLeft || isFirstRight
-            ? "z-10"
-            : "z-0";
-          const borderRadius = isActive ? "rounded-[20px] sm:rounded-[35px]" : "rounded-full";
+              ? "z-10"
+              : "z-0";
+          const borderRadius = isActive
+            ? "rounded-[20px] sm:rounded-[35px]"
+            : "rounded-full";
 
           // Pillar content
           const pillar = (
@@ -296,9 +323,11 @@ const Destinations = () => {
                 <div className="text-[8px] sm:text-xs font-semibold text-gray-600 w-[40px] sm:w-[100px] lg:w-[120px] text-wrap text-center">
                   Find Your Escape
                 </div>
-                <button className="mt-2 p-1.5 text-sm sm:text-xl sm:p-3 rounded-full border bg-secondary border-gray-400 text-gray-300 hover:scale-[1.01] transition-colors">
-                  <FiChevronRight />
-                </button>
+                <Link href="/destinations">
+                  <button className="cursor-pointer mt-2 p-1.5 text-sm sm:text-xl sm:p-3 rounded-full border bg-secondary border-gray-400 text-gray-300 hover:scale-[1.02] transition-colors">
+                    <FiChevronRight />
+                  </button>
+                </Link>
               </div>
             );
           }

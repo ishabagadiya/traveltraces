@@ -35,7 +35,6 @@ export default function TripDetailsPage() {
   const [current, setCurrent] = useState(0);
   const [hovered, setHovered] = useState(false);
   const [selectedPlaceIdx, setSelectedPlaceIdx] = useState(0);
-  const [expandedIdx, setExpandedIdx] = useState(0);
   const [currentDay, setCurrentDay] = useState(0);
   const intervalRef = useRef();
   const cardRefs = useRef([]);
@@ -45,7 +44,7 @@ export default function TripDetailsPage() {
     setLoading(true);
     client
       .fetch(
-        `*[_type == "destination" && slug.current == $slug][0]{
+        `*[_type == "featuredDestination" && slug.current == $slug][0]{
           name, tagline, images, videos, description, duration, difficulty, ageAllowed, maxGroupSize, rating, reviews, about, highlights, joinUsFrom, availableDates, schedule, inclusions, exclusions, thingsToCarry, accommodation, transport, cancellation, brochure, faq, location, image
         }`,
         { slug }

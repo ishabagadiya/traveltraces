@@ -17,12 +17,10 @@ export default {
       validation: Rule => Rule.required().min(1),
     },
     {
-      name: 'image',
-      title: 'Image',
-      type: 'image',
-      options: {
-        hotspot: true,
-      },
+      name: 'destination',
+      title: 'Destination',
+      type: 'reference',
+      to: [{ type: 'featuredDestination' }],
       validation: Rule => Rule.required(),
     },
   ],
