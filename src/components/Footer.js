@@ -3,11 +3,13 @@ import React from "react";
 import {
   FaInstagram,
   FaYoutube,
-  FaEnvelope,
+  FaPhone,
+  FaWhatsapp,
 } from "react-icons/fa";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "@/assets/logo-white.svg";
+import ContactCard from "@/components/ContactCard";
 
 export default function Footer() {
   return (
@@ -15,7 +17,7 @@ export default function Footer() {
       {/* Full-width Cursive TravelTraces */}
       <div className="w-full text-center overflow-hidden bg-secondary flex flex-col items-center justify-end relative pt-14 pb-2">
         {/* Logo and Navigation Section */}
-          <div className="sm:max-w-4xl mx-auto px-6 py-6 w-full flex justify-between items-center">
+          <div className="mx-auto px-6 py-6 w-full flex justify-between items-center">
             {/* Left: Logo */}
             <div className="w-[100px] sm:w-[220px] md:w-[250px] h-auto">
               <Link href="/">
@@ -42,70 +44,89 @@ export default function Footer() {
             </nav>
           </div>
 
-        {/* Conversational Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-4xl mx-auto px-2 z-10 place-items-end">
-          {/* Email Card */}
-          <div className="w-full h-[60px] md:h-[92px] bg-white/80 rounded-xl px-4 py-3 shadow-md hover:shadow-xl transition-all flex items-center gap-2 group cursor-pointer max-w-xs mx-auto">
-            <FaEnvelope
-              size={22}
-              className="text-green-600 group-hover:scale-110 group-hover:text-green-700 transition-transform duration-200"
-            />
-            <div className="flex flex-col items-start">
-              <span className="text-gray-700 text-xs font-semibold leading-tight text-left">
-                Still have doubts?
-              </span>
-              <a
-                href="mailto:contact@traveltraces.in"
-                target="_blank"
-                rel="noopener"
-                aria-label="Email"
-                className="text-green-700 hover:underline text-xs font-medium mt-0.5 text-left"
-              >
-                Mail us at contact@traveltraces.in
-              </a>
-            </div>
-          </div>
-          {/* Instagram Card */}
-          <div className="w-full h-[60px] md:h-[92px] bg-white/80 rounded-xl px-4 py-3 shadow-md hover:shadow-xl transition-all flex items-center gap-2 group cursor-pointer max-w-xs mx-auto">
-            <FaInstagram
-              size={22}
-              className="text-pink-500 group-hover:scale-110 group-hover:text-pink-600 transition-transform duration-200"
-            />
-            <div className="flex flex-col items-start">
-              <span className="text-gray-700 text-xs font-semibold leading-tight text-left">
-                Wanna see how people are enjoying?
-              </span>
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener"
-                aria-label="Instagram"
-                className="text-pink-600 hover:underline text-xs font-medium mt-0.5 text-left"
-              >
-                Check our latest reels!
-              </a>
-            </div>
-          </div>
-          {/* YouTube Card */}
-          <div className="w-full h-[60px] md:h-[92px] bg-white/80 rounded-xl px-4 py-3 shadow-md hover:shadow-xl transition-all flex items-center gap-2 group cursor-pointer max-w-xs mx-auto">
-            <FaYoutube
-              size={22}
-              className="text-red-600 group-hover:scale-110 group-hover:text-red-700 transition-transform duration-200"
-            />
-            <div className="flex flex-col items-start">
-              <span className="text-gray-700 text-xs font-semibold leading-tight text-left">
-                Watch our latest adventures
-              </span>
-              <a
-                href="https://youtube.com"
-                target="_blank"
-                rel="noopener"
-                aria-label="YouTube"
-                className="text-red-700 hover:underline text-xs font-medium mt-0.5 text-left"
-              >
-                on YouTube!
-              </a>
-            </div>
+        {/* Conversational Cards - Full width */}
+        <div className="w-full px-2 z-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 place-items-stretch">
+            {[
+              {
+                key: "instagram",
+                icon: (
+                  <FaInstagram
+                    size={22}
+                    className="text-pink-500 group-hover:scale-110 group-hover:text-pink-600 transition-transform duration-200"
+                  />
+                ),
+                title: "Wanna see how people are enjoying?",
+                href: "https://instagram.com/travel_traces__",
+                ariaLabel: "Instagram",
+                linkText: "Check our latest reels!",
+                linkClass:
+                  "text-pink-600 hover:underline text-xs font-medium mt-0.5 text-left",
+                target: "_blank",
+                rel: "noopener",
+              },
+              {
+                key: "youtube",
+                icon: (
+                  <FaYoutube
+                    size={22}
+                    className="text-red-600 group-hover:scale-110 group-hover:text-red-700 transition-transform duration-200"
+                  />
+                ),
+                title: "Watch our latest adventures",
+                href: "https://youtube.com/@traveltraces",
+                ariaLabel: "YouTube",
+                linkText: "on YouTube!",
+                linkClass:
+                  "text-red-700 hover:underline text-xs font-medium mt-0.5 text-left",
+                target: "_blank",
+                rel: "noopener",
+              },
+              {
+                key: "call",
+                icon: (
+                  <FaPhone
+                    size={22}
+                    className="text-blue-600 group-hover:scale-110 group-hover:text-blue-700 transition-transform duration-200"
+                  />
+                ),
+                title: "Talk to us",
+                href: "tel:8460146012",
+                ariaLabel: "Call",
+                linkText: "8460146012",
+                linkClass:
+                  "text-blue-700 hover:underline text-xs font-medium mt-0.5 text-left",
+              },
+              {
+                key: "whatsapp",
+                icon: (
+                  <FaWhatsapp
+                    size={22}
+                    className="text-green-600 group-hover:scale-110 group-hover:text-green-700 transition-transform duration-200"
+                  />
+                ),
+                title: "Chat on WhatsApp",
+                href: "https://wa.me/918460146012",
+                ariaLabel: "WhatsApp",
+                linkText: "Start chat",
+                linkClass:
+                  "text-green-700 hover:underline text-xs font-medium mt-0.5 text-left",
+                target: "_blank",
+                rel: "noopener",
+              },
+            ].map((c) => (
+              <ContactCard
+                key={c.key}
+                icon={c.icon}
+                title={c.title}
+                href={c.href}
+                ariaLabel={c.ariaLabel}
+                linkText={c.linkText}
+                linkClass={c.linkClass}
+                target={c.target}
+                rel={c.rel}
+              />
+            ))}
           </div>
         </div>
         {/* Copyright */}

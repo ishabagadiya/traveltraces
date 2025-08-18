@@ -221,13 +221,13 @@ body {
 
 @media (max-width: 768px) {
   .animated-text-main {
-    font-size: 3.5em;
+    font-size: 3.8em;
   }
 }
 
 @media (max-width: 640px) {
   .animated-text-main {
-    font-size: 2.8em;
+    font-size: 3.2em;
   }
 }
 
@@ -237,14 +237,6 @@ body {
   }
 }
 
-@media (max-width: 320px) {
-  .animated-text-main {
-    font-size: 1.5em;
-  }
-  .animated-text-traces {
-    font-size: 0.6em;
-  }
-}
 
 @keyframes swapthings {
   0% {
