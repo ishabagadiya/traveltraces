@@ -10,6 +10,21 @@ export default {
       validation: (Rule) => Rule.required(),
     },
     {
+      name: "theme",
+      title: "Theme",
+      type: "string",
+      options: {
+        list: [
+          { title: "Himalayan Treks", value: "Himalayan Treks" },
+          { title: "Monsoon Treks & Fort Adventures", value: "Monsoon Treks & Fort Adventures" },
+          { title: "Weekend Escapes", value: "Weekend Escapes" },
+          { title: "Spiritual Journeys", value: "Spiritual Journeys" },
+          { title: "Custom Group Trips", value: "Custom Group Trips" },
+        ],
+      },
+      validation: (Rule) => Rule.required(),
+    },
+    {
       name: "slug",
       title: "Slug",
       type: "slug",
@@ -23,6 +38,21 @@ export default {
       options: { hotspot: true },
       validation: (Rule) => Rule.required(),
     },
+    { name: "tagline", title: "Tagline", type: "string" },
+    {
+      name: "description",
+      title: "Description",
+      type: "text",
+      validation: (Rule) => Rule.required(),
+    },
+    {
+      name: "images",
+      title: "Images",
+      type: "array",
+      of: [{ type: "image", options: { hotspot: true } }],
+    },
+    { name: "videos", title: "Videos", type: "array", of: [{ type: "url" }] },
+    
     {
       name: "price",
       title: "Price",
@@ -35,12 +65,6 @@ export default {
       title: "Duration",
       type: "string",
       description: "e.g. 2 days",
-      validation: (Rule) => Rule.required(),
-    },
-    {
-      name: "description",
-      title: "Description",
-      type: "text",
       validation: (Rule) => Rule.required(),
     },
     {
@@ -62,16 +86,7 @@ export default {
       },
       validation: (Rule) => Rule.required(),
     },
-    { name: "tagline", title: "Tagline", type: "string" },
-    {
-      name: "images",
-      title: "Images",
-      type: "array",
-      of: [{ type: "image", options: { hotspot: true } }],
-    },
-    { name: "videos", title: "Videos", type: "array", of: [{ type: "url" }] },
     { name: "ageAllowed", title: "Age Allowed", type: "string" },
-    { name: "reviews", title: "Reviews", type: "number" },
     { name: "about", title: "About", type: "text" },
     {
       name: "highlights",
@@ -90,7 +105,6 @@ export default {
             { name: "place", title: "Place", type: "string" },
             { name: "price", title: "Price", type: "string" },
             { name: "duration", title: "Duration", type: "string" },
-            { name: "transport", title: "Transport", type: "string" },
           ],
         },
       ],
@@ -134,40 +148,6 @@ export default {
         },
       ],
     },
-    {
-      name: "inclusions",
-      title: "Inclusions",
-      type: "array",
-      of: [{ type: "string" }],
-    },
-    {
-      name: "exclusions",
-      title: "Exclusions",
-      type: "array",
-      of: [{ type: "string" }],
-    },
-    {
-      name: "thingsToCarry",
-      title: "Things To Carry",
-      type: "array",
-      of: [{ type: "string" }],
-    },
-    {
-      name: "accommodation",
-      title: "Accommodation",
-      type: "object",
-      fields: [
-        { name: "type", title: "Type", type: "string" },
-        {
-          name: "facilities",
-          title: "Facilities",
-          type: "array",
-          of: [{ type: "string" }],
-        },
-        { name: "roomType", title: "Room Type", type: "string" },
-      ],
-    },
-
     { name: "brochure", title: "Brochure", type: "file" },
   ],
 };

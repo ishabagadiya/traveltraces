@@ -145,6 +145,7 @@ export default function MoreThanAVisit() {
       .fetch(
         `*[_type == "featuredDestination"] | order(_createdAt asc){
       name,
+      theme,
       image,
       price,
       duration,

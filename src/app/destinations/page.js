@@ -19,7 +19,7 @@ export default function DestinationsPage() {
   useEffect(() => {
     client
       .fetch(
-        `*[_type == "destination"] | order(name asc){
+        `*[_type == "featuredDestination"] | order(name asc){
           _id, 
           name, 
           location, 

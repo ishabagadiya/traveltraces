@@ -47,7 +47,7 @@ export default function TripDetailsPage() {
     client
       .fetch(
         `*[_type == "featuredDestination" && slug.current == $slug][0]{
-          name, tagline, images, videos, description, duration, difficulty, ageAllowed, maxGroupSize, rating, reviews, about, highlights, joinUsFrom, availableDates, schedule, inclusions, exclusions, thingsToCarry, accommodation, transport, cancellation, brochure, faq, location, image
+          name, tagline, images, videos, description, duration, difficulty, ageAllowed, rating, about, highlights, joinUsFrom, availableDates, schedule, brochure,location, image
         }`,
         { slug }
       )
@@ -89,9 +89,9 @@ export default function TripDetailsPage() {
       <Header />
       <main className="min-h-screen bg-gray-50">
       {/* Hero Section with Carousel */}
-      <section className="relative h-[60vh] min-h-[400px] md:min-h-[500px] bg-black flex items-end">
+      <section className="relative h-[60vh] min-h-[400px] md:min-h-[500px] bg-black flex items-end mt-14  rounded-2xl overflow-hidden w-[90%] mx-auto">
         <div
-          className="absolute inset-0 w-full h-full"
+          className="absolute inset-0 w-full h-full "
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
         >
