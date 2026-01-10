@@ -148,12 +148,14 @@ body {
 }
 
 /* Hide horizontal scrollbar for ticket selector and similar horizontal scroll areas */
-.join-us-scroll {
+.join-us-scroll,
+.hide-scrollbar {
   overflow-x: auto;
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
-.join-us-scroll::-webkit-scrollbar {
+.join-us-scroll::-webkit-scrollbar,
+.hide-scrollbar::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
 }
 

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FaPhoneAlt } from "react-icons/fa";
-import { IoGlobeOutline, IoSearch } from "react-icons/io5";
+import { IoSearch } from "react-icons/io5";
 import { HiMenu, HiX } from "react-icons/hi";
 import { client } from "../sanity/lib/client";
 import logo from "@/assets/logo-white.svg";
@@ -13,43 +13,12 @@ import SearchResultsDropdown from "./SearchResultsDropdown";
 const Header = () => {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
-  const [showDestination, setShowDestination] = useState(false);
-  const [destination, setDestination] = useState(null);
-  const [taglineIndex, setTaglineIndex] = useState(0);
-  const [displayed, setDisplayed] = useState("");
-  const [typing, setTyping] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [allDestinations, setAllDestinations] = useState([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [filteredDestinations, setFilteredDestinations] = useState([]);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowDestination(true), 1000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    // Fetch Destination of the Month from Sanity
-    client
-      .fetch(
-        `*[_type == "destinationOfTheMonth"] | order(_createdAt desc)[0]{
-          title,
-          taglines,
-          image,
-          destination->{
-            slug,
-            name
-          }
-        }`
-      )
-      .then((data) => {
-        console.log("Fetched destination data:", data);
-        setDestination(data);
-      })
-      .catch((error) => {
-        console.error("Error fetching destination:", error);
-      });
-
     // Fetch all destinations for search
     client
       .fetch(
@@ -86,32 +55,6 @@ const Header = () => {
     setFilteredDestinations(filtered);
     setShowSearchResults(true); // Always show dropdown when there's a search term
   }, [searchTerm, allDestinations]);
-
-  // Typing effect for taglines from Sanity
-  useEffect(() => {
-    if (!destination || !destination.taglines) return;
-    let timeout;
-    const taglines = destination.taglines;
-    if (typing) {
-      if (displayed.length < taglines[taglineIndex].length) {
-        timeout = setTimeout(() => {
-          setDisplayed(taglines[taglineIndex].slice(0, displayed.length + 1));
-        }, 60);
-      } else {
-        timeout = setTimeout(() => setTyping(false), 1200);
-      }
-    } else {
-      if (displayed.length > 0) {
-        timeout = setTimeout(() => {
-          setDisplayed(displayed.slice(0, -1));
-        }, 30);
-      } else {
-        setTyping(true);
-        setTaglineIndex((taglineIndex + 1) % taglines.length);
-      }
-    }
-    return () => clearTimeout(timeout);
-  }, [displayed, typing, taglineIndex, destination]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -292,62 +235,6 @@ const Header = () => {
           destinations={filteredDestinations}
           onDestinationClick={handleDestinationClick}
         />
-      </div>
-
-      {/* Featured Destination/Testimonial Card - improved design */}
-      <div className="relative w-full flex justify-center md:mt-4 bg-white/20 p-3 rounded-[1.5rem] mt-3">
-        {/* Left: Badge and Headline */}
-        <div className="flex flex-col md:flex-row items-start md:items-center w-full gap-2 md:gap-6">
-          {/* Left: Badge, Heading, Tagline */}
-          <div className="flex-1 flex flex-col items-start w-full gap-2">
-            <span className="flex items-center gap-1 md:gap-3 bg-white/90 text-secondary text-[8px] md:text-xs font-bold px-4 py-1.5 rounded-full shadow">
-              <IoGlobeOutline className="text-secondary" />
-              Destination of the Month
-            </span>
-
-            <div className="flex flex-row items-start md:items-center gap-2 text-wrap ml-2">
-              <h3 className="text-xs md:text-sm lg:text-2xl font-bold text-white md:pl-2">
-                {destination && destination.title
-                  ? `${destination.title}:`
-                  : "Manali:"}
-              </h3>
-              <h3 className="text-xs md:text-sm lg:text-2xl font-bold text-white/90 text-wrap">
-                {destination && destination.taglines ? (
-                  <>
-                    {displayed}
-                    <span className="animate-pulse">|</span>
-                  </>
-                ) : (
-                  <>
-                    Where the mountains meet your soul.
-                    <span className="animate-pulse">|</span>
-                  </>
-                )}
-              </h3>
-            </div>
-          </div>
-
-          {/* Right: Book Button */}
-          {destination?.destination?.slug?.current ? (
-            <Link
-              href={`/destinations/${destination.destination.slug.current}`}
-              className="flex items-center gap-2 bg-secondary hover:scale-[1.022] text-white font-semibold px-3 py-1 md:px-4 md:py-3 text-xs md:text-sm rounded-full shadow-sm transition-colors duration-200 border border-white/30 mr-auto"
-            >
-              Book Now
-              <svg
-                className="w-3 h-3"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-              >
-                <path d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
-          ) : (
-            <div className="text-white/70 text-xs">No destination set</div>
-          )}
-        </div>
       </div>
     </header>
   );

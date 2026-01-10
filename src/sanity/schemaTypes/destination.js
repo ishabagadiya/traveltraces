@@ -22,12 +22,5 @@ export default {
       options: { hotspot: true },
       validation: (Rule) => Rule.required(),
     },
-    { name: "tagline", title: "Tagline", type: "string" },
-    {
-      name: "images",
-      title: "Images",
-      type: "array",
-      of: [{ type: "image", options: { hotspot: true } }],
-    },
   ],
 };

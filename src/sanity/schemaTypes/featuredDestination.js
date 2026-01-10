@@ -7,7 +7,18 @@ export default {
       name: "name",
       title: "Name",
       type: "string",
-      validation: (Rule) => Rule.required(),
+    },
+    {
+      name: "category",
+      title: "Category",
+      type: "string",
+      options: {
+        list: [
+          { title: "Domestic Destinations", value: "Domestic Destinations" },
+          { title: "International Trips", value: "International Trips" },
+          { title: "Winter Treks", value: "Winter Treks" },
+        ],
+      },
     },
     {
       name: "theme",
@@ -22,28 +33,24 @@ export default {
           { title: "Custom Group Trips", value: "Custom Group Trips" },
         ],
       },
-      validation: (Rule) => Rule.required(),
     },
     {
       name: "slug",
       title: "Slug",
       type: "slug",
       options: { source: "name", maxLength: 96 },
-      validation: (Rule) => Rule.required(),
     },
     {
       name: "image",
       title: "Image",
       type: "image",
       options: { hotspot: true },
-      validation: (Rule) => Rule.required(),
     },
     { name: "tagline", title: "Tagline", type: "string" },
     {
       name: "description",
       title: "Description",
       type: "text",
-      validation: (Rule) => Rule.required(),
     },
     {
       name: "images",
@@ -58,20 +65,17 @@ export default {
       title: "Price",
       type: "string",
       description: "e.g. 4,500",
-      validation: (Rule) => Rule.required(),
     },
     {
       name: "duration",
       title: "Duration",
       type: "string",
       description: "e.g. 2 days",
-      validation: (Rule) => Rule.required(),
     },
     {
       name: "rating",
       title: "Rating",
       type: "number",
-      validation: (Rule) => Rule.required().min(0).max(5),
     },
     {
       name: "difficulty",
@@ -84,7 +88,6 @@ export default {
           { title: "Challenging", value: "Challenging" },
         ],
       },
-      validation: (Rule) => Rule.required(),
     },
     { name: "ageAllowed", title: "Age Allowed", type: "string" },
     { name: "about", title: "About", type: "text" },
