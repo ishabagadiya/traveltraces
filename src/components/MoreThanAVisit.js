@@ -78,7 +78,7 @@ function CategoryCarousel({ title, destinations, visibleCount }) {
 
   const onTouchEnd = useCallback(() => {
     if (!touchStart || !touchEnd) return;
-    
+
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
@@ -91,6 +91,25 @@ function CategoryCarousel({ title, destinations, visibleCount }) {
       pauseAutoPlay();
     }
   }, [touchStart, touchEnd, handleNext, handlePrev, pauseAutoPlay]);
+
+  const onWheel = useCallback((e) => {
+    // Only handle horizontal scrolling (trackpad 2-finger swipe)
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+      e.preventDefault();
+
+      // Determine scroll direction
+      const isLeftScroll = e.deltaX > 0;
+      const isRightScroll = e.deltaX < 0;
+
+      if (isLeftScroll && !isTransitioning) {
+        handleNext();
+        pauseAutoPlay();
+      } else if (isRightScroll && !isTransitioning) {
+        handlePrev();
+        pauseAutoPlay();
+      }
+    }
+  }, [handleNext, handlePrev, pauseAutoPlay, isTransitioning]);
 
   const handleManualNavigation = useCallback((direction) => {
     if (direction === 'next') {
@@ -156,23 +175,23 @@ function CategoryCarousel({ title, destinations, visibleCount }) {
     <div className="mb-16 md:mb-20">
       {/* Section Title */}
       <div className="mb-8 text-center">
-        <h3 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-3">
+        <h3 className="text-2xl md:text-4xl font-bold text-white mb-3">
           {title}
         </h3>
-        <div className="h-1 w-24 bg-white/40 rounded-full mx-auto"></div>
       </div>
 
       {/* Carousel */}
       <div className="relative">
         <div
           ref={carouselRef}
-          className="flex gap-8 w-full justify-center touch-pan-x relative overflow-hidden"
+          className="flex gap-8 w-full justify-center touch-pan-x relative "
           style={{ WebkitOverflowScrolling: 'touch' }}
           onMouseEnter={() => setIsAutoPlaying(false)}
           onMouseLeave={() => !isUserInteracting && setIsAutoPlaying(true)}
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
+          onWheel={onWheel}
         >
           {visibleCards.map((dest, idx) => {
             const slug = dest.name.toLowerCase().replace(/\s+/g, "");
@@ -180,13 +199,7 @@ function CategoryCarousel({ title, destinations, visibleCount }) {
               <Link
                 key={`${dest.name}-${current}-${idx}`}
                 href={`/destinations/${slug}`}
-                className={`flex items-center justify-center rounded-3xl overflow-hidden !w-[320px] !h-max transition-all duration-500 ease-out ${
-                  isTransitioning 
-                    ? transitionDirection === 'next' 
-                      ? 'opacity-70 scale-95 translate-x-8' 
-                      : 'opacity-70 scale-95 -translate-x-8'
-                    : 'opacity-100 scale-100 translate-x-0'
-                } hover:shadow-2xl group`}
+                className={`flex items-center justify-center rounded-3xl overflow-hidden !w-[320px] !h-max transition-all duration-500 ease-out hover:shadow-2xl hover:scale-[1.03] group`}
               >
                 <Image
                   src={
@@ -197,7 +210,7 @@ function CategoryCarousel({ title, destinations, visibleCount }) {
                   alt={dest.name}
                   width={1080}
                   height={1350}
-                  className="!w-full !h-auto rounded-3xl group-hover:scale-[1.03]"
+                  className="!w-full !h-auto rounded-3xl"
                 />
               </Link>
             );
@@ -342,13 +355,6 @@ export default function MoreThanAVisit() {
   return (
     <section className="relative w-full mx-auto min-h-[500px] flex items-center justify-center bg-gradient-to-br from-secondary via-secondary/95 to-secondary/90 py-16 md:py-24 px-6 md:px-12">
       <div className="relative z-10 flex flex-col w-full max-w-7xl mx-auto">
-        {/* Main Header */}
-        <div className="mb-16 text-center">
-          <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
-            Experience More Than Travel
-          </h2>
-          <div className="h-1 w-32 bg-white/40 rounded-full mx-auto"></div>
-        </div>
 
         {/* Category Carousels */}
         <CategoryCarousel
