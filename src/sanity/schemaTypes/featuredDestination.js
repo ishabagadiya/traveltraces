@@ -9,6 +9,12 @@ export default {
       type: "string",
     },
     {
+      name: "slug",
+      title: "Slug",
+      type: "slug",
+      options: { source: "name", maxLength: 96 },
+    },
+    {
       name: "category",
       title: "Category",
       type: "string",
@@ -21,81 +27,48 @@ export default {
       },
     },
     {
-      name: "theme",
-      title: "Theme",
-      type: "string",
-      options: {
-        list: [
-          { title: "Himalayan Treks", value: "Himalayan Treks" },
-          { title: "Monsoon Treks & Fort Adventures", value: "Monsoon Treks & Fort Adventures" },
-          { title: "Weekend Escapes", value: "Weekend Escapes" },
-          { title: "Spiritual Journeys", value: "Spiritual Journeys" },
-          { title: "Custom Group Trips", value: "Custom Group Trips" },
-        ],
-      },
-    },
-    {
-      name: "slug",
-      title: "Slug",
-      type: "slug",
-      options: { source: "name", maxLength: 96 },
-    },
-    {
       name: "image",
-      title: "Image",
+      title: "Cover Image",
       type: "image",
       options: { hotspot: true },
     },
-    { name: "tagline", title: "Tagline", type: "string" },
+    {
+      name: "images",
+      title: "5 Images",
+      type: "array",
+      of: [{ type: "image", options: { hotspot: true } }],
+      validation: (Rule) => Rule.max(5).error("Maximum 5 images allowed"),
+    },
+    { name: "tagline", title: "Tagline(line below title)", type: "string" },
     {
       name: "description",
-      title: "Description",
+      title: "Description(line below tagline)",
       type: "text",
     },
     {
-      name: "images",
-      title: "Images",
-      type: "array",
-      of: [{ type: "image", options: { hotspot: true } }],
-    },
-    { name: "videos", title: "Videos", type: "array", of: [{ type: "url" }] },
-    
-    {
       name: "price",
-      title: "Price",
+      title: "Price(write like 4,500)",
       type: "string",
-      description: "e.g. 4,500",
     },
     {
       name: "duration",
       title: "Duration",
-      type: "string",
-      description: "e.g. 2 days",
-    },
-    {
-      name: "rating",
-      title: "Rating",
-      type: "number",
-    },
-    {
-      name: "difficulty",
-      title: "Difficulty",
-      type: "string",
-      options: {
-        list: [
-          { title: "Easy", value: "Easy" },
-          { title: "Moderate", value: "Moderate" },
-          { title: "Challenging", value: "Challenging" },
-        ],
-      },
-    },
-    { name: "ageAllowed", title: "Age Allowed", type: "string" },
-    { name: "about", title: "About", type: "text" },
-    {
-      name: "highlights",
-      title: "Highlights",
-      type: "array",
-      of: [{ type: "string" }],
+      type: "object",
+      fields: [
+        {
+          name: "days",
+          title: "Days",
+          type: "number",
+          validation: (Rule) => Rule.required().min(1),
+        },
+        {
+          name: "nights",
+          title: "Nights",
+          type: "number",
+          validation: (Rule) => Rule.required().min(0),
+        },
+      ],
+      description: "Enter number of days and nights",
     },
     {
       name: "joinUsFrom",
@@ -106,17 +79,40 @@ export default {
           type: "object",
           fields: [
             { name: "place", title: "Place", type: "string" },
-            { name: "price", title: "Price", type: "string" },
-            { name: "duration", title: "Duration", type: "string" },
+            { name: "price", title: "Price(write like 4,500)", type: "string" },
+            {
+              name: "duration",
+              title: "Duration",
+              type: "object",
+              fields: [
+                {
+                  name: "days",
+                  title: "Days",
+                  type: "number",
+                  validation: (Rule) => Rule.required().min(1),
+                },
+                {
+                  name: "nights",
+                  title: "Nights",
+                  type: "number",
+                  validation: (Rule) => Rule.required().min(0),
+                },
+              ],
+              description: "Enter number of days and nights",
+            },
+            {
+              name: "availableDates",
+              title: "Available Dates",
+              type: "array",
+              of: [{ type: "date" }],
+              options: {
+                dateFormat: "DD-MM-YYYY",
+                calendarTodayLabel: "Today",
+              },
+            },
           ],
         },
       ],
-    },
-    {
-      name: "availableDates",
-      title: "Available Dates",
-      type: "array",
-      of: [{ type: "string" }],
     },
     {
       name: "schedule",

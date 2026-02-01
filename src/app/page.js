@@ -6,7 +6,6 @@ import MoreThanAVisit from "@/components/MoreThanAVisit";
 import NextGenReviews from "@/components/NextGenReviews";
 import CallToAction from "@/components/CallToAction";
 import FAQ from "@/components/FAQ";
-// import AutoRotatingPixelSection from "@/components/AutoRotatingPixelSection";
 import Footer from "@/components/Footer";
 
 export default function Home() {
@@ -18,7 +17,6 @@ export default function Home() {
       <NextGenReviews />
       <CallToAction />
       <FAQ />
-      {/* <AutoRotatingPixelSection /> */}
       <Footer />
     </div>
   );

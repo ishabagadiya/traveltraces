@@ -1,19 +1,17 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import { useParams } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import Image from "next/image";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import {
   FaClock,
   FaMountain,
-  FaUserFriends,
   FaCalendarAlt,
   FaWhatsapp,
   FaPhoneAlt,
   FaDownload,
   FaSuitcase,
-  FaStar,
   FaUtensils,
   FaBed,
   FaBus,
@@ -23,22 +21,26 @@ import {
   FaLeaf,
   FaPlane,
   FaTrain,
+  FaShare,
+  FaPaperPlane,
+  FaCheck,
+  FaChevronDown,
+  FaChevronUp,
 } from "react-icons/fa";
 import { client } from "../../../sanity/lib/client";
 import { urlFor } from "../../../sanity/lib/image";
 
 export default function TripDetailsPage() {
   const params = useParams();
+  const pathname = usePathname();
   const slug = params?.slug;
 
   const [trip, setTrip] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [current, setCurrent] = useState(0);
-  const [hovered, setHovered] = useState(false);
   const [selectedPlaceIdx, setSelectedPlaceIdx] = useState(0);
   const [currentDay, setCurrentDay] = useState(0);
-  const intervalRef = useRef();
+  const [expandedDays, setExpandedDays] = useState({});
   const cardRefs = useRef([]);
 
   useEffect(() => {
@@ -47,7 +49,7 @@ export default function TripDetailsPage() {
     client
       .fetch(
         `*[_type == "featuredDestination" && slug.current == $slug][0]{
-          name, tagline, images, videos, description, duration, difficulty, ageAllowed, rating, about, highlights, joinUsFrom, availableDates, schedule,location, image, brochure{asset->{url, originalFilename, mimeType}}
+          name, tagline, images, description, duration, joinUsFrom, schedule,location, image, price, category, brochure{asset->{url, originalFilename, mimeType}}
         }`,
         { slug }
       )
@@ -61,17 +63,6 @@ export default function TripDetailsPage() {
       });
   }, [slug]);
 
-  // Carousel logic (like Destinations component)
-  const total = trip?.images?.length || 0;
-  useEffect(() => {
-    if (!trip || !trip.images || trip.images.length === 0) return;
-    if (!hovered) {
-      intervalRef.current = setInterval(() => {
-        setCurrent((c) => (c + 1) % trip.images.length);
-      }, 2000);
-    }
-    return () => clearInterval(intervalRef.current);
-  }, [hovered, trip]);
 
   // Add scroll-to-card effect when currentDay changes
   useEffect(() => {
@@ -83,6 +74,32 @@ export default function TripDetailsPage() {
       });
     }
   }, [currentDay]);
+
+  // Share function
+  const handleShare = async () => {
+    const url = `${window.location.origin}${pathname}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: trip?.name || "Travel Destination",
+          text: trip?.tagline || "Check out this amazing destination!",
+          url: url,
+        });
+      } else {
+        // Fallback: Copy to clipboard
+        await navigator.clipboard.writeText(url);
+        alert("Link copied to clipboard!");
+      }
+    } catch (err) {
+      // Fallback: Copy to clipboard if share fails
+      try {
+        await navigator.clipboard.writeText(url);
+        alert("Link copied to clipboard!");
+      } catch (clipboardErr) {
+        console.error("Failed to copy link:", clipboardErr);
+      }
+    }
+  };
 
   if (loading)
     return (
@@ -107,101 +124,386 @@ export default function TripDetailsPage() {
     <div className="w-full overflow-hidden">
       <Header />
       <main className="min-h-screen bg-gray-50">
-        {/* Hero Section with Carousel */}
-        <section className="relative h-[60vh] min-h-[400px] md:min-h-[500px] bg-black flex items-end mt-14  rounded-2xl overflow-hidden w-[90%] mx-auto">
-          <div
-            className="absolute inset-0 w-full h-full "
-            onMouseEnter={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
-          >
-            <Image
-              src={
-                trip.images && trip.images[current]
-                  ? urlFor(trip.images[current]).url()
-                  : "/HeroImages/saputara.jpeg"
-              }
-              alt={`${trip.name} - Hero Image`}
-              fill
-              className="object-cover w-full h-full transition-all duration-300"
-            />
-            <div className="absolute inset-0 bg-black/30" />
-            {/* Dots */}
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-              {trip.images?.map((_, idx) => (
-                <span
-                  key={idx}
-                  onClick={() => setCurrent(idx)}
-                  className={`rounded-full cursor-pointer transition-all duration-200 ${
-                    idx === current
-                      ? "bg-secondary w-4 h-2"
-                      : "bg-gray-300 w-2 h-2"
-                  }`}
-                  style={{ display: "inline-block" }}
+        {/* Image Collage Section - Shop it like layout */}
+        {trip.images && trip.images.length > 0 && (
+          <section className="w-[90%] mx-auto mt-14 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 h-[400px] md:h-[600px]">
+              {/* Large Main Image - Left Side */}
+              <div className="relative md:col-span-2 h-full rounded-2xl overflow-hidden shadow-2xl group">
+                <Image
+                  src={
+                    trip.images[0]
+                      ? urlFor(trip.images[0]).url()
+                      : "/HeroImages/saputara.jpeg"
+                  }
+                  alt={`${trip.name} - Main Image`}
+                  fill
+                  className="object-cover group-hover:scale-[1.03] transition-transform duration-700"
                 />
-              ))}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+              </div>
+
+              {/* 2x2 Grid of Smaller Images - Right Side */}
+              <div className="grid grid-cols-2 gap-3 md:gap-4 h-full">
+                {trip.images.slice(1, 5).map((img, idx) => (
+                  <div
+                    key={idx}
+                    className="relative rounded-2xl overflow-hidden shadow-xl group"
+                  >
+                    <Image
+                      src={urlFor(img).url()}
+                      alt={`${trip.name} - Image ${idx + 2}`}
+                      fill
+                      className="object-cover group-hover:scale-110 transition-transform duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
-        {/* Thumbnail Gallery below Carousel */}
-        <div
-          className="box-border w-full sm:px-12 mx-auto py-3 flex gap-2 justify-center items-center bg-[rgba(152,129,237,0.08)]"
-          style={{ overflowX: "auto" }}
-        >
-          {trip.images?.map((img, idx) => (
-            <button
-              key={idx}
-              onClick={() => setCurrent(idx)}
-              className={`flex-shrink-0 rounded-xl border-2 transition-all duration-200 focus:outline-none
-              ${
-                current === idx
-                  ? "border-secondary ring-2 ring-secondary bg-white"
-                  : "border-transparent bg-secondary/10"
-              }
-            `}
-              style={{
-                width: `calc(95vw / ${trip.images.length} - 8px)`,
-                maxWidth: "90px",
-              }}
-              aria-label={`Show image ${idx + 1}`}
-            >
-              <Image
-                src={img ? urlFor(img).url() : "/HeroImages/saputara.jpeg"}
-                alt={`${trip.name} thumbnail ${idx + 1}`}
-                width={60}
-                height={40}
-                className="object-cover w-full h-12 md:w-24 md:h-16 rounded-lg"
-              />
-            </button>
-          ))}
-        </div>
+        {/* Package Details & Pricing Section - Two Column Layout */}
+        <section className="w-[90%] mx-auto px-4 py-8 mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.8fr_1fr] gap-6">
+            {/* Left Column - Package Details */}
+            <div className="flex flex-col gap-6">
+              {/* Package Title Card */}
+              <div className="bg-white rounded-2xl shadow-lg p-6">
+                <div className="mb-4">
+                  <span className="inline-flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 bg-secondary/20 text-secondary rounded-full font-semibold text-[10px] sm:text-sm mb-4">
+                    <FaClock className="text-secondary" /> {trip.duration?.days ? `${trip.duration.days} Days ${trip.duration.nights} Nights` : trip.duration || 'N/A'}
+                  </span>
+                </div>
+                <h1 className="text-3xl xs:text-4xl sm:text-5xl font-black mb-2 text-secondary tracking-tight leading-tight">
+                  {trip.name}
+                </h1>
+                <p className="text-lg sm:text-xl font-semibold mb-3 text-secondary tracking-wide">
+                  {trip.tagline}
+                </p>
+                <p className="text-sm sm:text-base text-gray-700 mb-6 leading-relaxed">
+                  {trip.description}
+                </p>
+                <div className="flex items-center justify-end">
+                  <button
+                    onClick={handleShare}
+                    className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-full text-gray-700 hover:bg-gray-50 transition"
+                  >
+                    <FaShare className="text-gray-500" />
+                    <span className="text-sm font-medium">Share</span>
+                  </button>
+                </div>
+              </div>
 
-        {/* Trip Header Content */}
-        <section className="w-full bg-transparent py-8 md:py-12 mb-4 md:mb-8 border-b border-[rgba(140,120,215,0.13)]">
-          <div className="mx-auto px-4 sm:px-8 flex flex-col items-center text-center">
-            <h1 className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl font-black mb-1 text-secondary tracking-tight leading-tight ">
-              {trip.name}
-            </h1>
-            <p className="text-lg sm:text-2xl font-semibold mb-3 text-secondary tracking-wide">
-              {trip.tagline}
-            </p>
-            <p className="text-sm sm:text-base text-gray-700 mb-6 max-w-2xl mx-auto leading-relaxed">
-              {trip.description}
-            </p>
-            <div className="flex gap-2 xs:gap-3 justify-center items-center w-full">
-              <span className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 bg-secondary/20 text-secondary rounded-full font-semibold text-[10px] sm:text-base">
-                <FaClock className="text-secondary" /> {trip.duration}
-              </span>
-              <span className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 bg-secondary/10 text-secondary rounded-full font-semibold text-[10px] sm:text-base">
-                <FaMountain className="text-secondary" /> {trip.difficulty}
-              </span>
-              <span className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 bg-secondary/20 text-secondary rounded-full font-semibold text-[10px] sm:text-base">
-                <FaUserFriends className="text-secondary" /> Age{" "}
-                {trip.ageAllowed}+
-              </span>
-              <span className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 bg-secondary/10 text-secondary rounded-full font-semibold text-[10px] sm:text-base">
-                <FaStar className="text-secondary" /> {trip.rating}
-              </span>
+              {/* Join Us From - Minimal Pill Selector */}
+              <div className="bg-white rounded-xl shadow-md border border-secondary/10 p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-semibold text-secondary flex items-center gap-2">
+                    <FaPaperPlane className="text-xs" />
+                    Join Us From
+                  </h3>
+                </div>
+                <div
+                  className="join-us-scroll flex flex-wrap gap-2 overflow-x-auto"
+                  style={{ WebkitOverflowScrolling: "touch" }}
+                >
+                  {trip.joinUsFrom?.map((j, i) => {
+                    // Choose icon based on transport type
+                    let TransportIcon = FaBus;
+                    const transportType = j.transport?.toLowerCase() || "";
+                    if (transportType.includes("train")) TransportIcon = FaTrain;
+                    else if (transportType.includes("plane") || transportType.includes("flight")) TransportIcon = FaPlane;
+                    else if (transportType.includes("bus")) TransportIcon = FaBus;
+
+                    const isSelected = selectedPlaceIdx === i;
+                    return (
+                      <button
+                        key={i}
+                        onClick={() => setSelectedPlaceIdx(i)}
+                        className={`group relative flex items-center gap-2 px-3 py-2 rounded-full border transition-all duration-200 ${isSelected
+                            ? "bg-secondary text-white border-secondary shadow-md"
+                            : "bg-white text-secondary border-secondary/20 hover:border-secondary/40 hover:bg-secondary/5"
+                          }`}
+                        aria-label={`Depart from ${j.place} via ${j.transport}`}
+                        title={`${j.place} - ₹${j.price}${j.duration ? ` (${j.duration?.days ? `${j.duration.days} Days ${j.duration.nights} Nights` : j.duration})` : ""}`}
+                      >
+                        <TransportIcon className={`text-xs ${isSelected ? "text-white" : "text-secondary/70"}`} />
+                        <span className="text-xs font-semibold whitespace-nowrap">{j.place}</span>
+                        <span className={`text-xs font-bold ${isSelected ? "text-white/90" : "text-secondary/80"}`}>
+                          ₹{j.price}
+                        </span>
+                        {isSelected && (
+                          <FaCheck className="text-xs ml-0.5" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Available Dates Section */}
+              <div className="bg-white rounded-xl shadow-md border border-secondary/10 p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-semibold text-secondary flex items-center gap-2">
+                    <FaCalendarAlt className="text-xs" />
+                    Available Dates
+                  </h3>
+                  {trip.joinUsFrom?.[selectedPlaceIdx]?.place && (
+                    <span className="text-xs text-secondary/60">
+                      from {trip.joinUsFrom[selectedPlaceIdx].place}
+                    </span>
+                  )}
+                </div>
+                {trip.joinUsFrom?.[selectedPlaceIdx]?.availableDates && trip.joinUsFrom[selectedPlaceIdx].availableDates.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {trip.joinUsFrom[selectedPlaceIdx].availableDates.map((date, index) => {
+                      // Format date as '10 Jul'
+                      const formatted = new Date(date).toLocaleDateString("en-GB", {
+                        day: "numeric",
+                        month: "short",
+                      });
+                      return (
+                        <span
+                          key={index}
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-secondary/5 border border-secondary/20 rounded-lg font-semibold text-secondary text-xs transition-all duration-200 hover:bg-secondary hover:text-white hover:border-secondary cursor-pointer"
+                          tabIndex={0}
+                          aria-label={`Available on ${formatted}`}
+                        >
+                          <FaCalendarAlt className="text-[10px]" />
+                          {formatted}
+                        </span>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-4 px-2 text-center">
+                    <p className="text-xs text-secondary/70 mb-3">
+                      Dates not available yet
+                    </p>
+                    <a
+                      href="https://wa.me/918460146012"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-full font-semibold text-xs transition-all duration-200 shadow-md hover:shadow-lg"
+                    >
+                      <FaWhatsapp className="text-sm" />
+                      <span>Connect on WhatsApp for Dates</span>
+                    </a>
+                  </div>
+                )}
+              </div>
+
+              {/* Day-wise Itinerary Section - Accordion Style */}
+              {trip.schedule && trip.schedule.length > 0 && (
+                <div className="bg-white rounded-xl shadow-md border border-secondary/10 p-4 md:p-5">
+                  {/* Header with Expand All / Collapse All button */}
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg md:text-xl font-bold text-secondary">
+                      Itinerary
+                    </h2>
+                    {(() => {
+                      const allExpanded = trip.schedule.every((_, idx) => expandedDays[idx]);
+                      return (
+                        <button
+                          onClick={() => {
+                            if (allExpanded) {
+                              setExpandedDays({});
+                            } else {
+                              const newExpanded = {};
+                              trip.schedule.forEach((_, idx) => {
+                                newExpanded[idx] = true;
+                              });
+                              setExpandedDays(newExpanded);
+                            }
+                          }}
+                          className="flex items-center gap-2 px-3 py-1.5 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition bg-white"
+                        >
+                          {allExpanded ? (
+                            <>
+                              {/* Collapse All Icon - horizontal line with chevrons pointing inward */}
+                              <svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
+                                {/* Top vertical line with chevron pointing down */}
+                                <line x1="8" y1="1" x2="8" y2="4" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" />
+                                <path d="M6 4 L8 6 L10 4" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                                {/* Middle horizontal line */}
+                                <line x1="2" y1="6" x2="14" y2="6" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" />
+                                {/* Bottom vertical line with chevron pointing up */}
+                                <line x1="8" y1="8" x2="8" y2="11" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" />
+                                <path d="M6 8 L8 6 L10 8" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                              </svg>
+                              <span>Collapse All</span>
+                            </>
+                          ) : (
+                            <>
+                              {/* Expand All Icon - up and down chevrons */}
+                              <div className="flex flex-col -space-y-1">
+                                <FaChevronUp className="text-[8px]" />
+                                <FaChevronDown className="text-[8px]" />
+                              </div>
+                              <span>Expand All</span>
+                            </>
+                          )}
+                        </button>
+                      );
+                    })()}
+                  </div>
+
+                  {/* Accordion Items */}
+                  <div className="flex flex-col gap-3">
+                    {trip.schedule.map((s, i) => {
+                      const isExpanded = expandedDays[i];
+                      return (
+                        <div
+                          key={i}
+                          className="bg-gray-100 overflow-hidden transition-all duration-300 rounded-xl shadow-md border border-secondary/10"
+                        >
+                          {/* Day Header - Always Visible */}
+                          <button
+                            onClick={() => {
+                              setExpandedDays((prev) => ({
+                                ...prev,
+                                [i]: !prev[i],
+                              }));
+                            }}
+                            className="w-full flex items-center gap-3 px-4 py-3 bg-gray-200 transition !rounded-xl"
+                          >
+                            {/* Day Label - Pill Shape */}
+                            <span className="flex items-center justify-center px-3 py-1 bg-gray-600 text-white rounded-full text-xs font-semibold flex-shrink-0">
+                              Day {s.day}
+                            </span>
+
+                            {/* Heading */}
+                            <span className="flex-1 text-left text-sm font-medium text-gray-800">
+                              {s.heading || s.description?.substring(0, 50) + "..."}
+                            </span>
+
+                            {/* Chevron Icon */}
+                            {isExpanded ? (
+                              <FaChevronUp className="text-gray-500 text-xs transition-transform duration-300 flex-shrink-0" />
+                            ) : (
+                              <FaChevronDown className="text-gray-500 text-xs transition-transform duration-300 flex-shrink-0" />
+                            )}
+                          </button>
+
+                          {/* Expandable Content */}
+                          <div
+                            className={`overflow-hidden transition-all duration-300 ${
+                              isExpanded ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"
+                            }`}
+                          >
+                            <div className="bg-white">
+                              <div className="px-4 pt-4 pb-4 space-y-4">
+                                {/* Activities as Bulleted List */}
+                                {s.activities && s.activities.length > 0 ? (
+                                  <ul className="space-y-2 list-none">
+                                    {s.activities.map((activity, actIdx) => (
+                                      <li key={actIdx} className="flex items-start gap-2 text-sm text-gray-800">
+                                        <span className="text-secondary mt-1.5 flex-shrink-0">•</span>
+                                        <span className="leading-relaxed">{activity}</span>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                ) : s.description ? (
+                                  <ul className="space-y-2 list-none">
+                                    <li className="flex items-start gap-2 text-sm text-gray-800">
+                                      <span className="text-secondary mt-1.5 flex-shrink-0">•</span>
+                                      <span className="leading-relaxed">{s.description}</span>
+                                    </li>
+                                  </ul>
+                                ) : null}
+
+                                {/* Meals */}
+                                {s.meals && s.meals.length > 0 && (
+                                  <div className="pt-2">
+                                    <ul className="space-y-2 list-none">
+                                      {s.meals.map((meal, mealIndex) => (
+                                        <li key={mealIndex} className="flex items-start gap-2 text-sm text-gray-800">
+                                          <span className="text-secondary mt-1.5 flex-shrink-0">•</span>
+                                          <span className="leading-relaxed">{meal}</span>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Image gallery - Single large image at bottom with rounded corners */}
+                              {s.images && s.images.length > 0 && (
+                                <div className="relative w-full h-48 md:h-64 rounded-b-2xl overflow-hidden">
+                                  <Image
+                                    src={
+                                      s.images[0]
+                                        ? urlFor(s.images[0]).url()
+                                        : "/HeroImages/saputara.jpeg"
+                                    }
+                                    alt={`Day ${s.day} - ${s.heading}`}
+                                    fill
+                                    className="object-cover"
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Right Column - Pricing & Query Section */}
+            <div className="flex flex-col gap-6">
+              {/* Pricing Card */}
+              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <div className="p-6">
+                  <div className="mb-4">
+                    {(() => {
+                      const ahmedabadPrice = trip.joinUsFrom?.find(
+                        (item) => item.place?.toLowerCase().includes("ahmedabad")
+                      )?.price || trip.price || "5,900";
+                      return (
+                        <div>
+                          <div className="flex items-baseline gap-2 mb-1">
+                            <span className="text-3xl font-bold text-secondary">
+                              ₹ {ahmedabadPrice}
+                            </span>
+                            <span className="text-sm text-secondary/70">per person</span>
+                          </div>
+                          <p className="text-xs text-secondary/60">from Ahmedabad</p>
+                        </div>
+                      );
+                    })()}
+                  </div>
+
+                  <div className="border-t border-secondary/20 pt-4 mb-4">
+                    <p className="text-sm text-secondary font-medium">
+                      {trip.duration?.days ? `${trip.duration.days} Days ${trip.duration.nights} Nights` : trip.duration || 'N/A'}
+                    </p>
+                  </div>
+
+                  <button className="w-full bg-secondary hover:bg-secondary/80 text-white font-semibold py-3 px-4 rounded-full shadow-lg transition">
+                    Send Enquiry
+                  </button>
+                </div>
+              </div>
+
+              {/* Still Got Queries Card */}
+              <div className="bg-white rounded-2xl shadow-lg p-6">
+                <h3 className="text-xl font-bold text-secondary mb-2">Still Got Queries ?</h3>
+                <p className="text-sm text-secondary/70 mb-4">Have your queries answered by</p>
+                <p className="text-lg font-bold text-secondary mb-4">Travel Traces Experts</p>
+                <a
+                  href="https://wa.me/918460146012"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full flex items-center justify-center gap-2 border-2 border-secondary/30 hover:border-secondary text-secondary font-semibold py-3 px-4 rounded-full transition bg-secondary/5 hover:bg-secondary/10"
+                >
+                  <FaWhatsapp className="text-green-500 text-xl" />
+                  <span>Connect with Expert</span>
+                </a>
+              </div>
             </div>
           </div>
         </section>
@@ -237,254 +539,6 @@ export default function TripDetailsPage() {
 
         {/* Main Content */}
         <div className=" mx-auto px-3 sm:px-6">
-          {/* About Section */}
-          <section className="px-2 sm:px-0 py-6 sm:py-10 mb-8 bg-secondary/10 rounded-2xl">
-            <h2 className="text-2xl sm:text-3xl font-bold text-secondary mb-2 border-l-4 border-secondary pl-3">
-              About This Trip
-            </h2>
-            <p className="text-secondary text-sm sm:text-base leading-relaxed mb-4">
-              {trip.about}
-            </p>
-            <h3 className="text-lg sm:text-xl font-semibold text-secondary mb-2 mt-6">
-              Highlights
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 md:gap-3">
-              {trip.highlights?.map((h, i) => (
-                <div
-                  key={i}
-                  className="flex items-center gap-3 bg-secondary/10 border border-secondary rounded-xl px-2 py-2 md:px-4 md:py-3 shadow-sm"
-                >
-                  <FaStar className="text-secondary min-w-5 min-h-5" />
-                  <span className="text-secondary font-medium text-xs md:text-base">
-                    {h}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Join Us From - creative boarding pass ticket selector */}
-          <section className="w-full px-0 py-6 mb-4">
-            <h2 className="text-2xl sm:text-3xl font-bold text-secondary mb-5 border-l-4 border-secondary pl-3">
-              Join Us From
-            </h2>
-            <div
-              className="join-us-scroll flex gap-4 pb-4 px-2"
-              style={{ WebkitOverflowScrolling: "touch" }}
-            >
-              {trip.joinUsFrom?.map((j, i) => {
-                // Choose icon based on transport
-                let TransportIcon = FaBus;
-                // Confetti burst only on selected
-                const isSelected = selectedPlaceIdx === i;
-                return (
-                  <div
-                    key={i}
-                    className={`relative rounded-2xl group transition-transform duration-300 ${
-                      isSelected ? "z-10 scale-[1.01] shadow-2xl" : "scale-100"
-                    } `}
-                    aria-label={`Boarding pass from ${j.place} via ${j.transport}`}
-                    tabIndex={0}
-                    onClick={() => setSelectedPlaceIdx(i)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ")
-                        setSelectedPlaceIdx(i);
-                    }}
-                    role="button"
-                  >
-                    {/* Ticket shape */}
-                    <div
-                      className={`relative flex flex-col justify-between min-w-[120px] md:w-[200px] w-max border-2 ${
-                        isSelected ? "border-secondary" : "border-secondary/30"
-                      } rounded-2xl px-3 py-2 shadow-lg transition-all duration-300 cursor-pointer boarding-pass`}
-                      title={`Departing from ${j.place} via ${j.transport}`}
-                    >
-                      <span
-                        className={`inline-block text-lgl transition-transform duration-300 ${
-                          isSelected ? "animate-bounce-once" : ""
-                        }`}
-                        aria-label={j.transport}
-                      >
-                        <TransportIcon className="inline text-secondary" />
-                      </span>
-                      <div className="flex-1 flex flex-col justify-center">
-                        <span className="text-base md:text-2xl font-extrabold text-secondary tracking-tight leading-tight">
-                          {j.place}
-                        </span>
-                        <span className="text-base font-semibold text-secondary">
-                          {j.price}
-                        </span>
-                        <span className="text-left text-xs text-secondary/70 mt-1">
-                          {j.duration}
-                        </span>
-                      </div>
-                      {/* Confetti burst */}
-                      {isSelected && (
-                        <span className="absolute left-1/2 top-2 -translate-x-1/2 z-20 pointer-events-none">
-                          <svg width="60" height="30">
-                            <g>
-                              <circle
-                                cx="10"
-                                cy="10"
-                                r="2"
-                                fill="currentColor"
-                                className="text-secondary"
-                              >
-                                <animate
-                                  attributeName="cy"
-                                  values="10;0;10"
-                                  dur="0.7s"
-                                  repeatCount="1"
-                                />
-                              </circle>
-                              <circle
-                                cx="30"
-                                cy="8"
-                                r="2"
-                                fill="currentColor"
-                                className="text-secondary/60"
-                              >
-                                <animate
-                                  attributeName="cy"
-                                  values="8;0;8"
-                                  dur="0.6s"
-                                  repeatCount="1"
-                                />
-                              </circle>
-                              <circle
-                                cx="50"
-                                cy="12"
-                                r="2"
-                                fill="currentColor"
-                                className="text-secondary/40"
-                              >
-                                <animate
-                                  attributeName="cy"
-                                  values="12;0;12"
-                                  dur="0.8s"
-                                  repeatCount="1"
-                                />
-                              </circle>
-                            </g>
-                          </svg>
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-
-          {/* Available Dates for selected place */}
-          <section className="w-full mb-4">
-            <h3 className="text-lg font-semibold text-secondary mb-2 pl-3 flex items-center gap-2">
-              <FaCalendarAlt className="text-secondary" />
-              Available Dates from{" "}
-              {trip.joinUsFrom?.[selectedPlaceIdx]?.place || "-"}
-            </h3>
-            <div className="flex flex-wrap gap-3 px-2">
-              {trip.availableDates?.map((date, index) => {
-                // Format date as '10 Jul'
-                const formatted = new Date(date).toLocaleDateString("en-GB", {
-                  day: "numeric",
-                  month: "short",
-                });
-                return (
-                  <span
-                    key={index}
-                    className="flex items-center gap-2 px-4 py-2 bg-white border-2 border-secondary rounded-xl font-semibold shadow-md text-secondary text-sm sm:text-base transition-all duration-200 hover:bg-secondary hover:text-white hover:scale-105 focus:outline-none focus:ring-2 focus:ring-secondary cursor-pointer"
-                    tabIndex={0}
-                    aria-label={`Available on ${formatted}`}
-                  >
-                    <FaCalendarAlt className="text-secondary" />
-                    {formatted}
-                  </span>
-                );
-              })}
-            </div>
-          </section>
-
-          {/* Schedule Timeline - Modern Vertical Stacked Cards */}
-          <section className="px-0 sm:px-0 py-6 sm:py-10 mb-8">
-            <h2 className="text-2xl sm:text-3xl font-bold text-secondary mb-8 border-l-4 border-secondary pl-3">
-              Day-wise Itinerary
-            </h2>
-            <div className="flex flex-col gap-3 md:gap-10">
-              {trip.schedule?.map((s, i) => {
-                // Pick an icon for the main activity (fallback to FaSuitcase)
-                const activity = s.activities?.[0]?.toLowerCase() || "";
-                let ActivityIcon = FaSuitcase;
-                if (activity.includes("trek") || activity.includes("hiking"))
-                  ActivityIcon = FaHiking;
-                else if (
-                  activity.includes("lake") ||
-                  activity.includes("boating")
-                )
-                  ActivityIcon = FaCamera;
-                else if (activity.includes("temple")) ActivityIcon = FaLeaf;
-                else if (activity.includes("market")) ActivityIcon = FaUtensils;
-                else if (activity.includes("hotel")) ActivityIcon = FaBed;
-                else if (activity.includes("adventure"))
-                  ActivityIcon = FaMountain;
-                else if (activity.includes("hot springs"))
-                  ActivityIcon = FaSwimmingPool;
-                return (
-                  <div
-                    key={i}
-                    className="w-full mx-auto bg-secondary/10 rounded-3xl flex flex-col px-6 py-6 md:px-10 md:py-10 relative transition-all duration-300"
-                  >
-                    {/* Day and icon */}
-                    <div className="flex items-center gap-2 md:gap-5 mb-2 md:mb-4">
-                      <span className="flex items-center justify-center w-10 h-10 rounded-full bg-secondary text-white font-extrabold text-xl shadow-lg">
-                        {s.day}
-                      </span>
-                      <span className="ml-2 text-base md:text-2xl font-bold text-secondary uppercase tracking-wide">
-                        {s.heading}
-                      </span>
-                    </div>
-                    {/* Description */}
-                    <p className="text-secondary text-base md:text-lg mb-4 leading-relaxed">
-                      {s.description}
-                    </p>
-                    {/* Meals */}
-                    {s.meals && s.meals.length > 0 && (
-                      <div className="flex flex-wrap gap-3 mb-3">
-                        {s.meals.map((meal, mealIndex) => (
-                          <span
-                            key={mealIndex}
-                            className="px-3 py-1.5 md:px-4 md:py-2 bg-secondary/20 text-secondary rounded-full text-sm md:text-base font-semibold shadow"
-                          >
-                            {meal}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                    {/* Image gallery */}
-                    {s.images && s.images.length > 0 && (
-                      <div className="flex gap-4 mt-4 flex-wrap">
-                        {s.images.map((img, j) => (
-                          <Image
-                            key={j}
-                            src={
-                              img
-                                ? urlFor(img).url()
-                                : "/HeroImages/saputara.jpeg"
-                            }
-                            alt="schedule"
-                            width={120}
-                            height={80}
-                            className="w-28 h-20 object-cover rounded-xl shadow border border-secondary"
-                          />
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-
           {/* Desktop CTA Buttons */}
           <div className="hidden md:flex gap-6 justify-center mb-6 pb-5">
             <a
@@ -508,7 +562,7 @@ export default function TripDetailsPage() {
                 trip.brochure?.asset?.url
                   ? `${trip.brochure.asset.url}?dl=${encodeURIComponent(trip.brochure.asset.originalFilename || "brochure")}`
                   : "#"
-              } 
+              }
               download
               className="flex items-center gap-3 px-6 py-2 bg-secondary text-white rounded-full font-semibold shadow-lg hover:bg-secondary/80 transition text-base"
             >
