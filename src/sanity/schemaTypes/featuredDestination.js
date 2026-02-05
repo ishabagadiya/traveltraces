@@ -122,15 +122,21 @@ export default {
         {
           type: "object",
           fields: [
-            { name: "day", title: "Day", type: "number" },
+            {
+              name: "day",
+              title: "Day",
+              type: "number",
+              readOnly: true,
+              hidden: true,
+              initialValue: (_, context) => {
+                const parent = context?.parent;
+                const arr = Array.isArray(parent) ? parent : [];
+                return Math.max(1, arr.length + 1);
+              },
+            },
             { name: "heading", title: "Heading", type: "string" },
             { name: "description", title: "Description", type: "text" },
-            {
-              name: "activities",
-              title: "Activities",
-              type: "array",
-              of: [{ type: "string" }],
-            },
+            
             {
               name: "images",
               title: "Images",
@@ -144,6 +150,15 @@ export default {
               of: [{ type: "string" }],
             },
           ],
+          options: {
+            preview: {
+              select: { day: "day", heading: "heading" },
+              prepare: ({ day, heading }) => ({
+                title: day != null ? `Day ${day}` : "New day",
+                subtitle: heading || undefined,
+              }),
+            },
+          },
         },
       ],
     },

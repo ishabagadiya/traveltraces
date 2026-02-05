@@ -370,7 +370,7 @@ export default function TripDetailsPage() {
                           >
                             {/* Day Label - Pill Shape */}
                             <span className="flex items-center justify-center px-3 py-1 bg-gray-600 text-white rounded-full text-xs font-semibold flex-shrink-0">
-                              Day {s.day}
+                              Day {s.day ?? i + 1}
                             </span>
 
                             {/* Heading */}
@@ -437,7 +437,7 @@ export default function TripDetailsPage() {
                                         ? urlFor(s.images[0]).url()
                                         : "/HeroImages/saputara.jpeg"
                                     }
-                                    alt={`Day ${s.day} - ${s.heading}`}
+                                    alt={`Day ${s.day ?? i + 1} - ${s.heading}`}
                                     fill
                                     className="object-cover"
                                   />

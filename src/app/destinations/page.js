@@ -132,11 +132,6 @@ export default function DestinationsPage() {
       );
     }
     
-    // Difficulty filter
-    if (difficultyFilter !== "all") {
-      filtered = filtered.filter(dest => dest.difficulty === difficultyFilter);
-    }
-    
     // Duration filter
     if (durationFilter !== "all") {
       filtered = filtered.filter(dest => {
