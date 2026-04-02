@@ -654,16 +654,55 @@
 
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import DestinationCard from "@/components/DestinationCard";
 import { destinationsData } from "@/data/destinationsData";
+import { client } from "@/sanity/lib/client";
+
+const slugify = (value = "") =>
+  value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
 
 export default function DestinationsPage() {
-  const [destinations] = useState(Object.values(destinationsData));
+  const [destinations, setDestinations] = useState(Object.values(destinationsData));
   const [searchTerm, setSearchTerm] = useState("");
   const [durationFilter, setDurationFilter] = useState("all");
+  
+  useEffect(() => {
+    client
+      .fetch(
+        `*[_type in ["destination", "featuredDestination"]]{
+          _type,
+          name,
+          "slug": slug.current,
+          image
+        }`
+      )
+      .then((sanityDestinations) => {
+        if (!sanityDestinations?.length) return;
+        const imageBySlug = sanityDestinations.reduce((acc, item) => {
+          const computedSlug = item?.slug || slugify(item?.name || "");
+          if (computedSlug) acc[computedSlug] = item.image;
+          return acc;
+        }, {});
+
+        setDestinations((prev) =>
+          prev.map((dest) => ({
+            ...dest,
+            image: imageBySlug[dest.slug] || dest.image,
+          }))
+        );
+      })
+      .catch(() => {
+        // Keep hardcoded image fallback when Sanity image fetch fails.
+      });
+  }, []);
 
   const filteredDestinations = useMemo(() => {
     let filtered = destinations;

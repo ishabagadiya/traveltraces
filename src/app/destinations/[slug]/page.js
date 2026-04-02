@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, usePathname } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import {
@@ -28,6 +29,16 @@ import {
   FaChevronUp,
 } from "react-icons/fa";
 import { destinationsData } from "@/data/destinationsData";
+import { client } from "@/sanity/lib/client";
+import { urlFor } from "@/sanity/lib/image";
+
+const slugify = (value = "") =>
+  value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
 
 export default function TripDetailsPage() {
   const params = useParams();
@@ -58,9 +69,48 @@ export default function TripDetailsPage() {
     if (!slug) return;
     setLoading(true);
     setError(null);
-    const data = destinationsData[slug] || null;
-    setTrip(data);
-    setLoading(false);
+    const baseData = destinationsData[slug] || null;
+    if (!baseData) {
+      setTrip(null);
+      setLoading(false);
+      return;
+    }
+
+    setTrip(baseData);
+
+    client
+      .fetch(
+        `*[_type in ["featuredDestination", "destination"]]{
+          _type,
+          name,
+          "slug": slug.current,
+          image,
+          images
+        }`
+      )
+      .then((sanityRows) => {
+        if (!sanityRows?.length) return;
+        const matched = sanityRows.find((row) => {
+          const rowSlug = row?.slug || slugify(row?.name || "");
+          return rowSlug === slug;
+        });
+        if (!matched) return;
+
+        setTrip((prev) => ({
+          ...prev,
+          image: matched.image || prev?.image,
+          images:
+            matched.images && matched.images.length > 0
+              ? matched.images
+              : prev?.images || [],
+        }));
+      })
+      .catch(() => {
+        // Keep hardcoded fallback images when Sanity images are unavailable.
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, [slug]);
 
 
@@ -164,6 +214,12 @@ export default function TripDetailsPage() {
     );
 
   const scheduleData = trip.schedule || trip.itinerary || [];
+  const galleryImages = (trip.images || []).slice(0, 5);
+  const resolveImageSrc = (image) => {
+    if (!image) return "/HeroImages/saputara.jpeg";
+    if (typeof image === "string") return image;
+    return urlFor(image).url();
+  };
   const renderBulletSection = (title, items) => {
     if (!items || items.length === 0) return null;
     return (
@@ -186,15 +242,15 @@ export default function TripDetailsPage() {
       <Header />
       <main className="min-h-screen bg-gray-50">
         {/* Image Collage Section - Shop it like layout */}
-        {trip.images && trip.images.length > 0 && (
+        {galleryImages.length > 0 && (
           <section className="w-[90%] mx-auto mt-14 mb-8">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 h-[400px] md:h-[600px]">
-              {/* Large Main Image - Left Side */}
-              <div className="relative md:col-span-2 h-full rounded-2xl overflow-hidden shadow-2xl group">
+            <div className="grid grid-cols-2 md:grid-cols-4 md:grid-rows-2 gap-3 md:gap-4 h-[460px] md:h-[620px]">
+              {/* Main shot */}
+              <div className="relative col-span-2 md:col-span-2 md:row-span-2 h-[240px] md:h-full rounded-2xl overflow-hidden shadow-2xl group">
                 <Image
                   src={
-                    trip.images[0]
-                      ? trip.images[0]
+                    galleryImages[0]
+                      ? resolveImageSrc(galleryImages[0])
                       : "/HeroImages/saputara.jpeg"
                   }
                   alt={`${trip.name} - Main Image`}
@@ -204,23 +260,21 @@ export default function TripDetailsPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
               </div>
 
-              {/* 2x2 Grid of Smaller Images - Right Side */}
-              <div className="grid grid-cols-2 gap-3 md:gap-4 h-full">
-                {trip.images.slice(1, 5).map((img, idx) => (
-                  <div
-                    key={idx}
-                    className="relative rounded-2xl overflow-hidden shadow-xl group"
-                  >
-                    <Image
-                      src={img}
-                      alt={`${trip.name} - Image ${idx + 2}`}
-                      fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-700"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-                  </div>
-                ))}
-              </div>
+              {/* Supporting 4 shots */}
+              {[1, 2, 3, 4].map((idx) => (
+                <div
+                  key={idx}
+                  className="relative h-[100px] md:h-full rounded-2xl overflow-hidden shadow-xl group"
+                >
+                  <Image
+                    src={resolveImageSrc(galleryImages[idx])}
+                    alt={`${trip.name} - Image ${idx + 1}`}
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                </div>
+              ))}
             </div>
           </section>
         )}
@@ -495,7 +549,7 @@ export default function TripDetailsPage() {
                                   <Image
                                     src={
                                       s.images[0]
-                                        ? s.images[0]
+                                        ? resolveImageSrc(s.images[0])
                                         : "/HeroImages/saputara.jpeg"
                                     }
                                     alt={`Day ${s.day ?? i + 1} - ${s.heading}`}
@@ -522,7 +576,6 @@ export default function TripDetailsPage() {
               {renderBulletSection("Trip Notes", trip.tripNotes)}
               {renderBulletSection("Cancellation Policy", trip.cancellationPolicy)}
               {renderBulletSection("Payment & Booking", trip.paymentPlan)}
-              {renderBulletSection("Bank Details", trip.bankDetails)}
             </div>
 
             {/* Right Column - Pricing & Query Section */}
@@ -589,6 +642,20 @@ export default function TripDetailsPage() {
                   </p>
                 </div>
               )}
+
+              <div className="bg-white rounded-2xl shadow-lg p-6">
+                <h3 className="text-xl font-bold text-secondary mb-2">Payment QR</h3>
+                <p className="text-sm text-secondary/70 mb-4">
+                  Open payment page and scan QR to complete booking payment.
+                </p>
+                <Link
+                  href="/payment"
+                  target="_blank"
+                  className="w-full inline-flex items-center justify-center bg-secondary hover:bg-secondary/80 text-white font-semibold py-3 px-4 rounded-full shadow-lg transition"
+                >
+                  Open Payment Page
+                </Link>
+              </div>
 
               {/* Still Got Queries Card */}
               <div className="bg-white rounded-2xl shadow-lg p-6">
