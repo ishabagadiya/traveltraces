@@ -27,13 +27,12 @@ import {
   FaChevronDown,
   FaChevronUp,
 } from "react-icons/fa";
-import { client } from "../../../sanity/lib/client";
-import { urlFor } from "../../../sanity/lib/image";
+import { destinationsData } from "@/data/destinationsData";
 
 export default function TripDetailsPage() {
   const params = useParams();
   const pathname = usePathname();
-  const slug = params?.slug;
+  const slug = Array.isArray(params?.slug) ? params.slug[0] : params?.slug;
 
   const [trip, setTrip] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -41,26 +40,27 @@ export default function TripDetailsPage() {
   const [selectedPlaceIdx, setSelectedPlaceIdx] = useState(0);
   const [currentDay, setCurrentDay] = useState(0);
   const [expandedDays, setExpandedDays] = useState({});
+  const [showInquiryForm, setShowInquiryForm] = useState(false);
+  const [submittingInquiry, setSubmittingInquiry] = useState(false);
+  const [inquirySuccess, setInquirySuccess] = useState("");
+  const [inquiryError, setInquiryError] = useState("");
+  const [inquiryForm, setInquiryForm] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    travelDate: "",
+    travelers: "2",
+    message: "",
+  });
   const cardRefs = useRef([]);
 
   useEffect(() => {
     if (!slug) return;
     setLoading(true);
-    client
-      .fetch(
-        `*[_type == "featuredDestination" && slug.current == $slug][0]{
-          name, tagline, images, description, duration, joinUsFrom, schedule,location, image, price, category, brochure{asset->{url, originalFilename, mimeType}}
-        }`,
-        { slug }
-      )
-      .then((data) => {
-        setTrip(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError("Failed to load destination.");
-        setLoading(false);
-      });
+    setError(null);
+    const data = destinationsData[slug] || null;
+    setTrip(data);
+    setLoading(false);
   }, [slug]);
 
 
@@ -101,6 +101,49 @@ export default function TripDetailsPage() {
     }
   };
 
+  const handleInquiryInputChange = (e) => {
+    const { name, value } = e.target;
+    setInquiryForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleInquirySubmit = async (e) => {
+    e.preventDefault();
+    setSubmittingInquiry(true);
+    setInquiryError("");
+    setInquirySuccess("");
+
+    try {
+      const res = await fetch("/api/inquiry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...inquiryForm,
+          destinationSlug: trip?.slug || slug,
+          destinationName: trip?.name || "",
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data?.error || "Failed to submit inquiry.");
+      }
+
+      setInquirySuccess("Inquiry submitted successfully. Our team will contact you soon.");
+      setInquiryForm({
+        name: "",
+        phone: "",
+        email: "",
+        travelDate: "",
+        travelers: "2",
+        message: "",
+      });
+    } catch (err) {
+      setInquiryError(err.message || "Something went wrong. Please try again.");
+    } finally {
+      setSubmittingInquiry(false);
+    }
+  };
+
   if (loading)
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -120,6 +163,24 @@ export default function TripDetailsPage() {
       </div>
     );
 
+  const scheduleData = trip.schedule || trip.itinerary || [];
+  const renderBulletSection = (title, items) => {
+    if (!items || items.length === 0) return null;
+    return (
+      <div className="bg-white rounded-xl shadow-md border border-secondary/10 p-5">
+        <h2 className="text-lg md:text-xl font-bold text-secondary mb-3">{title}</h2>
+        <ul className="space-y-2 list-none">
+          {items.map((item, idx) => (
+            <li key={`${title}-${idx}`} className="flex items-start gap-2 text-sm text-gray-800">
+              <span className="text-secondary mt-1.5 flex-shrink-0">•</span>
+              <span className="leading-relaxed">{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  };
+
   return (
     <div className="w-full overflow-hidden">
       <Header />
@@ -133,7 +194,7 @@ export default function TripDetailsPage() {
                 <Image
                   src={
                     trip.images[0]
-                      ? urlFor(trip.images[0]).url()
+                      ? trip.images[0]
                       : "/HeroImages/saputara.jpeg"
                   }
                   alt={`${trip.name} - Main Image`}
@@ -151,7 +212,7 @@ export default function TripDetailsPage() {
                     className="relative rounded-2xl overflow-hidden shadow-xl group"
                   >
                     <Image
-                      src={urlFor(img).url()}
+                      src={img}
                       alt={`${trip.name} - Image ${idx + 2}`}
                       fill
                       className="object-cover group-hover:scale-110 transition-transform duration-700"
@@ -295,7 +356,7 @@ export default function TripDetailsPage() {
               </div>
 
               {/* Day-wise Itinerary Section - Accordion Style */}
-              {trip.schedule && trip.schedule.length > 0 && (
+              {scheduleData.length > 0 && (
                 <div className="bg-white rounded-xl shadow-md border border-secondary/10 p-4 md:p-5">
                   {/* Header with Expand All / Collapse All button */}
                   <div className="flex items-center justify-between mb-4">
@@ -303,7 +364,7 @@ export default function TripDetailsPage() {
                       Itinerary
                     </h2>
                     {(() => {
-                      const allExpanded = trip.schedule.every((_, idx) => expandedDays[idx]);
+                      const allExpanded = scheduleData.every((_, idx) => expandedDays[idx]);
                       return (
                         <button
                           onClick={() => {
@@ -311,7 +372,7 @@ export default function TripDetailsPage() {
                               setExpandedDays({});
                             } else {
                               const newExpanded = {};
-                              trip.schedule.forEach((_, idx) => {
+                              scheduleData.forEach((_, idx) => {
                                 newExpanded[idx] = true;
                               });
                               setExpandedDays(newExpanded);
@@ -351,7 +412,7 @@ export default function TripDetailsPage() {
 
                   {/* Accordion Items */}
                   <div className="flex flex-col gap-3">
-                    {trip.schedule.map((s, i) => {
+                    {scheduleData.map((s, i) => {
                       const isExpanded = expandedDays[i];
                       return (
                         <div
@@ -434,7 +495,7 @@ export default function TripDetailsPage() {
                                   <Image
                                     src={
                                       s.images[0]
-                                        ? urlFor(s.images[0]).url()
+                                        ? s.images[0]
                                         : "/HeroImages/saputara.jpeg"
                                     }
                                     alt={`Day ${s.day ?? i + 1} - ${s.heading}`}
@@ -451,6 +512,17 @@ export default function TripDetailsPage() {
                   </div>
                 </div>
               )}
+
+              {renderBulletSection("Experiences You Can't Miss", trip.experiences)}
+              {renderBulletSection("Cafes & Local Dishes", trip.cafesAndDishes)}
+              {renderBulletSection("Inclusions", trip.inclusions)}
+              {renderBulletSection("Exclusions", trip.exclusions)}
+              {renderBulletSection("Stay Details", trip.stayDetails)}
+              {renderBulletSection("Things to Carry", trip.thingsToCarry)}
+              {renderBulletSection("Trip Notes", trip.tripNotes)}
+              {renderBulletSection("Cancellation Policy", trip.cancellationPolicy)}
+              {renderBulletSection("Payment & Booking", trip.paymentPlan)}
+              {renderBulletSection("Bank Details", trip.bankDetails)}
             </div>
 
             {/* Right Column - Pricing & Query Section */}
@@ -483,11 +555,40 @@ export default function TripDetailsPage() {
                     </p>
                   </div>
 
-                  <button className="w-full bg-secondary hover:bg-secondary/80 text-white font-semibold py-3 px-4 rounded-full shadow-lg transition">
+                  <button
+                    onClick={() => {
+                      setInquiryError("");
+                      setInquirySuccess("");
+                      setShowInquiryForm(true);
+                    }}
+                    className="w-full bg-secondary hover:bg-secondary/80 text-white font-semibold py-3 px-4 rounded-full shadow-lg transition"
+                  >
                     Send Enquiry
                   </button>
                 </div>
               </div>
+
+              {trip.packages?.length > 0 && (
+                <div className="bg-white rounded-2xl shadow-lg p-6">
+                  <h3 className="text-xl font-bold text-secondary mb-4">Packages Available</h3>
+                  <div className="space-y-3">
+                    {trip.packages.map((pkg, index) => (
+                      <div
+                        key={`${pkg.label}-${index}`}
+                        className="flex items-start justify-between gap-3 border border-secondary/10 rounded-lg p-3"
+                      >
+                        <p className="text-sm text-gray-700">{pkg.label}</p>
+                        <p className="text-sm font-bold text-secondary whitespace-nowrap">
+                          ₹ {pkg.price}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-secondary/70 mt-3">
+                    Prices may increase during festive season and New Year.
+                  </p>
+                </div>
+              )}
 
               {/* Still Got Queries Card */}
               <div className="bg-white rounded-2xl shadow-lg p-6">
@@ -572,6 +673,125 @@ export default function TripDetailsPage() {
           </div>
         </div>
       </main>
+
+      {showInquiryForm && (
+        <div className="fixed inset-0 z-[60] bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl p-5">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold text-secondary">Trip Inquiry</h3>
+              <button
+                onClick={() => setShowInquiryForm(false)}
+                className="text-gray-500 hover:text-gray-700 text-sm"
+                type="button"
+              >
+                Close
+              </button>
+            </div>
+
+            <form onSubmit={handleInquirySubmit} className="space-y-3">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Full Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="name"
+                  value={inquiryForm.name}
+                  onChange={handleInquiryInputChange}
+                  placeholder="Enter your full name"
+                  required
+                  className="w-full border rounded-lg px-3 py-2 text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Phone Number <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="phone"
+                  value={inquiryForm.phone}
+                  onChange={handleInquiryInputChange}
+                  placeholder="Enter your WhatsApp/contact number"
+                  required
+                  className="w-full border rounded-lg px-3 py-2 text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Email (optional)
+                </label>
+                <input
+                  name="email"
+                  value={inquiryForm.email}
+                  onChange={handleInquiryInputChange}
+                  placeholder="Enter your email address"
+                  type="email"
+                  className="w-full border rounded-lg px-3 py-2 text-sm"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                    Travel Date
+                  </label>
+                  <input
+                    name="travelDate"
+                    value={inquiryForm.travelDate}
+                    onChange={handleInquiryInputChange}
+                    type="date"
+                    className="w-full border rounded-lg px-3 py-2 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                    Number of Persons
+                  </label>
+                  <input
+                    name="travelers"
+                    value={inquiryForm.travelers}
+                    onChange={handleInquiryInputChange}
+                    type="number"
+                    min="1"
+                    placeholder="e.g. 2"
+                    className="w-full border rounded-lg px-3 py-2 text-sm"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Message (optional)
+                </label>
+                <textarea
+                  name="message"
+                  value={inquiryForm.message}
+                  onChange={handleInquiryInputChange}
+                  placeholder="Tell us your preferences (budget, room type, pickup city, etc.)"
+                  rows={4}
+                  className="w-full border rounded-lg px-3 py-2 text-sm"
+                />
+              </div>
+
+              <p className="text-xs text-gray-500">
+                Fields marked with <span className="text-red-500">*</span> are required.
+              </p>
+
+              {inquiryError ? (
+                <p className="text-sm text-red-600">{inquiryError}</p>
+              ) : null}
+              {inquirySuccess ? (
+                <p className="text-sm text-green-600">{inquirySuccess}</p>
+              ) : null}
+
+              <button
+                type="submit"
+                disabled={submittingInquiry}
+                className="w-full bg-secondary text-white py-2.5 rounded-lg font-semibold disabled:opacity-60"
+              >
+                {submittingInquiry ? "Submitting..." : "Submit Inquiry"}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
       <Footer />
     </div>
   );
