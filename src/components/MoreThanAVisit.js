@@ -1,9 +1,10 @@
 "use client";
 import Image from "next/image";
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { client } from "../sanity/lib/client";
 import { urlFor } from "../sanity/lib/image";
+import { FaChevronRight } from "react-icons/fa";
 
 function getVisibleCount() {
   if (typeof window === "undefined") return 1;
@@ -15,167 +16,23 @@ function getVisibleCount() {
 
 // Reusable Carousel Component
 function CategoryCarousel({ title, destinations, visibleCount }) {
-  const [current, setCurrent] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [transitionDirection, setTransitionDirection] = useState('next');
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-  const [isUserInteracting, setIsUserInteracting] = useState(false);
-  const [touchStart, setTouchStart] = useState(null);
-  const [touchEnd, setTouchEnd] = useState(null);
-  
-  const autoPlayRef = useRef(null);
-  const touchTimeoutRef = useRef(null);
-  const carouselRef = useRef(null);
-  const minSwipeDistance = 50;
+  const scrollRef = useRef(null);
 
-  const pauseAutoPlay = useCallback(() => {
-    setIsUserInteracting(true);
-    setIsAutoPlaying(false);
-    
-    if (touchTimeoutRef.current) {
-      clearTimeout(touchTimeoutRef.current);
-    }
-    touchTimeoutRef.current = setTimeout(() => {
-      setIsUserInteracting(false);
-      setIsAutoPlaying(true);
-    }, 5000);
-  }, []);
-
-  const onTouchStart = useCallback((e) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-  }, []);
-
-  const onTouchMove = useCallback((e) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  }, []);
-
-  const handlePrev = useCallback(() => {
-    if (isTransitioning || destinations.length === 0) return;
-    setIsTransitioning(true);
-    setTransitionDirection('prev');
-    
-    setTimeout(() => {
-      setCurrent((current - 1 + destinations.length) % destinations.length);
-      setTimeout(() => {
-        setIsTransitioning(false);
-      }, 300);
-    }, 150);
-  }, [isTransitioning, current, destinations.length]);
-
-  const handleNext = useCallback(() => {
-    if (isTransitioning || destinations.length === 0) return;
-    setIsTransitioning(true);
-    setTransitionDirection('next');
-    
-    setTimeout(() => {
-      setCurrent((current + 1) % destinations.length);
-      setTimeout(() => {
-        setIsTransitioning(false);
-      }, 300);
-    }, 150);
-  }, [isTransitioning, current, destinations.length]);
-
-  const onTouchEnd = useCallback(() => {
-    if (!touchStart || !touchEnd) return;
-
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-
-    if (isLeftSwipe) {
-      handleNext();
-      pauseAutoPlay();
-    } else if (isRightSwipe) {
-      handlePrev();
-      pauseAutoPlay();
-    }
-  }, [touchStart, touchEnd, handleNext, handlePrev, pauseAutoPlay]);
-
-  const onWheel = useCallback((e) => {
-    // Only handle horizontal scrolling (trackpad 2-finger swipe)
-    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
-      e.preventDefault();
-
-      // Determine scroll direction
-      const isLeftScroll = e.deltaX > 0;
-      const isRightScroll = e.deltaX < 0;
-
-      if (isLeftScroll && !isTransitioning) {
-        handleNext();
-        pauseAutoPlay();
-      } else if (isRightScroll && !isTransitioning) {
-        handlePrev();
-        pauseAutoPlay();
-      }
-    }
-  }, [handleNext, handlePrev, pauseAutoPlay, isTransitioning]);
-
-  const handleManualNavigation = useCallback((direction) => {
-    if (direction === 'next') {
-      handleNext();
-    } else {
-      handlePrev();
-    }
-    pauseAutoPlay();
-  }, [handleNext, handlePrev, pauseAutoPlay]);
-
-  const handleDotNavigation = useCallback((index) => {
-    if (isTransitioning || index === current || destinations.length === 0) return;
-    setIsTransitioning(true);
-    setTransitionDirection(index > current ? 'next' : 'prev');
-    
-    setTimeout(() => {
-      setCurrent(index);
-      setTimeout(() => {
-        setIsTransitioning(false);
-      }, 300);
-    }, 150);
-    pauseAutoPlay();
-  }, [current, isTransitioning, pauseAutoPlay, destinations.length]);
-
-  const visibleCards = [];
-  const maxVisible = Math.min(visibleCount, destinations.length);
-  for (let i = 0; i < maxVisible; i++) {
-    if (destinations.length > 0) {
-      visibleCards.push(destinations[(current + i) % destinations.length]);
-    }
-  }
-
-  // Auto-rotate logic
-  useEffect(() => {
-    if (!isAutoPlaying || destinations.length === 0 || isTransitioning || isUserInteracting) return;
-    
-    autoPlayRef.current = setInterval(() => {
-      handleNext();
-    }, 5000);
-
-    return () => {
-      if (autoPlayRef.current) {
-        clearInterval(autoPlayRef.current);
-      }
-    };
-  }, [destinations.length, isTransitioning, isAutoPlaying, isUserInteracting, handleNext]);
-
-  // Cleanup timeouts on unmount
-  useEffect(() => {
-    return () => {
-      if (touchTimeoutRef.current) {
-        clearTimeout(touchTimeoutRef.current);
-      }
-      if (autoPlayRef.current) {
-        clearInterval(autoPlayRef.current);
-      }
-    };
-  }, []);
+  const handleScrollRight = () => {
+    if (!scrollRef.current) return;
+    scrollRef.current.scrollBy({
+      left: Math.max(scrollRef.current.clientWidth * 0.75, 220),
+      behavior: "smooth",
+    });
+  };
 
   if (destinations.length === 0) return null;
 
   return (
-    <div className="mb-16 md:mb-20">
+    <div className="w-full md:w-[90%] mx-auto">
       {/* Section Title */}
-      <div className="mb-8 text-center">
-        <h3 className="text-2xl md:text-4xl font-bold text-white mb-3">
+      <div className="mb-4 md:mb-8 text-left">
+        <h3 className="text-2xl md:text-4xl font-bold text-secondary mb-3">
           {title}
         </h3>
       </div>
@@ -183,23 +40,21 @@ function CategoryCarousel({ title, destinations, visibleCount }) {
       {/* Carousel */}
       <div className="relative">
         <div
-          ref={carouselRef}
-          className="flex gap-8 w-full justify-center touch-pan-x relative "
-          style={{ WebkitOverflowScrolling: 'touch' }}
-          onMouseEnter={() => setIsAutoPlaying(false)}
-          onMouseLeave={() => !isUserInteracting && setIsAutoPlaying(true)}
-          onTouchStart={onTouchStart}
-          onTouchMove={onTouchMove}
-          onTouchEnd={onTouchEnd}
-          onWheel={onWheel}
+          ref={scrollRef}
+          className="flex gap-5 md:gap-8 w-full overflow-x-auto overflow-y-hidden pb-2 touch-pan-x [&::-webkit-scrollbar]:hidden"
+          style={{
+            WebkitOverflowScrolling: "touch",
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+          }}
         >
-          {visibleCards.map((dest, idx) => {
+          {destinations.map((dest, idx) => {
             const slug = dest.name.toLowerCase().replace(/\s+/g, "");
             return (
               <Link
-                key={`${dest.name}-${current}-${idx}`}
+                key={`${dest.name}-${idx}`}
                 href={`/destinations/${slug}`}
-                className={`flex items-center justify-center rounded-3xl overflow-hidden !w-[320px] !h-max transition-all duration-500 ease-out hover:shadow-2xl hover:scale-[1.03] group`}
+                className="group flex-shrink-0 flex items-center justify-center rounded-2xl md:rounded-3xl overflow-hidden w-[170px] sm:w-[200px] md:w-[250px] h-max"
               >
                 <Image
                   src={
@@ -210,68 +65,21 @@ function CategoryCarousel({ title, destinations, visibleCount }) {
                   alt={dest.name}
                   width={1080}
                   height={1350}
-                  className="!w-full !h-auto rounded-3xl"
+                  className="!w-full !h-auto rounded-2xl md:rounded-3xl transition-transform duration-500 ease-out group-hover:scale-[1.03]"
                 />
               </Link>
             );
           })}
         </div>
-
-        {/* Navigation - Only show if more than one destination */}
         {destinations.length > 1 && (
-          <div className="flex items-center justify-center gap-8 mt-10">
-            {/* Dots */}
-            <div className="flex gap-2">
-              {destinations.map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => handleDotNavigation(idx)}
-                  className={`rounded-full transition-all duration-300 ${
-                    idx === current 
-                      ? "bg-white w-8 h-2" 
-                      : "bg-white/40 w-2 h-2 hover:bg-white/60"
-                  }`}
-                  aria-label={`Go to slide ${idx + 1}`}
-                />
-              ))}
-            </div>
-            
-            {/* Arrows */}
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => handleManualNavigation('prev')}
-                disabled={isTransitioning}
-                className={`w-10 h-10 flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-secondary transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg`}
-                aria-label="Previous destination"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-              <button
-                onClick={() => handleManualNavigation('next')}
-                disabled={isTransitioning}
-                className={`w-10 h-10 flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-secondary transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg`}
-                aria-label="Next destination"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
-            </div>
-          </div>
+          <button
+            type="button"
+            onClick={handleScrollRight}
+            aria-label={`Scroll ${title} carousel right`}
+            className="absolute -right-2 sm:-right-5 top-1/2 -translate-y-1/2 z-20 sm:w-10 sm:h-10 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm shadow-md border border-gray-200 text-gray-600 flex items-center justify-center hover:bg-white transition-colors  cursor-pointer"
+          >
+            <FaChevronRight className="w-5 h-5" />
+          </button>
         )}
       </div>
     </div>
@@ -280,22 +88,36 @@ function CategoryCarousel({ title, destinations, visibleCount }) {
 
 export default function MoreThanAVisit() {
   const [allDestinations, setAllDestinations] = useState([]);
+  const [featureVideoUrl, setFeatureVideoUrl] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [visibleCount, setVisibleCount] = useState(getVisibleCount());
 
   useEffect(() => {
     setLoading(true);
-    client
-      .fetch(
+    Promise.all([
+      client.fetch(
         `*[_type == "featuredDestination"] | order(_createdAt asc){
-      name,
-      image,
-      category
-    }`
-      )
-      .then((data) => {
-        setAllDestinations(data);
+          name,
+          image,
+          category
+        }`
+      ),
+      client.fetch(
+        `*[_type == "homepageMedia" && isActive == true] | order(_updatedAt desc)[0]{
+          featureVideo{
+            asset->{
+              url
+            }
+          }
+        }`
+      ),
+    ])
+      .then(([destinationData, homepageMedia]) => {
+        setAllDestinations(destinationData);
+        if (homepageMedia?.featureVideo?.asset?.url) {
+          setFeatureVideoUrl(homepageMedia.featureVideo.asset.url);
+        }
         setLoading(false);
       })
       .catch((err) => {
@@ -325,17 +147,17 @@ export default function MoreThanAVisit() {
 
   if (loading) {
     return (
-      <section className="relative w-full mx-auto min-h-[500px] flex items-center justify-center bg-gradient-to-br from-secondary via-secondary/95 to-secondary/90 py-16 md:py-24 px-6 md:px-12">
+      <section className="relative w-full mx-auto min-h-[500px] flex items-center justify-center bg-white py-16 md:py-24 px-6 md:px-12">
         <div className="relative z-10 flex flex-col w-full max-w-7xl mx-auto">
           <div className="mb-12 text-center">
-            <div className="h-10 md:h-14 w-64 md:w-96 bg-white/20 rounded-lg animate-pulse mx-auto mb-4" />
-            <div className="h-1 w-48 bg-white/20 rounded-full animate-pulse mx-auto" />
+            <div className="h-10 md:h-14 w-64 md:w-96 bg-gray-200 rounded-lg animate-pulse mx-auto mb-4" />
+            <div className="h-1 w-48 bg-gray-200 rounded-full animate-pulse mx-auto" />
           </div>
           <div className="flex gap-8 justify-center">
             {Array.from({ length: visibleCount }).map((_, idx) => (
               <div
                 key={idx}
-                className="rounded-3xl overflow-hidden w-[320px] h-[420px] bg-white/10 animate-pulse"
+                className="rounded-3xl overflow-hidden w-[320px] h-[420px] bg-gray-200 animate-pulse"
               />
             ))}
           </div>
@@ -343,7 +165,7 @@ export default function MoreThanAVisit() {
       </section>
     );
   }
-  
+
   if (error) {
     return (
       <section className="w-full flex items-center justify-center min-h-[400px] py-10">
@@ -353,8 +175,8 @@ export default function MoreThanAVisit() {
   }
 
   return (
-    <section className="relative w-full mx-auto min-h-[500px] flex items-center justify-center bg-gradient-to-br from-secondary via-secondary/95 to-secondary/90 py-16 md:py-24 px-6 md:px-12">
-      <div className="relative z-10 flex flex-col w-full max-w-7xl mx-auto">
+    <section className="relative w-full mx-auto min-h-[500px] flex items-center justify-center bg-white py-8 sm:py-16 px-4 md:px-12">
+      <div className="relative z-10 flex flex-col gap-12 w-full">
 
         {/* Category Carousels */}
         <CategoryCarousel
@@ -362,18 +184,39 @@ export default function MoreThanAVisit() {
           destinations={domesticDestinations}
           visibleCount={visibleCount}
         />
-        
+
+        <div className="relative z-20 -mb-[120px] md:-mb-[170px]">
+          <div className="mx-auto w-full md:w-[90%] h-[200px] md:h-[300px] overflow-hidden rounded-2xl shadow-lg">
+            {featureVideoUrl && (
+            <video
+              src={featureVideoUrl}
+              playsInline
+              autoPlay
+              muted
+              loop
+              preload="metadata"
+              className="block w-full h-full object-cover object-center"
+            >
+                Your browser does not support the video tag.
+              </video>
+            )}
+          </div>
+        </div>
+
+        <div className="relative left-1/2 right-1/2 w-screen -translate-x-1/2 bg-[#dfdfdf] pt-[120px] pb-8 md:pt-[200px] sm:pb-10 px-4 md:px-12">
+          <CategoryCarousel
+            title="Winter Treks"
+            destinations={winterTreks}
+            visibleCount={visibleCount}
+          />
+        </div>
+
         <CategoryCarousel
           title="International Trips"
           destinations={internationalTrips}
           visibleCount={visibleCount}
         />
-        
-        <CategoryCarousel
-          title="Winter Treks"
-          destinations={winterTreks}
-          visibleCount={visibleCount}
-        />
+
       </div>
     </section>
   );

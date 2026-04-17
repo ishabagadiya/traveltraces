@@ -370,7 +370,7 @@ export default function TripDetailsPage() {
                           >
                             {/* Day Label - Pill Shape */}
                             <span className="flex items-center justify-center px-3 py-1 bg-gray-600 text-white rounded-full text-xs font-semibold flex-shrink-0">
-                              Day {s.day ?? i + 1}
+                              Day {i + 1}
                             </span>
 
                             {/* Heading */}
@@ -394,38 +394,18 @@ export default function TripDetailsPage() {
                           >
                             <div className="bg-white">
                               <div className="px-4 pt-4 pb-4 space-y-4">
-                                {/* Activities as Bulleted List */}
-                                {s.activities && s.activities.length > 0 ? (
+                                {s.description && Array.isArray(s.description) && s.description.length > 0 ? (
                                   <ul className="space-y-2 list-none">
-                                    {s.activities.map((activity, actIdx) => (
-                                      <li key={actIdx} className="flex items-start gap-2 text-sm text-gray-800">
+                                    {s.description.map((point, idx) => (
+                                      <li key={idx} className="flex items-start gap-2 text-sm text-gray-800">
                                         <span className="text-secondary mt-1.5 flex-shrink-0">•</span>
-                                        <span className="leading-relaxed">{activity}</span>
+                                        <span className="leading-relaxed">{point}</span>
                                       </li>
                                     ))}
                                   </ul>
-                                ) : s.description ? (
-                                  <ul className="space-y-2 list-none">
-                                    <li className="flex items-start gap-2 text-sm text-gray-800">
-                                      <span className="text-secondary mt-1.5 flex-shrink-0">•</span>
-                                      <span className="leading-relaxed">{s.description}</span>
-                                    </li>
-                                  </ul>
+                                ) : typeof s.description === "string" && s.description ? (
+                                  <p className="text-sm text-gray-800 leading-relaxed">{s.description}</p>
                                 ) : null}
-
-                                {/* Meals */}
-                                {s.meals && s.meals.length > 0 && (
-                                  <div className="pt-2">
-                                    <ul className="space-y-2 list-none">
-                                      {s.meals.map((meal, mealIndex) => (
-                                        <li key={mealIndex} className="flex items-start gap-2 text-sm text-gray-800">
-                                          <span className="text-secondary mt-1.5 flex-shrink-0">•</span>
-                                          <span className="leading-relaxed">{meal}</span>
-                                        </li>
-                                      ))}
-                                    </ul>
-                                  </div>
-                                )}
                               </div>
 
                               {/* Image gallery - Single large image at bottom with rounded corners */}
@@ -437,7 +417,7 @@ export default function TripDetailsPage() {
                                         ? urlFor(s.images[0]).url()
                                         : "/HeroImages/saputara.jpeg"
                                     }
-                                    alt={`Day ${s.day ?? i + 1} - ${s.heading}`}
+                                    alt={`Day ${i + 1} - ${s.heading}`}
                                     fill
                                     className="object-cover"
                                   />

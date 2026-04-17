@@ -95,7 +95,7 @@ const Header = () => {
   };
 
   return (
-    <header className="w-[94vw] bg-secondary mx-auto rounded-b-[2rem] shadow-2xl px-4 py-4 md:px-6 md:py-6">
+    <header className="w-full bg-white shadow-md px-4 py-4 md:px-6 md:py-6">
       {/* Bottom Row: Main Navigation */}
       <div className="flex justify-between items-center">
         {/* Left: Hamburger & Logo */}
@@ -103,7 +103,7 @@ const Header = () => {
           {/* Hamburger Menu Button - All Screen Sizes */}
           <button
             onClick={toggleMobileMenu}
-            className="p-2 text-white hover:bg-white/20 rounded-lg transition-colors duration-200"
+            className="p-2 text-secondary hover:bg-secondary/10 rounded-lg transition-colors duration-200"
             aria-label="Toggle menu"
           >
             {isMobileMenuOpen ? <HiX size={24} /> : <HiMenu size={24} />}
@@ -111,13 +111,15 @@ const Header = () => {
           
           {/* Logo */}
           <div className="w-[120px] md:w-[200px] h-auto">
-            <Link href="/" onClick={closeMobileMenu}>
-              <Image
+            <Link href="/">
+              {/* <Image
                 src={logo}
                 alt="traveltraces"
                 width={1563}
                 height={1563}
-              ></Image>
+                className="invert"
+              ></Image> */}
+              <h1 className="text-xl sm:text-2xl text-secondary font-bold">TravelTraces</h1>
             </Link>
           </div>
         </div>
@@ -128,7 +130,7 @@ const Header = () => {
           <div className="hidden md:block relative">
             <form
               onSubmit={handleSearch}
-              className="flex items-center bg-white/90 backdrop-blur-sm shadow-sm rounded-full pl-2 transition-all duration-200 text-sm text-secondary"
+              className="!my-0 flex items-center border border-secondary bg-white/90 backdrop-blur-sm shadow-sm rounded-full pl-2 transition-all duration-200 text-sm text-secondary"
             >
               <input
                 type="text"
@@ -159,7 +161,7 @@ const Header = () => {
           {/* Call Button */}
           <a
             href="tel:8460146012"
-            className="text-nowrap flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white font-semibold text-sm px-3 py-2 md:px-4 md:py-3 rounded-full shadow-sm transition-colors duration-200 border border-white/30"
+            className="text-nowrap flex items-center gap-2 bg-secondary hover:bg-secondary/90 text-white font-semibold text-sm px-3 py-2 md:px-4 md:py-3 rounded-full shadow-sm transition-colors duration-200 border border-secondary/20"
             style={{ textDecoration: "none" }}
             aria-label="Call 8460146012"
           >
@@ -173,31 +175,31 @@ const Header = () => {
       <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
         isMobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
       }`}>
-        <nav className="flex flex-col items-center space-y-4 py-4 text-sm border-t border-white/20 mt-4">
+        <nav className="flex flex-col items-center space-y-4 py-4 text-sm border-t border-secondary/10 mt-4">
           <Link
             href="/"
-            className="text-white/90 hover:text-white font-medium transition-colors duration-200 w-full text-center py-2 hover:bg-white/10 rounded-lg"
+            className="text-secondary/90 hover:text-secondary font-medium transition-colors duration-200 w-full text-center py-2 hover:bg-secondary/10 rounded-lg"
             onClick={closeMobileMenu}
           >
             Home
           </Link>
           <Link
             href="/destinations"
-            className="text-white/90 hover:text-white font-medium transition-colors duration-200 w-full text-center py-2 hover:bg-white/10 rounded-lg"
+            className="text-secondary/90 hover:text-secondary font-medium transition-colors duration-200 w-full text-center py-2 hover:bg-secondary/10 rounded-lg"
             onClick={closeMobileMenu}
           >
             Destinations
           </Link>
           <Link
             href="/about"
-            className="text-white/90 hover:text-white font-medium transition-colors duration-200 w-full text-center py-2 hover:bg-white/10 rounded-lg"
+            className="text-secondary/90 hover:text-secondary font-medium transition-colors duration-200 w-full text-center py-2 hover:bg-secondary/10 rounded-lg"
             onClick={closeMobileMenu}
           >
             About us
           </Link>
           <Link
             href="/policy"
-            className="text-white/90 hover:text-white font-medium transition-colors duration-200 w-full text-center py-2 hover:bg-white/10 rounded-lg"
+            className="text-secondary/90 hover:text-secondary font-medium transition-colors duration-200 w-full text-center py-2 hover:bg-secondary/10 rounded-lg"
             onClick={closeMobileMenu}
           >
             Cancellation Policy
@@ -209,7 +211,7 @@ const Header = () => {
       <div className="md:hidden relative">
         <form
           onSubmit={handleSearch}
-          className="flex w-full items-center bg-white/90 backdrop-blur-sm border shadow-sm rounded-full px-2 transition-all duration-200 my-3 text-sm text-secondary"
+          className="flex w-full items-center bg-white/90 backdrop-blur-sm border shadow-sm rounded-full px-2 transition-all duration-200 mt-3 text-sm text-secondary"
         >
           <input
             type="text"

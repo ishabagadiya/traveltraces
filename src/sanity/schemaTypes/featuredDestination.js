@@ -122,40 +122,25 @@ export default {
         {
           type: "object",
           fields: [
-            {
-              name: "day",
-              title: "Day",
-              type: "number",
-              readOnly: true,
-              hidden: true,
-              initialValue: (_, context) => {
-                const parent = context?.parent;
-                const arr = Array.isArray(parent) ? parent : [];
-                return Math.max(1, arr.length + 1);
-              },
-            },
             { name: "heading", title: "Heading", type: "string" },
-            { name: "description", title: "Description", type: "text" },
-            
+            {
+              name: "description",
+              title: "Description (add points, shown as bullets)",
+              type: "array",
+              of: [{ type: "string" }],
+            },
             {
               name: "images",
               title: "Images",
               type: "array",
               of: [{ type: "image", options: { hotspot: true } }],
             },
-            {
-              name: "meals",
-              title: "Meals",
-              type: "array",
-              of: [{ type: "string" }],
-            },
           ],
           options: {
             preview: {
-              select: { day: "day", heading: "heading" },
-              prepare: ({ day, heading }) => ({
-                title: day != null ? `Day ${day}` : "New day",
-                subtitle: heading || undefined,
+              select: { heading: "heading" },
+              prepare: ({ heading }) => ({
+                title: heading || "Schedule item",
               }),
             },
           },

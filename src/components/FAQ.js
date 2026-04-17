@@ -129,21 +129,6 @@ export default function FAQ() {
             </div>
           </div>
         </div>
-
-        {/* Still have questions CTA - Modern Style */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border-2 border-secondary/10 shadow-lg">
-          <div className="text-center">
-            <p className="text-secondary/70 text-sm sm:text-base mb-4">
-              still have questions?
-            </p>
-            <a
-              href="mailto:contact@traveltraces.in"
-              className="inline-flex items-center gap-2 bg-secondary hover:bg-secondary/90 text-white font-semibold px-6 py-3 rounded-full transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105"
-            >
-              drop us a line
-            </a>
-          </div>
-        </div>
       </div>
     </section>
   );

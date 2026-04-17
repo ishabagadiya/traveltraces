@@ -14,9 +14,9 @@ export default function Home() {
       <Header />
       <Destinations />
       <MoreThanAVisit />
-      <NextGenReviews />
-      <CallToAction />
-      <FAQ />
+      {/* <NextGenReviews /> */}
+      {/* <CallToAction /> */}
+      {/* <FAQ /> */}
       <Footer />
     </div>
   );
