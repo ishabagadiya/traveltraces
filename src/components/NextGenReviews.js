@@ -1,187 +1,254 @@
 "use client";
 import Image from "next/image";
-import React, { useState, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { FiArrowRight, FiArrowLeft, FiMapPin } from "react-icons/fi";
+import Link from "next/link";
+import React, { useState, useEffect } from "react";
+import { FiX } from "react-icons/fi";
 import { client } from "../sanity/lib/client";
 import { urlFor } from "../sanity/lib/image";
+import { FaAngleRight } from "react-icons/fa";
 
-export default function EditorialReviews() {
+const COMMENT_PREVIEW_LEN = 100;
+
+export default function EditorialReviews({
+  maxReviews: maxReviewsProp,
+  sectionTitle = "Reviews",
+}) {
+  const isFullList = maxReviewsProp === null;
+  const isHomePreview = maxReviewsProp === undefined;
+  const numericLimit = typeof maxReviewsProp === "number" ? maxReviewsProp : null;
+
   const [reviews, setReviews] = useState([]);
-  const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [direction, setDirection] = useState(0);
+  const [activeReview, setActiveReview] = useState(null);
+  const [isLgUp, setIsLgUp] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
+
     client
-      .fetch(`*[_type == "travelerReview"] | order(_createdAt desc)`)
+      .fetch(
+        `*[_type == "travelerReview"] | order(_createdAt desc){
+          _id,
+          name,
+          trip,
+          comment,
+          photo,
+          "destinationSlug": destination->slug.current
+        }`
+      )
       .then((data) => {
-        setReviews(data.map(r => ({
-          ...r,
-          photo: r.photo ? urlFor(r.photo).url() : "/HeroImages/andharban.jpeg"
-        })));
+        if (!isMounted) return;
+
+        setReviews(
+          data.map((r) => ({
+            ...r,
+            photo: r.photo ? urlFor(r.photo).url() : "/HeroImages/andharban.jpeg",
+          }))
+        );
         setLoading(false);
+      })
+      .catch(() => {
+        if (isMounted) setLoading(false);
       });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  const paginate = (newDirection) => {
-    setDirection(newDirection);
-    setIndex((prev) => (prev + newDirection + reviews.length) % reviews.length);
-  };
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const update = () => setIsLgUp(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  useEffect(() => {
+    if (!activeReview) return;
+
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") setActiveReview(null);
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [activeReview]);
 
   if (loading || reviews.length === 0) return null;
 
-  const current = reviews[index];
+  const homePreviewCount = isLgUp ? 3 : 4;
+
+  let displayedReviews;
+  if (isFullList) {
+    displayedReviews = reviews;
+  } else if (isHomePreview) {
+    displayedReviews = reviews.slice(0, homePreviewCount);
+  } else if (numericLimit != null) {
+    displayedReviews = reviews.slice(0, numericLimit);
+  } else {
+    displayedReviews = reviews;
+  }
+
+  let showViewAll;
+  if (isFullList) {
+    showViewAll = false;
+  } else if (isHomePreview) {
+    showViewAll = reviews.length > homePreviewCount;
+  } else if (numericLimit != null) {
+    showViewAll = reviews.length > numericLimit;
+  } else {
+    showViewAll = false;
+  }
+
+  const modalRating = activeReview
+    ? Math.max(1, Math.min(5, Number(activeReview.rating || 5)))
+    : 5;
 
   return (
-    <section className="relative min-h-[90vh] lg:min-h-screen bg-white flex items-center justify-center overflow-hidden py-20 px-4">
-      
-      {/* 1. LAYER: DYNAMIC BACKGROUND MESH */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay"></div>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={index}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.08 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 2 }}
-            className="absolute inset-0"
-            style={{
-              background: `radial-gradient(circle at 50% 50%, ${index % 2 === 0 ? '#384523' : '#1e293b'} 0%, transparent 70%)`
-            }}
-          />
-        </AnimatePresence>
-      </div>
-
-      <div className="relative z-10 max-w-7xl w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-          
-          {/* 2. LAYER: THE IMAGE STAGE (Left 5 Columns) */}
-          <div className="lg:col-span-5 relative group">
-            <AnimatePresence mode="wait" custom={direction}>
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 0.8, x: -50 }}
-                animate={{ opacity: 1, scale: 1, x: 0 }}
-                exit={{ opacity: 0, scale: 1.1, x: 50 }}
-                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className="relative aspect-[4/5] w-full max-w-md mx-auto"
+    <>
+      <section className="bg-[#dfdfdf] px-4 pb-10 pt-[200px]">
+        <div className="mx-auto w-full md:w-[90%]">
+          <div className="mb-8 flex gap-4 items-end justify-between">
+            <h2 className="text-2xl md:text-4xl font-bold text-secondary">{sectionTitle}</h2>
+            {showViewAll ? (
+              <Link
+                href="/reviews"
+                className="inline-flex w-fit shrink-0 items-center justify-center rounded-full border border-secondary sm:px-5 sm:py-2.5 px-3 py-2 text-xs sm:text-sm font-semibold text-secondary transition-colors hover:bg-secondary hover:text-white"
               >
-                {/* Floating Decorative Elements */}
-                <div className="absolute -top-6 -right-6 w-32 h-32 border-t-2 border-r-2 border-gray-200 rounded-tr-[3rem]" />
-                <div className="absolute -bottom-6 -left-6 w-32 h-32 border-b-2 border-l-2 border-[#384523]/30 rounded-bl-[3rem]" />
-                
-                {/* Main Image */}
-                <div className="relative w-full h-full rounded-[2rem] overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)]">
-                  <Image 
-                    src={current.photo} 
-                    alt={current.name} 
-                    fill 
-                    className="object-cover saturate-[1.1] brightness-90 group-hover:scale-110 transition-transform duration-[2s]" 
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
-                  
-                  <div className="absolute bottom-10 left-10">
-                    <p className="text-[#384523] text-sm font-mono mb-2 flex items-center gap-2">
-                      <FiMapPin /> {current.trip}
-                    </p>
-                    <h3 className="text-4xl font-bold text-white tracking-tighter leading-none italic uppercase drop-shadow-lg">
-                      {current.name}
-                    </h3>
-                  </div>
-                </div>
-              </motion.div>
-            </AnimatePresence>
+                View All <FaAngleRight className="w-4 h-4 ml-2" />
+              </Link>
+            ) : null}
           </div>
 
-          {/* 3. LAYER: CONTENT (Right 7 Columns) */}
-          <div className="lg:col-span-7 lg:pl-12">
-            <div className="overflow-hidden mb-4">
-              <motion.span 
-                initial={{ y: "100%" }}
-                animate={{ y: 0 }}
-                className="block text-[#384523] font-bold tracking-[0.4em] uppercase text-xs"
-              >
-                Traveler Testimonial
-              </motion.span>
-            </div>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {displayedReviews.map((review, idx) => {
+              const avatarLetter = review.name ? review.name.charAt(0).toUpperCase() : "T";
+              const isLong = review.comment && review.comment.length > COMMENT_PREVIEW_LEN;
+              const shortComment = isLong
+                ? `${review.comment.slice(0, COMMENT_PREVIEW_LEN).trim()}...`
+                : review.comment || "Wonderful experience and highly recommended.";
 
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -30 }}
-                transition={{ duration: 0.5 }}
-              >
-                {/* Big Quote */}
-                <h2 className="text-gray-900 text-base font-light leading-[1.15] tracking-tight mb-10">
-                  <span className="text-[#384523] text-7xl serif absolute -left-8 -top-8 opacity-20">“</span>
-                  {current.comment}
-                  <span className="text-[#384523] text-7xl serif opacity-20">”</span>
-                </h2>
-
-                <div className="flex flex-col md:flex-row md:items-center gap-8 border-t border-gray-200 pt-10">
-                  <div className="flex-1">
-                    <p className="text-gray-500 text-sm uppercase tracking-widest mb-1">Destination Journey</p>
-                    <p className="text-xl text-gray-900 font-medium">{current.trip}</p>
-                  </div>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-
-            {/* 4. LAYER: MODERN NAVIGATION */}
-            <div className="flex items-center gap-8 mt-12">
-              <div className="flex items-center gap-4">
-                <button 
-                  onClick={() => paginate(-1)}
-                  className="w-14 h-14 rounded-full border border-gray-300 flex items-center justify-center text-gray-900 hover:bg-[#384523] hover:text-white hover:border-[#384523] transition-all group"
+              return (
+                <article
+                  key={review._id || `${review.name}-${idx}`}
+                  className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-shadow duration-300 hover:shadow-md md:rounded-3xl"
                 >
-                  <FiArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
-                </button>
+                  <div className="mb-4 flex items-start gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-pink-500 text-lg font-bold text-white">
+                      {avatarLetter}
+                    </div>
 
-                <div className="relative flex items-center justify-center">
-                  {/* Progress Circle */}
-                  <svg className="w-20 h-20 -rotate-90">
-                    <circle 
-                      cx="40" cy="40" r="38" 
-                      className="stroke-gray-200 fill-none" 
-                      strokeWidth="2" 
-                    />
-                    <motion.circle 
-                      cx="40" cy="40" r="38" 
-                      className="stroke-[#384523] fill-none" 
-                      strokeWidth="2"
-                      strokeDasharray="239"
-                      initial={{ strokeDashoffset: 239 }}
-                      animate={{ strokeDashoffset: 239 - (239 * (index + 1)) / reviews.length }}
-                      transition={{ duration: 0.5 }}
-                    />
-                  </svg>
-                  <button 
-                    onClick={() => paginate(1)}
-                    className="absolute w-14 h-14 rounded-full bg-[#384523] flex items-center justify-center text-white hover:scale-110 transition-transform group"
-                  >
-                    <FiArrowRight size={24} className="group-hover:translate-x-1 transition-transform" />
-                  </button>
-                </div>
-              </div>
+                    <div className="min-w-0">
+                      <h3 className="text-sm md:text-base font-semibold leading-tight text-gray-900">{review.name}</h3>
 
-              <div className="text-gray-400 font-mono text-sm tracking-tighter">
-                <span className="text-gray-900">0{index + 1}</span> / 0{reviews.length}
-              </div>
-            </div>
+                      <p className="flex min-w-0 items-center gap-1 text-xs text-gray-600 lg:text-sm">
+                        <span className="shrink-0">Booked:</span>
+                        {review.destinationSlug ? (
+                          <Link
+                            href={`/destinations/${review.destinationSlug}`}
+                            className="group inline-flex min-w-0 max-w-full flex-1 items-center gap-1 font-semibold text-gray-900 underline-offset-2 hover:underline"
+                          >
+                            <span className="min-w-0 truncate">{review.trip}</span>
+                            <span className="shrink-0 text-gray-500 group-hover:text-gray-700" aria-hidden>
+                              ↗
+                            </span>
+                          </Link>
+                        ) : (
+                          <span className="min-w-0 flex-1 truncate font-semibold text-gray-900">{review.trip}</span>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+
+                  <p className="mb-4 text-sm leading-relaxed text-gray-800">
+                    &ldquo;{shortComment}&rdquo;{" "}
+                    {isLong ? (
+                      <button
+                        type="button"
+                        onClick={() => setActiveReview(review)}
+                        className="font-medium text-gray-900 underline-offset-2 hover:underline"
+                      >
+                        Read more
+                      </button>
+                    ) : null}
+                  </p>
+
+                  <div className="relative aspect-[3/2] w-full overflow-hidden rounded-2xl">
+                    <Image
+                      src={review.photo}
+                      alt={`${review.name || "Traveler"} trip photo`}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                </article>
+              );
+            })}
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Background Section Title */}
-      <div className="absolute right-[-5%] top-1/2 -translate-y-1/2 rotate-90 hidden 2xl:block">
-        <h2 className="text-[4vh] font-black text-gray-100 leading-none uppercase select-none">
-          Stories
-        </h2>
-      </div>
-    </section>
+      {activeReview ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="review-modal-title"
+        >
+          <button
+            type="button"
+            className="absolute inset-0 bg-black/50"
+            aria-label="Close review"
+            onClick={() => setActiveReview(null)}
+          />
+
+          <div className="relative z-10 max-h-[min(90vh,640px)] w-full max-w-lg overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl md:rounded-[1.75rem] md:p-8">
+            <button
+              type="button"
+              onClick={() => setActiveReview(null)}
+              className="absolute right-4 top-4 rounded-full p-2 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900"
+              aria-label="Close"
+            >
+              <FiX className="h-5 w-5" />
+            </button>
+
+            <div className="flex gap-4 pr-10">
+              <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full ring-2 ring-gray-100">
+                <Image
+                  src={activeReview.photo}
+                  alt={activeReview.name || "Reviewer"}
+                  fill
+                  className="object-cover"
+                  sizes="56px"
+                />
+              </div>
+              <div className="min-w-0 pt-0.5">
+                <h3 id="review-modal-title" className="text-lg font-bold text-gray-900">
+                  {activeReview.name}
+                </h3>
+                <p className="truncate text-sm text-gray-500" title={activeReview.trip}>
+                  {activeReview.trip}
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-4 text-base tracking-tight text-amber-500" aria-hidden>
+              {Array.from({ length: modalRating }).map((_, i) => (
+                <span key={i}>★</span>
+              ))}
+            </div>
+
+            <p className="mt-5 text-base leading-relaxed text-gray-900">{activeReview.comment}</p>
+          </div>
+        </div>
+      ) : null}
+    </>
   );
 }

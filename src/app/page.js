@@ -1,11 +1,11 @@
 "use client";
-import { useEffect, useState } from "react";
+
 import Header from "../components/Header";
 import Destinations from "@/components/Destinations";
 import MoreThanAVisit from "@/components/MoreThanAVisit";
+import HomeOverlapSection from "@/components/HomeOverlapSection";
 import NextGenReviews from "@/components/NextGenReviews";
-import CallToAction from "@/components/CallToAction";
-import FAQ from "@/components/FAQ";
+import ContactSocialBanner from "@/components/ContactSocialBanner";
 import Footer from "@/components/Footer";
 
 export default function Home() {
@@ -14,9 +14,9 @@ export default function Home() {
       <Header />
       <Destinations />
       <MoreThanAVisit />
-      {/* <NextGenReviews /> */}
-      {/* <CallToAction /> */}
-      {/* <FAQ /> */}
+      <HomeOverlapSection />
+      <NextGenReviews />
+      <ContactSocialBanner />
       <Footer />
     </div>
   );

@@ -20,6 +20,28 @@ export default {
       validation: (Rule) => Rule.required(),
     },
     {
+      name: "overlapSliderImages",
+      title: "Overlap banner (above reviews) – slider images",
+      type: "array",
+      description:
+        "Add one or more photos. They slide one by one in the rounded banner between “More than a visit” and Reviews.",
+      of: [
+        {
+          type: "image",
+          options: { hotspot: true },
+          fields: [
+            {
+              name: "alt",
+              type: "string",
+              title: "Alternative text",
+              description: "Short description for accessibility and SEO.",
+            },
+          ],
+        },
+      ],
+      validation: (Rule) => Rule.max(20),
+    },
+    {
       name: "isActive",
       title: "Is Active",
       type: "boolean",
