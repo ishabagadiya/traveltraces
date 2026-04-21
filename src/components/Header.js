@@ -6,7 +6,7 @@ import { FaPhoneAlt } from "react-icons/fa";
 import { IoSearch } from "react-icons/io5";
 import { HiMenu, HiX } from "react-icons/hi";
 import { client } from "../sanity/lib/client";
-import logo from "@/assets/logo-white.svg";
+import logo from "@/assets/logo-dark.png";
 import Image from "next/image";
 import SearchResultsDropdown from "./SearchResultsDropdown";
 
@@ -99,7 +99,7 @@ const Header = () => {
       {/* Bottom Row: Main Navigation */}
       <div className="flex justify-between items-center">
         {/* Left: Hamburger & Logo */}
-        <div className="flex items-center gap-2 sm:gap-4">
+        <div className="flex items-center">
           {/* Hamburger Menu Button - All Screen Sizes */}
           <button
             onClick={toggleMobileMenu}
@@ -108,20 +108,21 @@ const Header = () => {
           >
             {isMobileMenuOpen ? <HiX size={24} /> : <HiMenu size={24} />}
           </button>
-          
+
           {/* Logo */}
-          <div className="w-[120px] md:w-[200px] h-auto">
-            <Link href="/">
-              {/* <Image
+          <div className="relative h-10 w-[120px] md:h-14 md:w-[200px] overflow-hidden">
+            <Link href="/" className="block h-full w-full">
+              <Image
                 src={logo}
                 alt="traveltraces"
-                width={1563}
-                height={1563}
-                className="invert"
-              ></Image> */}
-              <h1 className="text-xl sm:text-2xl text-secondary font-bold">TravelTraces</h1>
+                fill
+                className="object-cover object-center"
+                sizes="(min-width: 768px) 200px, 120px"
+                priority
+              />
             </Link>
           </div>
+
         </div>
 
         {/* Right: Action Icons */}
@@ -172,9 +173,8 @@ const Header = () => {
       </div>
 
       {/* Navigation Menu - Hamburger Menu for All Screens */}
-      <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
-        isMobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-      }`}>
+      <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isMobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+        }`}>
         <nav className="flex flex-col items-center space-y-4 py-4 text-sm border-t border-secondary/10 mt-4">
           <Link
             href="/"
@@ -205,7 +205,7 @@ const Header = () => {
             Cancellation Policy
           </Link>
         </nav>
-        </div>
+      </div>
 
       {/* Mobile Search Bar with Dropdown */}
       <div className="md:hidden relative">

@@ -8,7 +8,7 @@ export default function ReviewsPage() {
   return (
     <div className="w-full overflow-hidden">
       <Header />
-      <NextGenReviews maxReviews={null} sectionTitle="Client reviews" />
+      <NextGenReviews maxReviews={null} sectionTitle="Traveler reviews" />
       <WhyChooseTravelTraces />
       <ContactSocialBanner />
       <Footer />
