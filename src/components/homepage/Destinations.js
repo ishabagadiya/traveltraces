@@ -1,8 +1,8 @@
 "use client";
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
-import { client } from "../sanity/lib/client";
-import { urlFor } from "../sanity/lib/image";
+import { client } from "@/sanity/lib/client";
+import { urlFor } from "@/sanity/lib/image";
 
 const AUTO_ROTATE_INTERVAL = 3500;
 const AUDIENCE_WORDS = [

@@ -1,10 +1,11 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { FiX } from "react-icons/fi";
-import { client } from "../sanity/lib/client";
-import { urlFor } from "../sanity/lib/image";
+import { client } from "@/sanity/lib/client";
+import { urlFor } from "@/sanity/lib/image";
 import { FaAngleRight } from "react-icons/fa";
 
 const COMMENT_PREVIEW_LEN = 100;
@@ -13,6 +14,8 @@ export default function EditorialReviews({
   maxReviews: maxReviewsProp,
   sectionTitle = "Reviews",
 }) {
+  const pathname = usePathname();
+  const isReviewsPage = pathname === "/reviews";
   const isFullList = maxReviewsProp === null;
   const isHomePreview = maxReviewsProp === undefined;
   const numericLimit = typeof maxReviewsProp === "number" ? maxReviewsProp : null;
@@ -113,7 +116,7 @@ export default function EditorialReviews({
 
   return (
     <>
-      <section className="bg-[#dfdfdf] px-4 pb-10 pt-[200px]">
+      <section className={`bg-[#dfdfdf] px-4 md:px-8 ${isReviewsPage ? "pt-20 pb-15 " : "pt-[200px] pb-10"}`}>
         <div className="mx-auto w-full md:w-[90%]">
           <div className="mb-8 flex gap-4 items-end justify-between">
             <h2 className="text-2xl md:text-4xl font-bold text-secondary">{sectionTitle}</h2>

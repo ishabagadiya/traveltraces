@@ -2,8 +2,8 @@
 import Image from "next/image";
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { client } from "../sanity/lib/client";
-import { urlFor } from "../sanity/lib/image";
+import { client } from "@/sanity/lib/client";
+import { urlFor } from "@/sanity/lib/image";
 import { FaChevronRight } from "react-icons/fa";
 
 function getVisibleCount() {

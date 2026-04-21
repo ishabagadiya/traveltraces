@@ -1,11 +1,11 @@
 "use client";
 
 import Header from "../components/Header";
-import Destinations from "@/components/Destinations";
-import MoreThanAVisit from "@/components/MoreThanAVisit";
-import HomeOverlapSection from "@/components/HomeOverlapSection";
-import NextGenReviews from "@/components/NextGenReviews";
-import ContactSocialBanner from "@/components/ContactSocialBanner";
+import Destinations from "@/components/homepage/Destinations";
+import MoreThanAVisit from "@/components/homepage/MoreThanAVisit";
+import HomeOverlapSection from "@/components/homepage/HomeOverlapSection";
+import NextGenReviews from "@/components/homepage/NextGenReviews";
+import ContactSocialBanner from "@/components/homepage/ContactSocialBanner";
 import Footer from "@/components/Footer";
 
 export default function Home() {
