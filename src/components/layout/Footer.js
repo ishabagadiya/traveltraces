@@ -52,10 +52,10 @@ export default function Footer() {
               <Link href="/about" className="text-xs sm:text-sm md:text-xs lg:text-sm text-[#fcf3d8]/90 transition-colors hover:text-white">
                 About Us
               </Link>
-              <Link href="/terms" className="text-xs sm:text-sm md:text-xs lg:text-sm text-[#fcf3d8]/90 transition-colors hover:text-white">
+              <Link href="/terms-and-conditions" className="text-xs sm:text-sm md:text-xs lg:text-sm text-[#fcf3d8]/90 transition-colors hover:text-white">
                 Terms and Condition
               </Link>
-              <Link href="/privacy" className="text-xs sm:text-sm md:text-xs lg:text-sm text-[#fcf3d8]/90 transition-colors hover:text-white">
+              <Link href="/privacy-policy" className="text-xs sm:text-sm md:text-xs lg:text-sm text-[#fcf3d8]/90 transition-colors hover:text-white">
                 Privacy Policy
               </Link>
             </div>
