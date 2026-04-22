@@ -5,10 +5,10 @@ import { useRouter } from "next/navigation";
 import { FaPhoneAlt } from "react-icons/fa";
 import { IoSearch } from "react-icons/io5";
 import { HiMenu, HiX } from "react-icons/hi";
-import { client } from "../sanity/lib/client";
+import { client } from "../../sanity/lib/client";
 import logo from "@/assets/logo-dark.png";
 import Image from "next/image";
-import SearchResultsDropdown from "./SearchResultsDropdown";
+import SearchResultsDropdown from "../SearchResultsDropdown";
 
 const Header = () => {
   const router = useRouter();

@@ -2,8 +2,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, usePathname } from "next/navigation";
 import Image from "next/image";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import {
   FaClock,
   FaMountain,
@@ -122,7 +120,6 @@ export default function TripDetailsPage() {
 
   return (
     <div className="w-full overflow-hidden">
-      <Header />
       <main className="min-h-screen bg-gray-50">
         {/* Image Collage Section - Shop it like layout */}
         {trip.images && trip.images.length > 0 && (
@@ -552,7 +549,6 @@ export default function TripDetailsPage() {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 }

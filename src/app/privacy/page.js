@@ -1,13 +1,10 @@
 "use client";
-import Footer from "@/components/Footer";
-import Header from "@/components/Header";
 import React from "react";
 import { FaShieldAlt, FaUserShield, FaCookieBite, FaExclamationTriangle, FaCheckCircle, FaTimesCircle, FaInfoCircle, FaEnvelope, FaGavel, FaHandshake, FaLock, FaEye, FaUsers, FaCar, FaTicketAlt, FaCamera, FaSmokingBan, FaBed, FaExclamationCircle } from "react-icons/fa";
 
 export default function PrivacyPage() {
   return (
     <main className="min-h-screen bg-gray-50 pt-20">
-      <Header />
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-secondary/10 to-secondary/5 py-16">
         <div className="container mx-auto px-4 text-center">
@@ -444,7 +441,6 @@ export default function PrivacyPage() {
           </section>
         </div>
       </div>
-      <Footer />
     </main>
   );
 }

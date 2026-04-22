@@ -46,31 +46,6 @@ export default {
       type: "text",
     },
     {
-      name: "price",
-      title: "Price(write like 4,500)",
-      type: "string",
-    },
-    {
-      name: "duration",
-      title: "Duration",
-      type: "object",
-      fields: [
-        {
-          name: "days",
-          title: "Days",
-          type: "number",
-          validation: (Rule) => Rule.required().min(1),
-        },
-        {
-          name: "nights",
-          title: "Nights",
-          type: "number",
-          validation: (Rule) => Rule.required().min(0),
-        },
-      ],
-      description: "Enter number of days and nights",
-    },
-    {
       name: "joinUsFrom",
       title: "Join Us From",
       type: "array",

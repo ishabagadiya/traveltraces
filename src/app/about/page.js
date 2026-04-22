@@ -1,6 +1,4 @@
 "use client";
-import Footer from "@/components/Footer";
-import Header from "@/components/Header";
 import SectionHeader from "@/components/SectionHeader";
 import FeatureCard from "@/components/FeatureCard";
 import FounderCard from "@/components/FounderCard";
@@ -17,7 +15,6 @@ export default function AboutUs() {
 
   return (
     <div className="w-full overflow-hidden">
-      <Header />
       {/* Hero Section */}
       <section className="relative my-12 flex items-center justify-center px-4 sm:px-6 lg:px-8 overflow-hidden">
         <div className="relative z-10 text-center">
@@ -273,7 +270,6 @@ export default function AboutUs() {
         </div>
       </section>
 
-      <Footer />
     </div>
   );
 }

@@ -1,13 +1,10 @@
 "use client";
-import Footer from "@/components/Footer";
-import Header from "@/components/Header";
 import React from "react";
 import { FaPhoneAlt, FaEnvelope, FaGlobe, FaExclamationTriangle, FaInfoCircle, FaClock, FaCreditCard, FaTrain, FaPlane, FaWallet, FaCalendarAlt } from "react-icons/fa";
 
 export default function PolicyPage() {
   return (
     <div className="w-full overflow-hidden">
-      <Header />
       <main className="min-h-screen bg-gray-50 pt-20">
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-secondary/10 to-secondary/5 py-16">
@@ -313,7 +310,6 @@ export default function PolicyPage() {
         </div>
       </div>
       </main>
-      <Footer />
     </div>
   );
 }

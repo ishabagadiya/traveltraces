@@ -1,5 +1,6 @@
 import { Manrope } from "next/font/google";
 import "./globals.css";
+import SiteChrome from "@/components/layout/SiteChrome";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -22,7 +23,7 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className={`${manrope.variable} antialiased`}>
-        {children}
+        <SiteChrome>{children}</SiteChrome>
       </body>
     </html>
   );
