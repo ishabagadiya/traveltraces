@@ -6,6 +6,11 @@ import DestinationCard from "@/components/destinations/DestinationCard";
 
 const CATEGORY_TABS = [
   {
+    id: "weekend",
+    label: "Weekend Trips",
+    schemaValue: "Weekend Trips",
+  },
+  {
     id: "domestic",
     label: "Domestic",
     schemaValue: "Domestic Destinations",
@@ -103,8 +108,8 @@ export default function DestinationsPageClient() {
           </div>
         ) : (
           <>
-            <div className="mx-auto mb-6 sm:mb-10 rounded-full border border-[#c7c7c7] bg-[#dcdcdc] max-w-[90%] md:max-w-[700px]">
-              <div className="grid grid-cols-3 text-center">
+            <div className="mx-auto mb-6 sm:mb-10 max-w-[90%] md:max-w-[700px]">
+              <div className="flex flex-wrap justify-center gap-2 sm:hidden">
                 {CATEGORY_TABS.map((tab) => {
                   const isActive = activeCategory === tab.id;
 
@@ -113,10 +118,30 @@ export default function DestinationsPageClient() {
                       key={tab.id}
                       type="button"
                       onClick={() => setActiveCategory(tab.id)}
-                        className={`cursor-pointer rounded-full px-3 py-3 font-semibold transition-all text-xs sm:text-sm md:text-base ${
-                          isActive
-                            ? "bg-white text-black shadow-sm"
-                            : "text-black/90 hover:bg-[#d2d2d2] hover:shadow-sm"
+                      className={`basis-[calc(50%-0.25rem)] cursor-pointer rounded-full border border-[#c7c7c7] bg-[#dcdcdc] px-3 py-3 font-semibold transition-all text-xs ${
+                        isActive
+                          ? "bg-white text-black shadow-sm"
+                          : "text-black/90 hover:bg-[#d2d2d2] hover:shadow-sm"
+                      }`}
+                    >
+                      {tab.label}
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="hidden sm:grid sm:grid-cols-4 sm:rounded-full sm:border sm:border-[#c7c7c7] sm:bg-[#dcdcdc] sm:text-center">
+                {CATEGORY_TABS.map((tab) => {
+                  const isActive = activeCategory === tab.id;
+
+                  return (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() => setActiveCategory(tab.id)}
+                      className={`cursor-pointer rounded-full px-3 py-3 font-semibold transition-all text-sm md:text-base ${
+                        isActive
+                          ? "bg-white text-black shadow-sm"
+                          : "text-black/90 hover:bg-[#d2d2d2] hover:shadow-sm"
                       }`}
                     >
                       {tab.label}

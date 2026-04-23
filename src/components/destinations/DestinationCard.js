@@ -1,162 +1,67 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { FaImages } from "react-icons/fa";
-import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
-import { MdOutlineTravelExplore } from "react-icons/md";
+import { FiArrowUpRight } from "react-icons/fi";
 import { urlFor } from "@/sanity/lib/image";
 
-const getDurationText = (duration) => {
-  if (!duration) return null;
-  if (duration?.days) return `${duration.days} Days ${duration.nights} Nights`;
-  if (typeof duration === "string") {
-    const compactDurationMatch = duration
-      .trim()
-      .match(/^(\d+)\s*d\s*\/\s*(\d+)\s*n$/i);
-    if (compactDurationMatch) {
-      const [, days, nights] = compactDurationMatch;
-      return `${days} Days ${nights} Nights`;
-    }
-  }
-  return duration;
-};
-
-const getAhmedabadOption = (destination) =>
-  (destination.joinUsFrom || []).find(
-    (item) => item?.place?.trim()?.toLowerCase() === "ahmedabad"
-  );
-
 const getStartingPrice = (destination) => {
-  const joinPrices = (destination.joinUsFrom || [])
-    .map((item) => Number(item?.price))
-    .filter((value) => Number.isFinite(value));
+  const parsePrice = (value) => {
+    const numeric = Number(String(value || "").replace(/[^\d]/g, ""));
+    return Number.isNaN(numeric) ? null : numeric;
+  };
 
-  if (joinPrices.length > 0) return Math.min(...joinPrices);
-  return null;
+  const ahmedabadEntry = (destination.joinUsFrom || []).find(
+    (item) => String(item?.place || "").trim().toLowerCase() === "ahmedabad"
+  );
+  const ahmedabadPrice = parsePrice(ahmedabadEntry?.price);
+  if (ahmedabadPrice && ahmedabadPrice > 0) return ahmedabadPrice;
+
+  const fallbackPrices = (destination.joinUsFrom || [])
+    .map((item) => parsePrice(item?.price))
+    .filter((value) => value !== null && value > 0);
+
+  if (!fallbackPrices.length) return null;
+  return Math.min(...fallbackPrices);
 };
 
 export default function DestinationCard({ destination }) {
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const [isImageHovered, setIsImageHovered] = useState(false);
-  const ahmedabadOption = getAhmedabadOption(destination);
-  const durationText = getDurationText(ahmedabadOption?.duration);
-  const startingPrice =
-    Number(ahmedabadOption?.price) || getStartingPrice(destination);
-  const galleryImages = useMemo(() => {
-    const images = Array.isArray(destination.images) ? destination.images.slice(0, 5) : [];
-    if (images.length > 0) return images;
-    return destination.image ? [destination.image] : [];
-  }, [destination.images, destination.image]);
-  const hasMultipleImages = galleryImages.length > 1;
-
-  const goToPreviousImage = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setActiveImageIndex((prev) => (prev === 0 ? galleryImages.length - 1 : prev - 1));
-  };
-
-  const goToNextImage = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setActiveImageIndex((prev) => (prev + 1) % galleryImages.length);
-  };
-
-  useEffect(() => {
-    if (!hasMultipleImages || isImageHovered) return undefined;
-
-    const interval = setInterval(() => {
-      setActiveImageIndex((prev) => (prev + 1) % galleryImages.length);
-    }, 3500);
-
-    return () => clearInterval(interval);
-  }, [galleryImages.length, hasMultipleImages, isImageHovered]);
+  const startingPrice = getStartingPrice(destination);
+  const destinationImage = destination.image
+    ? urlFor(destination.image).width(1080).height(1350).url()
+    : "/HeroImages/saputara.jpeg";
 
   return (
     <Link
       href={`/destinations/${destination.slug?.current}`}
-      className="group block w-[280px]"
+      className="group relative flex-shrink-0 flex items-center justify-center rounded-2xl md:rounded-3xl overflow-hidden w-[300px] h-max"
     >
-      <article className="w-full h-full overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl">
-        <div
-          className="relative h-[250px] w-full overflow-hidden rounded-2xl"
-          onMouseEnter={() => setIsImageHovered(true)}
-          onMouseLeave={() => setIsImageHovered(false)}
-        >
-          <Image
-            src={galleryImages.length > 0 ? urlFor(galleryImages[activeImageIndex]).url() : "/HeroImages/saputara.jpeg"}
-            alt={destination.name}
-            fill
-            className={`object-cover transition-transform duration-500 group-hover:scale-105 ${
-              hasMultipleImages ? "" : "object-top"
-            }`}
-          />
-
-          {hasMultipleImages ? (
-            <>
-              {isImageHovered ? (
-                <>
-                  <button
-                    type="button"
-                    onClick={goToPreviousImage}
-                    className="absolute left-3 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/50 p-2 text-gray-900 shadow transition hover:bg-white/70"
-                    aria-label="Previous image"
-                  >
-                    <FiChevronLeft className="h-5 w-5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={goToNextImage}
-                    className="absolute right-3 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/50 p-2 text-gray-900 shadow transition hover:bg-white/70"
-                    aria-label="Next image"
-                  >
-                    <FiChevronRight className="h-5 w-5" />
-                  </button>
-                </>
-              ) : null}
-              <div className="absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 items-center gap-1.5">
-                {galleryImages.map((_, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setActiveImageIndex(idx);
-                    }}
-                    className={`h-1 w-1 rounded-full transition ${
-                      idx === activeImageIndex ? "bg-white" : "bg-white/50 hover:bg-white/80"
-                    }`}
-                    aria-label={`View image ${idx + 1}`}
-                  />
-                ))}
-              </div>
-            </>
-          ) : null}
-        </div>
-
-        <div className="p-4 w-full">
-          <p className="text-xs text-gray-500 mb-1.5">{durationText || "Custom Duration"}</p>
-          <h3 className="text-base md:text-lg font-extrabold leading-tight text-gray-900">{destination.name}</h3>
-          <p className="mt-1 text-xs text-gray-700 h-[25px]">
-            {destination.tagline || destination.location || "Explore this curated trip package"}
-          </p>
-
-          <div className="py-2">
-            <div className="h-[1px] w-full rounded-full bg-gray-200" />
-          </div>
-
-          <div className="flex items-end justify-between rounded-xl bg-gray-100 px-3 py-2">
-            <span className="text-sm font-bold text-[#384523]">
-              {startingPrice ? `₹ ${startingPrice.toLocaleString("en-IN")}` : "Contact Us"}
-            </span>
-            {ahmedabadOption && (
-              <span className="text-xs text-gray-500">From Ahmedabad</span>
+      <Image
+        src={destinationImage}
+        alt={destination.name}
+        width={1080}
+        height={1350}
+        className="!w-full !h-auto rounded-2xl md:rounded-3xl transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+      />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-3 md:p-4">
+        <div className="flex items-end justify-between gap-3">
+          <div className="min-w-0">
+            <p className="truncate text-[10px] md:text-[11px] font-semibold tracking-[0.08em] uppercase text-white/85">
+              {destination.name}
+            </p>
+            {startingPrice ? (
+              <p className="text-lg font-extrabold leading-tight text-white">
+                ₹ {startingPrice.toLocaleString("en-IN")}
+              </p>
+            ) : (
+              <p className="text-sm font-semibold text-white">Contact Us</p>
             )}
           </div>
+          <span className="flex h-8 w-8 items-center justify-center rounded-full border border-white/80 text-white">
+            <FiArrowUpRight className="h-4 w-4" />
+          </span>
         </div>
-      </article>
+      </div>
     </Link>
   );
 }
