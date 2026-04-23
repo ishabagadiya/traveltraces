@@ -1,5 +1,5 @@
 export default {
-  name: "Images of Herosection",
+  name: "imagesOfHerosection",
   title: "Images of Herosection",
   type: "document",
   fields: [
@@ -11,4 +11,15 @@ export default {
       validation: (Rule) => Rule.required(),
     },
   ],
+  preview: {
+    select: {
+      media: "image",
+    },
+    prepare({ media }) {
+      return {
+        title: "Image",
+        media,
+      };
+    },
+  },
 };

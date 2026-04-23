@@ -23,7 +23,7 @@ const Destinations = () => {
   useEffect(() => {
     client
       .fetch(
-        `*[_type == "destination"] | order(_createdAt asc){ _id, name, location, image }`
+        `*[_type == "imagesOfHerosection"] | order(_createdAt asc){ _id, image }`
       )
       .then((data) => {
         setDestinations(data);
@@ -55,7 +55,7 @@ const Destinations = () => {
   const nextSlide = (currentSlide + 1) % totalSlides;
 
   return (
-    <section className="relative w-full h-[430px] overflow-hidden">
+    <section className="relative w-[90%] mx-auto h-[400px] md:h-[500px] overflow-hidden rounded-2xl shadow-lg mt-5">
       {destinations.map((destination, index) => (
           <div
             key={destination._id}
@@ -71,41 +71,46 @@ const Destinations = () => {
           >
             <Image
               src={destination.image ? urlFor(destination.image).url() : ""}
-              alt={destination.name}
+              alt={`Hero image ${index + 1}`}
               fill
               priority={index === 0}
               sizes="100vw"
               className="object-cover object-center"
             />
-            <div className="absolute w-full inset-0 bg-gradient-to-t sm:bg-gradient-to-r bg-black/50 sm:from-black/30 to-transparent" />
+            <div className="absolute w-full inset-0 bg-gradient-to-t from-black/70 to-transparent" />
           </div>
       ))}
 
-      <div className="absolute inset-0 z-30 flex items-start sm:items-center">
-        <div className="w-full px-4 pt-12 sm:pt-0 sm:px-10 md:px-14 lg:px-20">
-          <h1 className="max-w-[620px] text-white font-extrabold leading-[0.95] text-3xl sm:text-5xl">
-            <span className="block mb-3">Experiences for</span>
-            <span className="block">
-              <span className="relative inline-block mr-2 sm:mr-6">
-                Tourist
-                <svg
-                  aria-hidden="true"
-                  viewBox="0 0 100 16"
-                  preserveAspectRatio="none"
-                  className="absolute left-0 right-0 top-[60%] h-6 w-full -translate-y-1/2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.35)]"
-                >
-                  <path
-                    d="M2 12 Q50 2 98 10"
-                    fill="none"
-                    stroke="white"
-                    strokeWidth="2.8"
-                    strokeLinecap="round"
-                  />
-                </svg>
+      <div className="absolute top-[70%] sm:top-[60%] left-1/2 -translate-x-1/2 z-30 flex items-center justify-center text-white w-full">
+        <div className="flex flex-col items-center justify-center px-4 text-center w-full">
+          <span className="mb-3 block text-3xl sm:text-5xl font-extrabold md:text-6xl">
+            TravelTraces
+          </span>
+          <p className="w-full gap-1.5 leading-relaxed text-white text-xs sm:text-base 2xl:text-xl">
+            Where every trip starts with a smile and{" "}
+            <br className="block" />
+            <span className="relative inline-block mt-1">
+              <span className="relative z-0 font-medium text-yellow-400">
+                ends with a story
               </span>
-              <span>{AUDIENCE_WORDS[currentAudience]}</span>
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 150 60"
+                preserveAspectRatio="none"
+                className="absolute -top-0 -right-2 z-10 block h-[25px] w-[120px] overflow-visible sm:w-[130px] lg:-top-1 lg:right-1 lg:h-[30px] lg:w-[130px] 2xl:-top-0.5 2xl:right-4 2xl:h-[35px] 2xl:w-[160px]"
+              >
+                <path
+                  d="M56.15,64.35 C 94.7,67.56 179,63.62 179,32.96 C 179,7.04 123.43,0 83.74,0 S -8.11,7.04 -8.11,32.08 S 35.55,70.85 129.86,67.56"
+                  fill="none"
+                  stroke="white"
+                  strokeWidth="2"
+                  pathLength="1"
+                  strokeDashoffset="0"
+                  strokeDasharray="1 1"
+                />
+              </svg>
             </span>
-          </h1>
+          </p>
         </div>
       </div>
     </section>

@@ -95,7 +95,7 @@ const Header = () => {
   };
 
   return (
-    <header className="w-full bg-white shadow-md px-4 py-4 md:px-6 md:py-6">
+    <header className="w-full md:w-[90%] mx-auto bg-white px-4 py-4 md:px-0">
       {/* Bottom Row: Main Navigation */}
       <div className="flex justify-between items-center">
         {/* Left: Hamburger & Logo */}
