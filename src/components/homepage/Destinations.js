@@ -3,6 +3,7 @@ import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
+import { FiClock, FiStar, FiUser } from "react-icons/fi";
 
 const AUTO_ROTATE_INTERVAL = 3500;
 const AUDIENCE_WORDS = [
@@ -77,13 +78,16 @@ const Destinations = () => {
               sizes="100vw"
               className="object-cover object-center"
             />
-            <div className="absolute w-full inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+            <div className="absolute w-full inset-0 bg-gradient-to-t from-black/30 via-black/60 to-black/30" />
           </div>
       ))}
 
-      <div className="absolute top-[70%] sm:top-[60%] left-1/2 -translate-x-1/2 z-30 flex items-center justify-center text-white w-full">
+      <div className="absolute top-[50%] -translate-y-1/2 left-1/2 -translate-x-1/2 z-30 flex items-center justify-center text-white w-full">
         <div className="flex flex-col items-center justify-center px-4 text-center w-full">
-          <span className="mb-3 block text-3xl sm:text-5xl font-extrabold md:text-6xl">
+          <span
+            className="mb-3 block text-3xl sm:text-5xl font-extrabold md:text-7xl"
+            style={{ fontFamily: "Poppins, sans-serif", fontWeight: "900" }}
+          >
             TravelTraces
           </span>
           <p className="w-full gap-1.5 leading-relaxed text-white text-xs sm:text-base 2xl:text-xl">
@@ -97,7 +101,7 @@ const Destinations = () => {
                 aria-hidden="true"
                 viewBox="0 0 150 60"
                 preserveAspectRatio="none"
-                className="absolute -top-0 -right-2 z-10 block h-[25px] w-[120px] overflow-visible sm:w-[130px] lg:-top-1 lg:right-1 lg:h-[30px] lg:w-[130px] 2xl:-top-0.5 2xl:right-4 2xl:h-[35px] 2xl:w-[160px]"
+                className="absolute -top-0 right-0 sm:right-2.5 z-10 block h-[25px] w-[120px] overflow-visible sm:w-[130px] lg:-top-1 lg:right-1 lg:h-[30px] lg:w-[130px] 2xl:-top-0.5 2xl:right-4 2xl:h-[35px] 2xl:w-[160px]"
               >
                 <path
                   d="M56.15,64.35 C 94.7,67.56 179,63.62 179,32.96 C 179,7.04 123.43,0 83.74,0 S -8.11,7.04 -8.11,32.08 S 35.55,70.85 129.86,67.56"
@@ -110,6 +114,25 @@ const Destinations = () => {
                 />
               </svg>
             </span>
+          </p>
+          <div className="mt-5 sm:mt-8 flex flex-wrap items-center justify-center gap-2 text-[8px] sm:text-xs font-semibold text-white/90">
+            <span className="flex items-center gap-1.5">
+              <FiClock className="h-3 w-3 text-cyan-300 sm:h-4 sm:w-4" />
+              24x7 Support
+            </span>
+            <span className="text-white/45">|</span>
+            <span className="flex items-center gap-1.5">
+              <FiUser className="h-3 w-3 text-cyan-300 sm:h-4 sm:w-4" />
+              100% Personalised
+            </span>
+            <span className="text-white/45">|</span>
+            <span className="flex items-center gap-1.5">
+              <FiStar className="h-3 w-3 text-cyan-300 sm:h-4 sm:w-4" />
+              4.9+ Rated
+            </span>
+          </div>
+          <p className="mt-3 text-[8px] sm:text-xs font-medium text-white/95">
+            #India's New Age youth Travel Partner
           </p>
         </div>
       </div>
