@@ -6,6 +6,8 @@ import { urlFor } from "@/sanity/lib/image";
 import { FiClock, FiStar, FiUser } from "react-icons/fi";
 
 const AUTO_ROTATE_INTERVAL = 3500;
+const GOOGLE_REVIEWS_URL =
+  "https://www.google.com/search?sca_esv=33b5970ecd4ab1db&rlz=1C1YTUH_enIN1024IN1025&sxsrf=ANbL-n4gWQpXmfEnWYDkLgKJUHpaP6h1YQ:1776952142632&si=AL3DRZEsmMGCryMMFSHJ3StBhOdZ2-6yYkXd_doETEE1OR-qOR0leiSzxlQsyvxQasNRJhnpcQ3yvEAi9YoacnRJeYaQLFhrBCPjEKoGsgFeVj3fYbSi2ZV30_h_U97MXidAv2DrTxg-E6_vklwOnxEe7YBc7ci8JYAzu5LiT_CfYYc44JlNPnKnFVnNZv2tUithote5owQh&q=Travel+Traces+%7C+Your+Trusted+Tour+Operator+in+Ahmedabad+Reviews&sa=X&ved=2ahUKEwiSgvrJjoSUAxVE3jgGHR2dEEkQ0bkNegQINBAH&biw=1536&bih=695&dpr=1.25";
 const AUDIENCE_WORDS = [
   "Explorers",
   "Adventurers",
@@ -126,10 +128,12 @@ const Destinations = () => {
               100% Personalised
             </span>
             <span className="text-white/45">|</span>
+            <a href={GOOGLE_REVIEWS_URL} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5">
             <span className="flex items-center gap-1.5">
               <FiStar className="h-3 w-3 text-cyan-300 sm:h-4 sm:w-4" />
               4.9+ Rated
             </span>
+            </a>
           </div>
           <p className="mt-3 text-[8px] sm:text-xs font-medium text-white/95">
             #India's New Age youth Travel Partner

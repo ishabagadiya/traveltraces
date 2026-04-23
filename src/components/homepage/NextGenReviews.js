@@ -12,7 +12,7 @@ const COMMENT_PREVIEW_LEN = 100;
 
 export default function EditorialReviews({
   maxReviews: maxReviewsProp,
-  sectionTitle = "Reviews",
+  sectionTitle = " ",
 }) {
   const pathname = usePathname();
   const isReviewsPage = pathname === "/reviews";
@@ -35,6 +35,7 @@ export default function EditorialReviews({
           name,
           trip,
           comment,
+          photos,
           photo,
           "destinationSlug": destination->slug.current
         }`
@@ -45,7 +46,24 @@ export default function EditorialReviews({
         setReviews(
           data.map((r) => ({
             ...r,
-            photo: r.photo ? urlFor(r.photo).url() : "/HeroImages/andharban.jpeg",
+            photos:
+              (Array.isArray(r.photos) ? r.photos : [])
+                .filter(Boolean)
+                .map((img) => urlFor(img).url())
+                .slice(0, 4),
+            photo:
+              (r.photos && r.photos[0] ? urlFor(r.photos[0]).url() : null) ||
+              (r.photo ? urlFor(r.photo).url() : null) ||
+              "/HeroImages/andharban.jpeg",
+          }))
+          .map((r) => ({
+            ...r,
+            photos:
+              r.photos && r.photos.length > 0
+                ? r.photos
+                : r.photo
+                  ? [r.photo]
+                  : ["/HeroImages/andharban.jpeg"],
           }))
         );
         setLoading(false);
@@ -113,10 +131,18 @@ export default function EditorialReviews({
   const modalRating = activeReview
     ? Math.max(1, Math.min(5, Number(activeReview.rating || 5)))
     : 5;
+  const getPhotoGridClass = (count) => {
+    if (count <= 1) return "grid-cols-1";
+    return "grid-cols-2";
+  };
+
+  const getPhotoTileClass = (isModal = false) => {
+    return `relative overflow-hidden ${isModal ? "rounded-xl" : "rounded-2xl"} aspect-[4/3]`;
+  };
 
   return (
     <>
-      <section className={`bg-[#dfdfdf] px-4 md:px-8 ${isReviewsPage ? "pt-20 pb-15 " : "pt-[200px] pb-10"}`}>
+      <section className={`bg-[#dfdfdf] px-4 md:px-0 ${isReviewsPage ? "pt-0 pb-15 " : "pt-[200px] pb-5"}`}>
         <div className="mx-auto w-full md:w-[90%]">
           <div className="mb-8 flex gap-4 items-end justify-between">
             <h2 className="text-2xl md:text-4xl font-bold text-secondary">{sectionTitle}</h2>
@@ -183,13 +209,21 @@ export default function EditorialReviews({
                     ) : null}
                   </p>
 
-                  <div className="relative aspect-[3/2] w-full overflow-hidden rounded-2xl">
-                    <Image
-                      src={review.photo}
-                      alt={`${review.name || "Traveler"} trip photo`}
-                      fill
-                      className="object-cover"
-                    />
+                  <div className={`grid w-full gap-2 ${getPhotoGridClass(review.photos.length)}`}>
+                    {review.photos.map((imgSrc, photoIdx) => (
+                      <div
+                        key={`${review._id || review.name}-photo-${photoIdx}`}
+                        className={getPhotoTileClass()}
+                      >
+                        <Image
+                          src={imgSrc}
+                          alt={`${review.name || "Traveler"} trip photo ${photoIdx + 1}`}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        />
+                      </div>
+                    ))}
                   </div>
                 </article>
               );
@@ -245,6 +279,23 @@ export default function EditorialReviews({
             <div className="mt-4 text-base tracking-tight text-amber-500" aria-hidden>
               {Array.from({ length: modalRating }).map((_, i) => (
                 <span key={i}>★</span>
+              ))}
+            </div>
+
+            <div className={`mt-4 grid gap-2 ${getPhotoGridClass(activeReview.photos.length)}`}>
+              {activeReview.photos.map((imgSrc, photoIdx) => (
+                <div
+                  key={`${activeReview._id || activeReview.name}-modal-photo-${photoIdx}`}
+                  className={getPhotoTileClass(true)}
+                >
+                  <Image
+                    src={imgSrc}
+                    alt={`${activeReview.name || "Traveler"} review photo ${photoIdx + 1}`}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 90vw, 50vw"
+                  />
+                </div>
               ))}
             </div>
 

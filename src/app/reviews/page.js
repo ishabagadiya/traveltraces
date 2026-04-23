@@ -1,4 +1,5 @@
 import NextGenReviews from "@/components/homepage/NextGenReviews";
+import ReviewsCta from "@/components/reviews/ReviewsCta";
 import WhyChooseTravelTraces from "@/components/reviews/WhyChooseTravelTraces";
 
 export const metadata = {
@@ -9,7 +10,8 @@ export const metadata = {
 export default function ReviewsPage() {
   return (
     <div className="w-full overflow-hidden">
-      <NextGenReviews maxReviews={null} sectionTitle="Traveler reviews" />
+      <ReviewsCta />
+      <NextGenReviews maxReviews={null} sectionTitle=" " />
       <WhyChooseTravelTraces />
     </div>
   );

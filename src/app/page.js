@@ -2,6 +2,7 @@ import Destinations from "@/components/homepage/Destinations";
 import MoreThanAVisit from "@/components/homepage/MoreThanAVisit";
 import HomeOverlapSection from "@/components/homepage/HomeOverlapSection";
 import NextGenReviews from "@/components/homepage/NextGenReviews";
+import HomeFaqs from "@/components/homepage/HomeFaqs";
 
 export const metadata = {
   title: "TravelTraces | Curated Trips and Experiences",
@@ -15,7 +16,8 @@ export default function Home() {
       <Destinations />
       <MoreThanAVisit />
       <HomeOverlapSection />
-      <NextGenReviews />
+      <NextGenReviews sectionTitle="Traveler Reviews" />
+      <HomeFaqs />
     </div>
   );
 }

@@ -13,6 +13,20 @@ export default {
     },
     { name: 'trip', title: 'Trip', type: 'string', validation: Rule => Rule.required() },
     { name: 'comment', title: 'Comment', type: 'text', validation: Rule => Rule.required() },
-    { name: 'photo', title: 'Photo', type: 'image', options: { hotspot: true }, validation: Rule => Rule.required() },
+    {
+      name: 'photos',
+      title: 'Photos',
+      type: 'array',
+      of: [{ type: 'image', options: { hotspot: true } }],
+      description: 'Add 1 to 4 photos for this review.',
+      validation: Rule => Rule.required().min(1).max(4),
+    },
+    {
+      name: 'photo',
+      title: 'Photo (legacy)',
+      type: 'image',
+      options: { hotspot: true },
+      hidden: true,
+    },
   ]
 } 
