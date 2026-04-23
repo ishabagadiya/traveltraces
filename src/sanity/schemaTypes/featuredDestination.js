@@ -15,6 +15,12 @@ export default {
       options: { source: "name", maxLength: 96 },
     },
     {
+      name: "showOnUpcomingTrips",
+      title: "Show this trip on upcoming trips section?",
+      type: "boolean",
+      initialValue: false,
+    },
+    {
       name: "category",
       title: "Category",
       type: "string",
@@ -22,13 +28,14 @@ export default {
         list: [
           { title: "Domestic Destinations", value: "Domestic Destinations" },
           { title: "International Trips", value: "International Trips" },
-          { title: "Winter Treks", value: "Winter Treks" },
+          { title: "Treks", value: "Treks" },
+          { title: "Weekend Trips", value: "Weekend Trips" },
         ],
       },
     },
     {
       name: "image",
-      title: "Cover Image",
+      title: "Cover Image(to show on homepage or destination page)",
       type: "image",
       options: { hotspot: true },
     },

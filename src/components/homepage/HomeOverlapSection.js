@@ -43,7 +43,7 @@ export default function HomeOverlapSection() {
   }, [slides.length]);
 
   return (
-    <div className="relative z-20 -mb-[120px] md:-mb-[150px] px-4 md:px-12">
+    <div className="relative z-20 -mb-[120px] md:-mb-[150px] px-4 md:px-0">
       <div className="relative mx-auto w-full md:w-[90%] h-[200px] md:h-[300px] overflow-hidden rounded-2xl shadow-lg">
         {slides.length > 0 &&
           slides.map((slide, i) => (

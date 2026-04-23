@@ -5,6 +5,7 @@ import Link from "next/link";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
 import { FaChevronRight } from "react-icons/fa";
+import { FiArrowUpRight } from "react-icons/fi";
 
 function getVisibleCount() {
   if (typeof window === "undefined") return 1;
@@ -17,6 +18,29 @@ function getVisibleCount() {
 // Reusable Carousel Component
 function CategoryCarousel({ title, destinations, visibleCount }) {
   const scrollRef = useRef(null);
+
+  const getStartingPrice = (destination) => {
+    const parsePrice = (value) => {
+      const numeric = Number(String(value || "").replace(/[^\d]/g, ""));
+      return Number.isNaN(numeric) ? null : numeric;
+    };
+
+    const ahmedabadEntry = (destination.joinUsFrom || []).find(
+      (item) => String(item?.place || "").trim().toLowerCase() === "ahmedabad"
+    );
+
+    const ahmedabadPrice = parsePrice(ahmedabadEntry?.price);
+    if (ahmedabadPrice && ahmedabadPrice > 0) {
+      return `₹ ${ahmedabadPrice.toLocaleString("en-IN")}`;
+    }
+
+    const fallbackPrices = (destination.joinUsFrom || [])
+      .map((item) => parsePrice(item?.price))
+      .filter((value) => value !== null && value > 0);
+
+    if (!fallbackPrices.length) return null;
+    return `₹ ${Math.min(...fallbackPrices).toLocaleString("en-IN")}`;
+  };
 
   const handleScrollRight = () => {
     if (!scrollRef.current) return;
@@ -50,11 +74,12 @@ function CategoryCarousel({ title, destinations, visibleCount }) {
         >
           {destinations.map((dest, idx) => {
             const slug = dest.name.toLowerCase().replace(/\s+/g, "");
+            const displayPrice = getStartingPrice(dest);
             return (
               <Link
                 key={`${dest.name}-${idx}`}
                 href={`/destinations/${slug}`}
-                className="group flex-shrink-0 flex items-center justify-center rounded-2xl md:rounded-3xl overflow-hidden w-[170px] sm:w-[200px] md:w-[250px] h-max"
+                className="group relative flex-shrink-0 flex items-center justify-center rounded-2xl md:rounded-3xl overflow-hidden w-[170px] sm:w-[200px] md:w-[250px] h-max"
               >
                 <Image
                   src={
@@ -67,6 +92,25 @@ function CategoryCarousel({ title, destinations, visibleCount }) {
                   height={1350}
                   className="!w-full !h-auto rounded-2xl md:rounded-3xl transition-transform duration-500 ease-out group-hover:scale-[1.03]"
                 />
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-3 md:p-4">
+                  <div className="flex items-end justify-between gap-3">
+                    {displayPrice ? (
+                      <div className="text-white">
+                        <p className="text-[9px] md:text-[10px] font-semibold tracking-[0.08em] uppercase text-white/85">
+                          From Ahmedabad
+                        </p>
+                        <p className="text-lg font-extrabold leading-tight">
+                          {displayPrice}
+                        </p>
+                      </div>
+                    ) : (
+                      <div />
+                    )}
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full border border-white/80 text-white">
+                      <FiArrowUpRight className="h-4 w-4" />
+                    </span>
+                  </div>
+                </div>
               </Link>
             );
           })}
@@ -100,7 +144,9 @@ export default function MoreThanAVisit() {
         `*[_type == "featuredDestination"] | order(_createdAt asc){
           name,
           image,
-          category
+          category,
+          showOnUpcomingTrips,
+          joinUsFrom[]{place, price}
         }`
       ),
       client.fetch(
@@ -138,11 +184,12 @@ export default function MoreThanAVisit() {
   const domesticDestinations = allDestinations.filter(
     (dest) => dest.category === "Domestic Destinations"
   );
+  const upcomingTrips = allDestinations.filter((dest) => dest.showOnUpcomingTrips);
   const internationalTrips = allDestinations.filter(
     (dest) => dest.category === "International Trips"
   );
-  const winterTreks = allDestinations.filter(
-    (dest) => dest.category === "Winter Treks"
+  const treks = allDestinations.filter(
+    (dest) => dest.category === "Treks" || dest.category === "Winter Treks"
   );
 
   if (loading) {
@@ -175,10 +222,16 @@ export default function MoreThanAVisit() {
   }
 
   return (
-    <section className="relative w-full mx-auto min-h-[500px] flex items-center justify-center bg-white py-8 sm:py-16 px-4 md:px-12">
-      <div className="relative z-10 flex flex-col gap-12 w-full">
+    <section className="relative w-full mx-auto min-h-[500px] flex items-center justify-center bg-white py-8 sm:py-12 px-4 md:px-0">
+      <div className="relative z-10 flex flex-col gap-8 sm:gap-12 w-full">
 
         {/* Category Carousels */}
+        <CategoryCarousel
+          title="Upcoming Trips"
+          destinations={upcomingTrips}
+          visibleCount={visibleCount}
+        />
+
         <CategoryCarousel
           title="Domestic Destinations"
           destinations={domesticDestinations}
@@ -203,10 +256,10 @@ export default function MoreThanAVisit() {
           </div>
         </div>
 
-        <div className="relative left-1/2 right-1/2 w-screen -translate-x-1/2 bg-[#dfdfdf] pt-[120px] pb-8 md:pt-[200px] sm:pb-10 px-4 md:px-12">
+        <div className="relative left-1/2 right-1/2 w-screen -translate-x-1/2 bg-[#dfdfdf] pt-[120px] pb-8 md:pt-[200px] sm:pb-10 px-6 md:px-0">
           <CategoryCarousel
-            title="Winter Treks"
-            destinations={winterTreks}
+            title="Treks"
+            destinations={treks}
             visibleCount={visibleCount}
           />
         </div>

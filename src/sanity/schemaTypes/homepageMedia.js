@@ -12,7 +12,7 @@ export default {
     },
     {
       name: "featureVideo",
-      title: "Feature Video (Between Domestic and Winter Treks)",
+      title: "Feature Video (Between Domestic and Treks)",
       type: "file",
       options: {
         accept: "video/mp4,video/webm,video/quicktime",

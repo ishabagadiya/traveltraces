@@ -11,9 +11,9 @@ const CATEGORY_TABS = [
     schemaValue: "Domestic Destinations",
   },
   {
-    id: "winter-treks",
-    label: "Winter Treks",
-    schemaValue: "Winter Treks",
+    id: "treks",
+    label: "Treks",
+    schemaValue: "Treks",
   },
   {
     id: "international",
@@ -61,6 +61,11 @@ export default function DestinationsPageClient() {
   const filteredDestinations = destinations.filter((destination) => {
     const selectedTab = CATEGORY_TABS.find((tab) => tab.id === activeCategory);
     if (!selectedTab) return true;
+    if (selectedTab.id === "treks") {
+      return (
+        destination.category === "Treks" || destination.category === "Winter Treks"
+      );
+    }
     return destination.category === selectedTab.schemaValue;
   });
 
