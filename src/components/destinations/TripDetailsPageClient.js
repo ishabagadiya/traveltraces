@@ -7,7 +7,6 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { FiX } from "react-icons/fi";
 import {
-  FaClock,
   FaCalendarAlt,
   FaWhatsapp,
   FaPhoneAlt,
@@ -15,14 +14,11 @@ import {
   FaBus,
   FaPlane,
   FaTrain,
-  FaShare,
-  FaPaperPlane,
   FaCheck,
   FaChevronDown,
   FaChevronUp,
   FaChevronLeft,
   FaChevronRight,
-  FaMapMarkerAlt,
 } from "react-icons/fa";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
@@ -130,29 +126,6 @@ export default function TripDetailsPageClient() {
       document.body.style.overflow = prevOverflow;
     };
   }, [isAboutModalOpen]);
-
-  const handleShare = async () => {
-    const url = `${window.location.origin}${pathname}`;
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: trip?.name || "Travel Destination",
-          text: trip?.tagline || "Check out this amazing destination!",
-          url,
-        });
-      } else {
-        await navigator.clipboard.writeText(url);
-        alert("Link copied to clipboard!");
-      }
-    } catch {
-      try {
-        await navigator.clipboard.writeText(url);
-        alert("Link copied to clipboard!");
-      } catch (clipboardErr) {
-        console.error("Failed to copy link:", clipboardErr);
-      }
-    }
-  };
 
   const selectedDuration = trip?.joinUsFrom?.[selectedPlaceIdx]?.duration || trip?.joinUsFrom?.[0]?.duration;
   const durationText =
@@ -320,27 +293,29 @@ export default function TripDetailsPageClient() {
                   ) : null}
                 </p>
               )}
-              <div className="flex items-center justify-end gap-3 mt-4">
-                <a
-                  href={
-                    trip.brochure?.asset?.url
-                      ? `${trip.brochure.asset.url}?dl=${encodeURIComponent(trip.brochure.asset.originalFilename || "brochure")}`
-                      : "#"
-                  }
-                  download
-                  className="flex items-center gap-2 px-4 py-2 border border-secondary/30 rounded-full text-secondary hover:bg-secondary/5 transition"
-                >
-                  <FaDownload className="text-secondary" />
-                  <span className="text-sm font-medium">Download Brochure</span>
-                </a>
-                <button
-                  onClick={handleShare}
-                  className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-full text-gray-700 hover:bg-gray-50 transition"
-                >
-                  <FaShare className="text-gray-500" />
-                  <span className="text-sm font-medium">Share</span>
-                </button>
-              </div>
+              {Array.isArray(trip.brochures) && trip.brochures.length > 0 ? (
+                <div className="flex flex-wrap items-center justify-end gap-3 mt-4">
+                  {trip.brochures.map((brochure, index) => {
+                    const fileUrl = brochure?.pdf?.asset?.url;
+                    if (!fileUrl) return null;
+
+                    const fileName = brochure?.pdf?.asset?.originalFilename || "brochure.pdf";
+                    const buttonLabel = brochure?.buttonName || "Download Brochure";
+
+                    return (
+                      <a
+                        key={`brochure-${index}`}
+                        href={`${fileUrl}?dl=${encodeURIComponent(fileName)}`}
+                        download
+                        className="flex items-center gap-2 px-4 py-2 border border-secondary/30 rounded-full text-secondary hover:bg-secondary/5 transition"
+                      >
+                        <FaDownload className="text-xs md:text-base" />
+                        <span className="text-xs md:text-sm">{buttonLabel}</span>
+                      </a>
+                    );
+                  })}
+                </div>
+              ) : null}
             </div>
 
             <div className="bg-white rounded-2xl shadow-lg p-6">
@@ -348,22 +323,22 @@ export default function TripDetailsPageClient() {
               <p className="text-sm text-secondary/70 mb-5">
                 Talk to Travel Traces experts for availability, pricing, and custom options.
               </p>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-1 sm:gap-3">
                 <a
                   href="https://wa.me/918460146012"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full flex items-center justify-center gap-2 border-2 border-secondary/30 hover:border-secondary text-secondary font-semibold py-3 px-3 rounded-full transition bg-secondary/5 hover:bg-secondary/10"
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-full border border-secondary px-2 md:px-6 py-2 md:py-2.5 md:text-xs text-sm font-semibold text-secondary transition-colors hover:bg-secondary hover:text-white text-nowrap"
                 >
-                  <FaWhatsapp className="text-green-500 text-xl" />
+                  <FaWhatsapp className="text-xs md:text-base" />
                   <span>WhatsApp</span>
                 </a>
                 <a
                   href="tel:8460146012"
-                  className="w-full flex items-center justify-center gap-2 border-2 border-secondary/30 hover:border-secondary text-secondary font-semibold py-3 px-3 rounded-full transition bg-secondary/5 hover:bg-secondary/10"
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-full border border-secondary px-2 md:px-6 py-2 md:py-2.5 md:text-xs text-sm font-semibold text-secondary transition-colors hover:bg-secondary hover:text-white text-nowrap"
                 >
-                  <FaPhoneAlt className="text-secondary text-lg" />
-                  <span>Call Now</span>
+                  <FaPhoneAlt className="text-xs md:text-base" />
+                  <span>Call</span>
                 </a>
               </div>
             </div>
@@ -453,7 +428,7 @@ export default function TripDetailsPageClient() {
 
             {/* itinerary section */}
             {selectedSchedule.length > 0 && (
-              <div className="rounded-xl p-4 md:p-5">
+              <div className="rounded-xl px-0">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg md:text-xl font-bold text-secondary">Itinerary</h2>
                   {(() => {
@@ -475,14 +450,14 @@ export default function TripDetailsPageClient() {
                       >
                         {allExpanded ? (
                           <>
-                            <svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
+                            <svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
                               <line x1="8" y1="1" x2="8" y2="4" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" />
                               <path d="M6 4 L8 6 L10 4" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
                               <line x1="2" y1="6" x2="14" y2="6" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" />
                               <line x1="8" y1="8" x2="8" y2="11" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" />
                               <path d="M6 8 L8 6 L10 8" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
                             </svg>
-                            <span>Collapse All</span>
+                            <span className="text-xs md:text-sm">Collapse All</span>
                           </>
                         ) : (
                           <>
@@ -490,7 +465,7 @@ export default function TripDetailsPageClient() {
                               <FaChevronUp className="text-[8px]" />
                               <FaChevronDown className="text-[8px]" />
                             </div>
-                            <span>Expand All</span>
+                            <span className="text-xs md:text-sm">Expand All</span>
                           </>
                         )}
                       </button>
@@ -642,10 +617,10 @@ export default function TripDetailsPageClient() {
               <button
                 type="button"
                 onClick={() => scrollGallery("left")}
-                className="absolute left-2 top-1/2 z-30 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/40 bg-secondary/65 text-white shadow-lg backdrop-blur-sm transition hover:bg-secondary/80"
+                className="absolute left-2 top-1/2 z-30 inline-flex h-7 md:h-10 w-7 md:w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/40 bg-secondary/65 text-white shadow-lg backdrop-blur-sm transition hover:bg-secondary/80"
                 aria-label="Scroll gallery left"
               >
-                <FaChevronLeft className="text-base" />
+                <FaChevronLeft className="text-xs md:text-base" />
               </button>
               <div className="pointer-events-none absolute top-[-80px] z-10 m-0 h-[102px] w-full shrink-0 scale-110 rounded-[50%/40%] bg-[#dfdfdf] p-0 box-border" />
               <div
@@ -675,10 +650,10 @@ export default function TripDetailsPageClient() {
               <button
                 type="button"
                 onClick={() => scrollGallery("right")}
-                className="absolute right-2 top-1/2 z-30 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/40 bg-secondary/65 text-white shadow-lg backdrop-blur-sm transition hover:bg-secondary/80"
+                className="absolute right-2 top-1/2 z-30 inline-flex h-7 md:h-10 w-7 md:w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/40 bg-secondary/65 text-white shadow-lg backdrop-blur-sm transition hover:bg-secondary/80"
                 aria-label="Scroll gallery right"
               >
-                <FaChevronRight className="text-base" />
+                <FaChevronRight className="text-xs md:text-base" />
               </button>
             </div>
           </section>
