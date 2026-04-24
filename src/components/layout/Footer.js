@@ -9,7 +9,7 @@ import { FiArrowUpRight, FiMapPin } from "react-icons/fi";
 export default function Footer() {
   return (
     <footer className="w-full bg-secondary text-white pt-[60px] sm:pt-[100px]">
-      <div className="mx-auto flex w-full md:w-[90%] flex-col md:flex-row gap-8 md:items-end md:justify-between pb-8 sm:pb-15">
+      <div className="mx-auto flex w-full md:w-[90%] flex-col md:flex-row gap-4 md:gap-8 md:items-end md:justify-between pb-8 sm:pb-15">
         <div className="flex flex-col items-center md:items-start justify-center md:justify-start gap-2 w-full md:w-[40%]">
           <div className="w-[200px] h-max">
             <Image src={logo} alt="TravelTraces Logo" className="w-full h-auto" />

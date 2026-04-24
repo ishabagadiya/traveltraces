@@ -46,10 +46,10 @@ export default {
       of: [{ type: "image", options: { hotspot: true } }],
       validation: (Rule) => Rule.max(5).error("Maximum 5 images allowed"),
     },
-    { name: "tagline", title: "Tagline(line below title)", type: "string" },
+    { name: "tagline", title: "Tagline(show below title on image)", type: "string" },
     {
       name: "description",
-      title: "Description(line below tagline)",
+      title: "Description(About the trip)",
       type: "text",
     },
     {
@@ -86,49 +86,137 @@ export default {
               name: "availableDates",
               title: "Available Dates",
               type: "array",
-              of: [{ type: "date" }],
-              options: {
-                dateFormat: "DD-MM-YYYY",
-                calendarTodayLabel: "Today",
-              },
+              of: [
+                {
+                  type: "date",
+                  options: {
+                    dateFormat: "DD-MM-YYYY",
+                    calendarTodayLabel: "Today",
+                  },
+                },
+              ],
+            },
+            {
+              name: "schedule",
+              title: "Schedule (for this departure)",
+              type: "array",
+              of: [
+                {
+                  type: "object",
+                  fields: [
+                    { name: "heading", title: "Heading", type: "string" },
+                    {
+                      name: "description",
+                      title: "Description (add points, shown as bullets)",
+                      type: "array",
+                      of: [{ type: "string" }],
+                    },
+                  ],
+                  options: {
+                    preview: {
+                      select: { heading: "heading" },
+                      prepare: ({ heading }) => ({
+                        title: heading || "Schedule item",
+                      }),
+                    },
+                  },
+                },
+              ],
             },
           ],
         },
       ],
     },
     {
-      name: "schedule",
-      title: "Schedule",
+      name: "inclusions",
+      title: "Inclusions",
+      type: "array",
+      of: [{ type: "string" }],
+      description: "Add each inclusion as a separate bullet point",
+    },
+    {
+      name: "exclusions",
+      title: "Exclusions",
+      type: "array",
+      of: [{ type: "string" }],
+      description: "Add each exclusion as a separate bullet point",
+    },
+    {
+      name: "faqs",
+      title: "Trip FAQs",
       type: "array",
       of: [
         {
           type: "object",
           fields: [
-            { name: "heading", title: "Heading", type: "string" },
             {
-              name: "description",
-              title: "Description (add points, shown as bullets)",
-              type: "array",
-              of: [{ type: "string" }],
+              name: "question",
+              title: "Question",
+              type: "string",
+              validation: (Rule) => Rule.required(),
             },
             {
-              name: "images",
-              title: "Images",
-              type: "array",
-              of: [{ type: "image", options: { hotspot: true } }],
+              name: "answer",
+              title: "Answer",
+              type: "text",
+              rows: 4,
+              validation: (Rule) => Rule.required(),
             },
           ],
-          options: {
-            preview: {
-              select: { heading: "heading" },
-              prepare: ({ heading }) => ({
-                title: heading || "Schedule item",
-              }),
+          preview: {
+            select: {
+              title: "question",
+              subtitle: "answer",
+            },
+          },
+        },
+      ],
+      description: "FAQs shown only on this trip page",
+    },
+    {
+      name: "brochures",
+      title: "Brochures (PDF)",
+      type: "array",
+      of: [
+        {
+          type: "object",
+          title: "Brochure Item",
+          fields: [
+            {
+              name: "buttonName",
+              title: "Button Name",
+              type: "string",
+              validation: (Rule) => Rule.required().error("Button name is required"),
+            },
+            {
+              name: "pdf",
+              title: "PDF File",
+              type: "file",
+              options: { accept: ".pdf" },
+              validation: (Rule) => Rule.required().error("PDF file is required"),
+            },
+          ],
+          preview: {
+            select: {
+              title: "buttonName",
+              subtitle: "pdf.asset.originalFilename",
+            },
+            prepare({ title, subtitle }) {
+              return {
+                title: title || "Brochure",
+                subtitle: subtitle || "No PDF selected",
+              };
             },
           },
         },
       ],
     },
-    { name: "brochure", title: "Brochure", type: "file" },
+    {
+      name: "tripGallery",
+      title: "Trip Gallery",
+      type: "array",
+      of: [{ type: "image", options: { hotspot: true } }],
+      description: "Add any number of photos to show in the trip gallery section",
+    },
   ],
 };

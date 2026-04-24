@@ -47,7 +47,7 @@ export default function DestinationCard({ destination }) {
         <div className="flex items-end justify-between gap-3">
           <div className="min-w-0">
             <p className="truncate text-[10px] md:text-[11px] font-semibold tracking-[0.08em] uppercase text-white/85">
-              {destination.name}
+              From Ahmedabad            
             </p>
             {startingPrice ? (
               <p className="text-lg font-extrabold leading-tight text-white">

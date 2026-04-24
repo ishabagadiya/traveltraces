@@ -5,7 +5,7 @@ const GOOGLE_REVIEWS_URL =
 
 export default function ReviewsCta() {
   return (
-    <section className="bg-[#dfdfdf] px-4 md:px-8 pt-15">
+    <section className="bg-[#dfdfdf] px-4 md:px-0 pt-15">
       <div className="mx-auto w-full rounded-2xl border border-black/10 bg-white/70 p-5 md:w-[90%] md:p-8">
         <p className="max-w-xl text-sm md:text-base leading-relaxed text-black md:leading-[1.35]">
           Don&apos;t just take our word for it - hear from people who&apos;ve transformed their dreams into
