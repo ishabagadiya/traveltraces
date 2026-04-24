@@ -22,6 +22,7 @@ import {
   FaChevronUp,
   FaChevronLeft,
   FaChevronRight,
+  FaMapMarkerAlt,
 } from "react-icons/fa";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
@@ -153,31 +154,42 @@ export default function TripDetailsPageClient() {
     }
   };
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
-  if (error) return <div className="min-h-screen flex items-center justify-center text-red-600">{error}</div>;
-  if (!trip) return <div className="min-h-screen flex items-center justify-center">Not found</div>;
-
-  const selectedDuration = trip.joinUsFrom?.[selectedPlaceIdx]?.duration || trip.joinUsFrom?.[0]?.duration;
+  const selectedDuration = trip?.joinUsFrom?.[selectedPlaceIdx]?.duration || trip?.joinUsFrom?.[0]?.duration;
   const durationText =
     selectedDuration?.days != null
       ? `${selectedDuration.days} Days ${selectedDuration.nights ?? 0} Nights`
       : "N/A";
-  const selectedSchedule = trip.joinUsFrom?.[selectedPlaceIdx]?.schedule || [];
-  const tripFaqs = Array.isArray(trip.faqs) ? trip.faqs.filter((faq) => faq?.question && faq?.answer) : [];
-  const aboutDescription = String(trip.description || "").trim();
+  const selectedSchedule = trip?.joinUsFrom?.[selectedPlaceIdx]?.schedule || [];
+  const tripFaqs = Array.isArray(trip?.faqs) ? trip.faqs.filter((faq) => faq?.question && faq?.answer) : [];
+  const aboutDescription = String(trip?.description || "").trim();
   const shouldTruncateAbout = aboutDescription.length > 180;
   const visibleAboutDescription = shouldTruncateAbout
     ? `${aboutDescription.slice(0, 150).trim()}...`
     : aboutDescription || "No description available.";
 
-  const rotatingImages = Array.isArray(trip.images) ? trip.images : [];
-  const tripGalleryImages = Array.isArray(trip.tripGallery) && trip.tripGallery.length > 0
+  const rotatingImages = Array.isArray(trip?.images) ? trip.images : [];
+  const tripGalleryImages = Array.isArray(trip?.tripGallery) && trip.tripGallery.length > 0
     ? trip.tripGallery.filter(Boolean)
     : rotatingImages;
+  const loopedTripGalleryImages =
+    tripGalleryImages.length > 1
+      ? [...tripGalleryImages, ...tripGalleryImages, ...tripGalleryImages]
+      : tripGalleryImages;
   const activeHeroImage =
     rotatingImages.length > 0
       ? rotatingImages[heroImageStartIndex % rotatingImages.length]
-      : trip.image;
+      : trip?.image;
+
+  const normalizeGalleryLoop = () => {
+    const el = galleryScrollRef.current;
+    if (!el || tripGalleryImages.length <= 1) return;
+    const oneSetWidth = el.scrollWidth / 3;
+    if (el.scrollLeft < oneSetWidth * 0.5) {
+      el.scrollLeft += oneSetWidth;
+    } else if (el.scrollLeft > oneSetWidth * 1.5) {
+      el.scrollLeft -= oneSetWidth;
+    }
+  };
 
   const scrollGallery = (direction) => {
     if (!galleryScrollRef.current) return;
@@ -186,6 +198,7 @@ export default function TripDetailsPageClient() {
       left: direction === "left" ? -scrollAmount : scrollAmount,
       behavior: "smooth",
     });
+    setTimeout(normalizeGalleryLoop, 360);
   };
 
   const startGalleryDrag = (clientX) => {
@@ -203,7 +216,28 @@ export default function TripDetailsPageClient() {
 
   const endGalleryDrag = () => {
     isGalleryDraggingRef.current = false;
+    normalizeGalleryLoop();
   };
+
+  useEffect(() => {
+    const el = galleryScrollRef.current;
+    if (!el || tripGalleryImages.length <= 1) return;
+
+    const oneSetWidth = el.scrollWidth / 3;
+    el.scrollLeft = oneSetWidth;
+
+    const onScroll = () => {
+      if (isGalleryDraggingRef.current) return;
+      normalizeGalleryLoop();
+    };
+
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => el.removeEventListener("scroll", onScroll);
+  }, [tripGalleryImages.length]);
+
+  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  if (error) return <div className="min-h-screen flex items-center justify-center text-red-600">{error}</div>;
+  if (!trip) return <div className="min-h-screen flex items-center justify-center">Not found</div>;
 
   return (
     <div className="w-full bg-[#dfdfdf]">
@@ -567,7 +601,7 @@ export default function TripDetailsPageClient() {
                           aria-expanded={isOpen}
                           aria-controls={`trip-faq-answer-${index}`}
                         >
-                          <span className="pt-1 font-mono text-[11px] text-gray-500 md:text-xs">[{itemIndex}]</span>
+                          <span className="pt-1 text-[11px] text-gray-500 md:text-xs">[{itemIndex}]</span>
 
                           <div className="pr-2">
                             <p className="text-xs font-semibold leading-tight text-gray-900 sm:text-base">{faq.question}</p>
@@ -599,56 +633,53 @@ export default function TripDetailsPageClient() {
         </section>
 
         {tripGalleryImages.length > 0 && (
-          <section className="w-full md:w-[90%] mx-auto px-4 md:px-0 pb-20">
-            <div className="">
-              <h2 className="text-lg md:text-2xl font-bold text-secondary text-center">Journey in Frames</h2>
-              <p className="mt-1 text-sm text-gray-600 text-center">Pictures Perfect Moments</p>
-
-              <div className="mt-5 flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => scrollGallery("left")}
-                  className="hidden sm:inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary text-white shadow-md hover:bg-secondary/90 transition"
-                  aria-label="Scroll gallery left"
-                >
-                  <FaChevronLeft />
-                </button>
-
-                <div
-                  ref={galleryScrollRef}
-                  className="flex-1 overflow-x-auto overflow-y-hidden cursor-grab active:cursor-grabbing [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-                  onMouseDown={(e) => startGalleryDrag(e.clientX)}
-                  onMouseMove={(e) => moveGalleryDrag(e.clientX)}
-                  onMouseUp={endGalleryDrag}
-                  onMouseLeave={endGalleryDrag}
-                  onTouchStart={(e) => startGalleryDrag(e.touches[0].clientX)}
-                  onTouchMove={(e) => moveGalleryDrag(e.touches[0].clientX)}
-                  onTouchEnd={endGalleryDrag}
-                >
-                  <div className="flex w-max gap-3 pb-2">
-                    {tripGalleryImages.map((photo, idx) => (
-                      <div key={`trip-gallery-${idx}`} className="relative h-64 w-44 md:h-72 md:w-48 shrink-0 overflow-hidden rounded-lg">
-                        <Image
-                          src={urlFor(photo).url()}
-                          alt={`${trip.name} gallery photo ${idx + 1}`}
-                          fill
-                          className="object-cover transition-transform duration-300 hover:scale-105"
-                          sizes="(max-width: 640px) 176px, 192px"
-                        />
-                      </div>
-                    ))}
+          <section className="w-full md:w-[80%] mx-auto px-4 md:px-0 pb-20 overflow-hidden">
+            <div className="relative flex flex-col items-center justify-center w-full">
+              <h2 className="text-lg md:text-2xl font-bold text-secondary text-center w-full z-30">Journey in Frames</h2>
+              <p className="mt-1 text-sm text-gray-600 text-center z-30">Pictures Perfect Moments</p>
+            </div>
+            <div className="relative mt-5">
+              <button
+                type="button"
+                onClick={() => scrollGallery("left")}
+                className="absolute left-2 top-1/2 z-30 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/40 bg-secondary/65 text-white shadow-lg backdrop-blur-sm transition hover:bg-secondary/80"
+                aria-label="Scroll gallery left"
+              >
+                <FaChevronLeft className="text-base" />
+              </button>
+              <div className="pointer-events-none absolute top-[-80px] z-10 m-0 h-[102px] w-full shrink-0 scale-110 rounded-[50%/40%] bg-[#dfdfdf] p-0 box-border" />
+              <div
+                ref={galleryScrollRef}
+                className="overflow-x-auto overflow-y-hidden px-8 cursor-grab active:cursor-grabbing [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden flex gap-2"
+                onMouseDown={(e) => startGalleryDrag(e.clientX)}
+                onMouseMove={(e) => moveGalleryDrag(e.clientX)}
+                onMouseUp={endGalleryDrag}
+                onMouseLeave={endGalleryDrag}
+                onTouchStart={(e) => startGalleryDrag(e.touches[0].clientX)}
+                onTouchMove={(e) => moveGalleryDrag(e.touches[0].clientX)}
+                onTouchEnd={endGalleryDrag}
+              >
+                {loopedTripGalleryImages.map((photo, idx) => (
+                  <div key={`trip-gallery-${idx}`} className="relative md:h-[400px] md:w-[300px] h-[200px] w-[150px] shrink-0 overflow-hidden">
+                    <Image
+                      src={urlFor(photo).url()}
+                      alt={`${trip.name} gallery photo ${idx + 1}`}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 640px) 176px, 208px"
+                    />
                   </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => scrollGallery("right")}
-                  className="hidden sm:inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary text-white shadow-md hover:bg-secondary/90 transition"
-                  aria-label="Scroll gallery right"
-                >
-                  <FaChevronRight />
-                </button>
+                ))}
               </div>
+              <div className="pointer-events-none absolute bottom-[-70px] z-10 m-0 h-[102px] w-full shrink-0 scale-110 rounded-[50%/40%] bg-[#dfdfdf] p-0 box-border" />
+              <button
+                type="button"
+                onClick={() => scrollGallery("right")}
+                className="absolute right-2 top-1/2 z-30 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/40 bg-secondary/65 text-white shadow-lg backdrop-blur-sm transition hover:bg-secondary/80"
+                aria-label="Scroll gallery right"
+              >
+                <FaChevronRight className="text-base" />
+              </button>
             </div>
           </section>
         )}
