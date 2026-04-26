@@ -28,22 +28,22 @@ const getStartingPrice = (destination) => {
 export default function DestinationCard({ destination }) {
   const startingPrice = getStartingPrice(destination);
   const destinationImage = destination.image
-    ? urlFor(destination.image).width(1080).height(1350).url()
+    ? urlFor(destination.image).width(1131).height(1600).url()
     : "/HeroImages/saputara.jpeg";
 
   return (
     <Link
       href={`/destinations/${destination.slug?.current}`}
-      className="group relative flex-shrink-0 flex items-center justify-center rounded-2xl md:rounded-3xl overflow-hidden w-[300px] h-max"
+      className="group relative flex items-start justify-start rounded-2xl md:rounded-3xl overflow-hidden w-[300px] h-max"
     >
       <Image
         src={destinationImage}
         alt={destination.name}
         width={1080}
         height={1350}
-        className="!w-full !h-auto rounded-2xl md:rounded-3xl transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+        className="w-full! h-auto! rounded-2xl md:rounded-xl transition-transform duration-500 ease-out group-hover:scale-[1.01]"
       />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-3 md:p-4">
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-linear-to-t from-black/90 via-black/50 to-transparent p-3 md:p-4">
         <div className="flex items-end justify-between gap-3">
           <div className="min-w-0">
             <p className="truncate text-[10px] md:text-[11px] font-semibold tracking-[0.08em] uppercase text-white/85">

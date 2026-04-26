@@ -1,11 +1,8 @@
 "use client";
-import Image from "next/image";
 import React, { useState, useEffect, useRef } from "react";
-import Link from "next/link";
 import { client } from "@/sanity/lib/client";
-import { urlFor } from "@/sanity/lib/image";
 import { FaChevronRight } from "react-icons/fa";
-import { FiArrowUpRight } from "react-icons/fi";
+import DestinationCard from "@/components/destinations/DestinationCard";
 
 function getVisibleCount() {
   if (typeof window === "undefined") return 1;
@@ -18,29 +15,6 @@ function getVisibleCount() {
 // Reusable Carousel Component
 function CategoryCarousel({ title, destinations, visibleCount }) {
   const scrollRef = useRef(null);
-
-  const getStartingPrice = (destination) => {
-    const parsePrice = (value) => {
-      const numeric = Number(String(value || "").replace(/[^\d]/g, ""));
-      return Number.isNaN(numeric) ? null : numeric;
-    };
-
-    const ahmedabadEntry = (destination.joinUsFrom || []).find(
-      (item) => String(item?.place || "").trim().toLowerCase() === "ahmedabad"
-    );
-
-    const ahmedabadPrice = parsePrice(ahmedabadEntry?.price);
-    if (ahmedabadPrice && ahmedabadPrice > 0) {
-      return `₹ ${ahmedabadPrice.toLocaleString("en-IN")}`;
-    }
-
-    const fallbackPrices = (destination.joinUsFrom || [])
-      .map((item) => parsePrice(item?.price))
-      .filter((value) => value !== null && value > 0);
-
-    if (!fallbackPrices.length) return null;
-    return `₹ ${Math.min(...fallbackPrices).toLocaleString("en-IN")}`;
-  };
 
   const handleScrollRight = () => {
     if (!scrollRef.current) return;
@@ -73,45 +47,22 @@ function CategoryCarousel({ title, destinations, visibleCount }) {
           }}
         >
           {destinations.map((dest, idx) => {
-            const slug = dest.name.toLowerCase().replace(/\s+/g, "");
-            const displayPrice = getStartingPrice(dest);
+            const fallbackSlug = String(dest?.name || "")
+              .trim()
+              .toLowerCase()
+              .replace(/[^\w\s-]/g, "")
+              .replace(/\s+/g, "-");
+            const normalizedDestination = {
+              ...dest,
+              slug: dest?.slug?.current
+                ? dest.slug
+                : { current: fallbackSlug },
+            };
+
             return (
-              <Link
-                key={`${dest.name}-${idx}`}
-                href={`/destinations/${slug}`}
-                className="group relative flex-shrink-0 flex items-center justify-center rounded-2xl md:rounded-3xl overflow-hidden w-[170px] sm:w-[200px] md:w-[250px] h-max"
-              >
-                <Image
-                  src={
-                    dest.image
-                      ? urlFor(dest.image).width(1080).height(1350).url()
-                      : "/HeroImages/saputara.jpeg"
-                  }
-                  alt={dest.name}
-                  width={1080}
-                  height={1350}
-                  className="!w-full !h-auto rounded-2xl md:rounded-3xl transition-transform duration-500 ease-out group-hover:scale-[1.03]"
-                />
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-3 md:p-4">
-                  <div className="flex items-end justify-between gap-3">
-                    {displayPrice ? (
-                      <div className="text-white">
-                        <p className="text-[9px] md:text-[10px] font-semibold tracking-[0.08em] uppercase text-white/85">
-                          From Ahmedabad
-                        </p>
-                        <p className="text-lg font-extrabold leading-tight">
-                          {displayPrice}
-                        </p>
-                      </div>
-                    ) : (
-                      <div />
-                    )}
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full border border-white/80 text-white">
-                      <FiArrowUpRight className="h-4 w-4" />
-                    </span>
-                  </div>
-                </div>
-              </Link>
+              <div key={`${dest.name}-${idx}`} className="shrink-0">
+                <DestinationCard destination={normalizedDestination} />
+              </div>
             );
           })}
         </div>

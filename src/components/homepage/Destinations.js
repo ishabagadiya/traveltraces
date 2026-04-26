@@ -87,7 +87,7 @@ const Destinations = () => {
               sizes="100vw"
               className="object-cover object-center"
             />
-            <div className="absolute w-full inset-0 bg-gradient-to-t from-black/30 via-black/60 to-black/30" />
+            <div className="absolute w-full inset-0 bg-linear-to-t from-black/30 via-black/60 to-black/30" />
           </div>
       ))}
 
@@ -110,7 +110,7 @@ const Destinations = () => {
                 aria-hidden="true"
                 viewBox="0 0 150 60"
                 preserveAspectRatio="none"
-                className="absolute -top-0 right-0 sm:right-2.5 z-10 block h-[25px] w-[120px] overflow-visible sm:w-[130px] lg:-top-1 lg:right-1 lg:h-[30px] lg:w-[130px] 2xl:-top-0.5 2xl:right-4 2xl:h-[35px] 2xl:w-[160px]"
+                className="absolute top-0 right-0 sm:right-2.5 z-10 block h-[25px] w-[120px] overflow-visible sm:w-[130px] lg:-top-1 lg:right-1 lg:h-[30px] lg:w-[130px] 2xl:-top-0.5 2xl:right-4 2xl:h-[35px] 2xl:w-[160px]"
               >
                 <path
                   d="M56.15,64.35 C 94.7,67.56 179,63.62 179,32.96 C 179,7.04 123.43,0 83.74,0 S -8.11,7.04 -8.11,32.08 S 35.55,70.85 129.86,67.56"

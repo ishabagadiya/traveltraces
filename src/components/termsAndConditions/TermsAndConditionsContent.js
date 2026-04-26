@@ -1,250 +1,184 @@
 "use client";
 
 const introParagraphs = [
-  "Welcome to TravelTraces! Before you embark on your unforgettable experiences, kindly read and familiarize yourself with our Terms & Conditions:",
+  "By confirming a booking with Travel Traces, the participant acknowledges having read, understood, and agreed to the following terms and conditions in full.",
+  "At Travel Traces, your satisfaction and trust are our top priorities. While we would love to see you on every trip, we understand that plans can change. Our transparent cancellation and refund policies are designed to offer flexibility while allowing us to maintain fair operational standards.",
 ];
 
 const sections = [
   {
-    title: "Agreement to Terms:",
+    title: "Booking Confirmation",
     paragraphs: [
-      "By accessing or using our website, you acknowledge that you have read, understood, and agree to be bound by these Terms and Conditions.",
-      "If you do not agree to these terms, please refrain from using the website.",
+      "A trek or trip with Travel Traces is considered confirmed only after an official confirmation email is issued.",
+      "By booking any travel service with Travel Traces, it is assumed that the participant unconditionally accepts all terms and conditions outlined herein.",
     ],
   },
   {
-    title: "Use of Website:",
+    title: "Adventure Activities and Risk Acknowledgement",
     paragraphs: [
-      "This website is provided for informational and booking purposes only and is intended for personal, non-commercial use only.",
-      "You agree to use it responsibly and not engage in any activity that may disrupt or interfere with its operation, nor for any illegal or unauthorized purpose.",
+      "All adventure activities (trekking, camping, river crossing, etc.) are complementary in nature, even when mentioned in the itinerary.",
+      "In the event of unforeseen conditions like bad weather, political unrest, natural calamities, or other force majeure, if any activity is canceled, no refund shall be applicable.",
+      "Adventure travel involves inherent personal and physical risk, including potential injury, illness, or death. By booking, the participant assumes full responsibility and releases Travel Traces from all liabilities related to such risks.",
     ],
   },
   {
-    title: "Booking Information:",
+    title: "Trip Alterations or Cancellations",
     paragraphs: [
-      "While we strive to provide accurate and up-to-date information, we do not guarantee the availability or accuracy of travel products, services, prices, or other details listed on the website.",
-      "All bookings are subject to availability and the terms and conditions of the respective service providers.",
+      "Travel Traces reserves the right to modify or cancel any part of the itinerary due to circumstances beyond our control (weather, strikes, operational issues, etc.).",
+      "In such events, any additional costs incurred (accommodation, transport, food, etc.) shall be borne by the participant.",
+      "If the trip is carried on under a revised itinerary, it will be considered that the participant has accepted the changes.",
     ],
   },
   {
-    title: "Booking Confirmation & Payment:",
+    title: "Package Inclusions and Cost Breakdown",
     paragraphs: [
-      "All travellers must provide accurate personal information at the time of booking.",
-      "To reserve a tour or travel experience, you must provide us with all necessary details and payments as requested.",
-      "The booking is considered confirmed only after we have received the full payment or the specified advance amount.",
-      "Payments can be made through various methods such as UPI, credit/debit cards, bank transfers, cash, or any other payment option mentioned by our company.",
+      "Travel Traces does not provide a detailed cost breakup for the package price.",
+      "All packages must be fully paid prior to the start of the journey.",
     ],
   },
   {
-    title: "Travel Documents:",
+    title: "Mandatory Travel Documents",
     paragraphs: [
-      "It is the responsibility of each traveller to obtain and carry all required travel documents, such as passports, visas, health certificates, and any other necessary permits.",
-      "We will provide general information and assistance regarding travel documents, but we are not liable for any issues arising from incomplete or incorrect documentation.",
+      "Participants must carry valid original and photocopy of government-issued ID proofs.",
+      "One photocopy must be submitted to Travel Traces before the trip.",
+      "Failure to present valid ID or documentation may lead to denial of service without any refund liability.",
     ],
   },
   {
-    title: "Changes to Itinerary:",
+    title: "Health Disclosure",
     paragraphs: [
-      "We reserve the right to modify/cancel the itinerary, including accommodation, transportation, and activities, due to unforeseen circumstances, safety concerns, or external factors.",
-      "We shall not be liable for any failure or delay in performing our obligations due to events beyond our control, including but not limited to natural disasters, acts of terrorism, civil unrest, or government restrictions.",
-      "In the event of any significant changes, we will notify you as soon as possible and offer suitable alternatives or a refund, depending on the situation.",
+      "Any physical or mental disability must be disclosed at the time of booking for yourself or anyone you are booking for.",
+      "Failure to do so may result in termination from the trip at any stage, without refund, if it poses a risk to the individual or the group.",
     ],
   },
   {
-    title: "Health and Fitness:",
+    title: "Medical and Fitness Responsibility",
     paragraphs: [
-      "It is essential that travellers have the appropriate health and fitness level to fully enjoy the experience. If you have any health concerns or medical conditions, please consult your physician before booking and also inform us at the time of booking.",
-      "We reserve the right to deny participation in certain activities if we believe it may endanger your health or safety and disrupt the group.",
+      "It is the participant's responsibility to consult a doctor and obtain necessary vaccinations before the trip.",
+      "Travel Traces is not liable for any health issues arising during or after the trip.",
     ],
   },
   {
-    title: "Personal Belongings:",
+    title: "Travel Etiquette and Group Conduct",
     paragraphs: [
-      "We are not responsible for any loss, damage, or theft of personal belongings. It is your personal responsibility to take care of your belongings at all times.",
+      "In group travel, participants must maintain respectful behavior. Any act of aggression, misbehavior, or disruption may result in removal from the group at your own expense.",
+      "Any damage to property or discomfort caused to co-travelers may incur a penalty.",
     ],
   },
   {
-    title: "Safety:",
+    title: "Timely Reporting and Transportation",
     paragraphs: [
-      "We prioritize the safety of every traveller and follow all necessary safety protocols during the trips/activities.",
+      "It is the participant's responsibility to report on time for transportation (bus, train, flight).",
+      "Travel Traces is not liable if the participant misses a departure or fails to board the group transport.",
+      "All participants must travel together in the assigned group vehicle unless otherwise permitted.",
     ],
   },
   {
-    title: "Punctuality & Discipline:",
+    title: "Tickets and Third-Party Services",
     paragraphs: [
-      "Participants are expected to maintain strict punctuality throughout the tour/activity, arriving at designated meeting points and departure times as per the itinerary.",
-      "Adherence to the schedule is vital to ensure the smooth execution of activities and to cover all planned destinations.",
-      "Failure to comply with these requirements may result in the traveller's exclusion from certain activities or termination of their participation without any entitlement to refunds or compensation.",
+      "For bookings involving train, flight, or bus tickets, any charges deducted by third-party platforms (like IRCTC, airlines, or OTAs) will be borne by the participant.",
+      "Refunds will be processed after deducting such charges as per third-party policies.",
     ],
   },
   {
-    title: "Behavior and Compliance:",
+    title: "Luggage and Personal Belongings",
     paragraphs: [
-      "Participants are expected to behave responsibly and respectfully towards fellow travellers, guides, local communities, and the environment. Also, follow the instructions of the guides and representatives and respect local customs and regulations.",
-      "We reserve the right to remove any traveller from a tour or experience if their behavior jeopardizes the safety or enjoyment of others, without providing a refund.",
+      "Travel Traces shall not be responsible for loss or theft of personal belongings, documents, or valuables during the trip, regardless of the cause.",
     ],
   },
   {
-    title: "Limitation of Liability:",
+    title: "Media and Promotional Content",
     paragraphs: [
-      "We and our affiliates shall not be held liable for any losses, damages, injuries, delays, accidents, inconveniences, or other irregularities caused by any circumstances.",
-      "Participants undertake the tours at their own risk, and we recommend exercising caution and following our guide's instructions during activities.",
+      "By participating in a Travel Traces trip, you consent to being photographed or filmed during activities, which may be used for social media or marketing purposes.",
+      "We ensure that your privacy and safety are respected at all times.",
     ],
   },
   {
-    title: "Photo and Video Usage:",
+    title: "Substance Policy",
     paragraphs: [
-      "We reserve the right to take photos/videos of traveller and can use those shared by them through email, Whatsapp, or any website link for promotional purposes.",
-      "By booking or participating with us, they automatically grant us a royalty-free, perpetual, worldwide, and irrevocable license for using their images in photographs and videos that may be used for promotional material, website, social media, collateral, and any other marketing and publicity materials.",
-      "We do not require their prior consent and do not need to compensate them for such use of their photographs and videos.",
+      "Smoking, alcohol consumption, or use of prohibited substances (for example weed or hashish) is strictly forbidden during travel in transport vehicles and may result in termination from the trip without refund.",
     ],
   },
   {
-    title: "Restrictions:",
+    title: "Accommodation and Amenities",
     paragraphs: [
-      "Alcohol, smoking, tobacco, drugs, and abusive language are strictly prohibited. If anyone is found to be involved in such cases, their participation will be terminated, and no further services or refunds will be provided.",
+      "Allocation of accommodation and amenities is handled by the Travel Traces team or trip leader. Their decision will be final and binding.",
+      "Participants should understand that trekking and adventure travel may not offer home-like comfort. Patience, flexibility, and team spirit are expected at all times.",
     ],
   },
   {
-    title: "Complaints and Disputes:",
+    title: "Force Majeure and Limitation of Liability",
     paragraphs: [
-      "We value your feedback and aim to provide exceptional travel experiences. If you encounter any issues during your tour/activity, please inform us promptly, either on the tour/activity or shortly after its completion. This allows us to address your concerns promptly and find a satisfactory solution.",
-      "To ensure a smooth resolution process, we kindly request that you report complaints within a reasonable timeframe after the tour/activity. While we will still do our best to assist with delayed complaints, resolving issues becomes more challenging when reported at a later stage.",
-      "If necessary, we are open to exploring mediation or alternative dispute resolution methods.",
-      "For all disputes related to these terms, the governing jurisdiction shall be Ahmedabad, Gujarat. Any legal proceedings will take place in the appropriate jurisdiction according to the prevailing laws.",
+      "Travel Traces does not own or control airlines, hotels, restaurants, or transport companies. Therefore, we are not liable for any schedule changes, service breakdowns, or delays caused by such third parties.",
+      "Participants must understand the risks of adventure travel, including political, cultural, and geographical challenges, and release Travel Traces from all claims arising from such risks.",
     ],
   },
   {
-    title: "Payment Policy",
+    title: "Cancellation Policy",
     paragraphs: [
-      "This Payment Policy governs all bookings made with TravelTraces (traveltraces.in) and applies to all travellers unless otherwise specified in writing.",
+      "30 days or more before departure: 90% of total package cost is refundable.",
+      "21 to 29 days before departure: 75% of total package cost is refundable.",
+      "15 to 19 days before departure: 50% of total package cost is refundable.",
+      "14 days or less before departure: No refund.",
+      "The booking token amount (INR 500) per person is strictly non-refundable, regardless of the cancellation timeline.",
+      "Cancellations must be communicated via email or phone only.",
     ],
   },
   {
-    title: "Group Trips - Payment Schedule",
+    title: "Refund Policy for Train and Flight Bookings",
     paragraphs: [
-      "Domestic Group Trips: Full payment must be received at least 20 days prior to the scheduled travel date.",
-      "International Group Trips: Full payment must be received at least 30 days prior to the scheduled travel date.",
-      "Failure to complete full payment within the specified timeline may result in automatic cancellation of the booking, without further notice, and applicable cancellation charges will apply.",
+      "If your package includes train or flight tickets, the refund for train or flight tickets will be processed as per the respective airline or IRCTC cancellation policy.",
+      "The ticket amount will be refunded to your original bank account or payment source after 30 days from the date of trip completion (as per IRCTC processing timelines).",
+      "The remaining refundable amount from the travel package will be credited to your Travel Traces Wallet within 72 working hours after cancellation.",
+      "If your package does not include train or flight tickets, the entire refundable amount (as per the cancellation slab) will be credited to your Travel Traces Wallet within 72 working hours.",
+      "Refunds are processed only during working days (Monday to Friday). National holidays and weekends may extend processing time.",
     ],
   },
   {
-    title: "Payment at the Time of Booking",
+    title: "Important Financial Notes",
     paragraphs: [
-      "At the time of booking, travellers are required to pay an advance amount as per the specific destination or trip policy communicated by TravelTraces.",
-      "In addition, 100% payment is required at the time of booking for the following services: Flight tickets, additional or optional services, and any non-refundable services.",
+      "GST amount paid is non-refundable as per government regulations.",
+      "Ticket cancellation charges plus agent charges are applicable as per IRCTC or airline and agency policies, and these will be deducted from your refundable amount.",
+      "Travel Traces Wallet amount cannot be transferred to a bank account or shared with another individual. It can only be used for future bookings with Travel Traces.",
     ],
   },
   {
-    title: "Private Trips - Payment Schedule",
+    title: "Rescheduling Policy",
     paragraphs: [
-      "At the time of booking, travellers must pay: 100% payment for flights, visas, activities, and all non-refundable services, and 50% of the total land package amount.",
-      "The remaining 50% balance of the land package must be cleared at least 30 days prior to the date of departure.",
-      "Failure to complete full payment within the specified timeline may result in automatic cancellation of the booking, without further notice, along with applicable cancellation charges.",
+      "Rescheduling within the same trip is allowed by paying 25% of the package cost.",
+      "Rescheduling is subject to availability and must be requested at least 15 days before the departure date.",
+      "For short duration trips (less than 7 days), rescheduling requests within 15 days of departure cannot be accommodated, and such requests will be treated as cancellations.",
+      "Once a booking is rescheduled, the option to cancel that booking is not available.",
+      "If train or flight tickets were booked using the Travel Traces Wallet, any refund related to cancellation of those tickets will be credited back only to the wallet, not to your bank.",
     ],
   },
   {
-    title: "Mode of Payment",
+    title: "How to Cancel or Reschedule",
     paragraphs: [
-      "Online Payments: Payments can be made through our authorised online payment gateway or TravelTraces bank account. Payment gateway charges may apply based on the selected payment mode.",
-      "Cash Payments: Cash payments are accepted at our registered Ahmedabad office, subject to limits prescribed under applicable Indian laws and regulations, including the Income Tax Act.",
+      "Call us: +91 84601 46012 (Monday to Saturday | 11:00 AM to 07:00 PM).",
+      "Email us: contact@traveltraces.in.",
+      "Online: Visit the Booking History section on our website and raise a cancellation or rescheduling request.",
     ],
   },
   {
-    title: "General Payment Terms",
+    title: "Refund Processing Timeline",
     paragraphs: [
-      "All payments must be made in Indian Rupees (INR) unless otherwise agreed in writing.",
-      "A booking is considered confirmed only upon receipt of the required payment as per the applicable payment schedule.",
-      "TravelTraces reserves the right to revise payment timelines or policies based on airline, hotel, visa embassy, supplier, or destination-specific requirements.",
-      "Any waiver or exception to this Payment Policy must be approved in writing by an authorised representative of TravelTraces.",
+      "Package (excluding tickets): Travel Traces Wallet, within 72 working hours.",
+      "Train ticket refund: Bank account (via IRCTC), within 30 days after trip completion.",
+      "Flight ticket refund: Bank account (as per airline), subject to airline processing time.",
     ],
   },
   {
-    title: "Cancellation & Refund Policy",
+    title: "Summary of Key Terms",
     paragraphs: [
-      "This Cancellation & Refund Policy is applicable to all bookings made with TravelTraces (traveltraces.in). All cancellations must be communicated in writing.",
-    ],
-  },
-  {
-    title: "Group Trips - Domestic Group Trips Cancellation Charges",
-    paragraphs: [
-      "Booking amount: Non-refundable.",
-      "Last 15 days before departure: No refund.",
-      "15–30 days before departure: 50% of the total trip cost will be deducted.",
-      "31–45 days before departure: 25% of the total trip cost will be deducted.",
-      "More than 45 days before departure: 10% of the total trip cost will be deducted.",
-    ],
-  },
-  {
-    title: "Group Trips - International Group Trips Cancellation Charges",
-    paragraphs: [
-      "Booking amount: Non-refundable.",
-      "Last 30 days before departure: No refund.",
-      "31–45 days before departure: 50% of the total trip cost will be deducted.",
-      "More than 45 days before departure: 25% of the total trip cost will be deducted.",
-    ],
-  },
-  {
-    title: "Free Rescheduling",
-    paragraphs: [
-      "Free rescheduling is allowed up to 30 days before departure for Domestic Group Trips.",
-      "Free rescheduling is allowed up to 45 days before departure for International Group Trips.",
-      "One (1) complimentary reschedule is permitted.",
-      "Actual costs incurred for non-refundable components such as flights, trains, buses, visa fees, permits, and vendor penalties will be charged.",
-      "Rescheduling is subject to availability.",
-      "The revised travel date must be within 12 months from the original departure date.",
-      "Indirect travel arrangements such as flights, visa processing or insurance will be governed by the respective vendor policies and are typically non-refundable.",
-    ],
-  },
-  {
-    title: "Private Trips - Flights, Hotels, Trains, Buses, Activities & Experiences",
-    paragraphs: [
-      "Non-refundable bookings: Once booked, these services are not eligible for any refund.",
-      "Refundable bookings: Refunds will be processed strictly as per the respective service provider's cancellation policy.",
-      "TravelTraces Pvt. Ltd. is not responsible for delays or cancellations by airlines, hotels, trains, buses, or any third-party service providers.",
-      "For international travel, travellers must ensure they hold a valid passport with a minimum validity of 12 months from the travel date.",
-      "Most hotels are non-refundable within the last 20 days prior to check-in; last-minute changes or refunds may not be possible.",
-    ],
-  },
-  {
-    title: "Visa Services",
-    paragraphs: [
-      "TravelTraces provides visa assistance services only, including documentation support and guidance. The final decision regarding visa approval or rejection lies solely with the respective embassy or consulate.",
-      "Visa fees are non-refundable under all circumstances.",
-      "In case a visa is not approved before the travel date, the trip cost will be non-refundable as per the applicable cancellation policy.",
-    ],
-  },
-  {
-    title: "Land Packages",
-    paragraphs: [
-      "Domestic private trips: Land packages are non-refundable within the last 20 days prior to departure.",
-      "International private trips: Land packages are non-refundable within the last 30 days prior to departure.",
-      "Cancellations made before the above timelines will be processed as per respective service provider and vendor charges.",
-    ],
-  },
-  {
-    title: "Cancellation by TravelTraces Pvt. Ltd.",
-    paragraphs: [
-      "In the event of a trip being cancelled or modified due to government restrictions, natural calamities, protests, or any other circumstances beyond our control, TravelTraces may be required to alter or cancel the tour itinerary. Any refunds or credit vouchers in such situations will be governed by the respective vendor policies and what is practically feasible. No refunds will be issued for indirect travel services (such as flights, visas, or insurance) that are impacted by such changes.",
-      "Indirect travel arrangements such as flights, visa processing or insurance will be governed by the respective vendor policies and are typically non-refundable.",
-    ],
-  },
-  {
-    title: "Refund",
-    paragraphs: [
-      "Refunds will be processed to the bank account or the original mode of payment used for the booking.",
-      "Refund processing time is 7 to 14 working days from the date of cancellation confirmation.",
-      "In case of cancellation of international trips, the value of credit vouchers/partial refund will be calculated based on the Rate of Exchange (ROE) prevailing on the date of cancellation.",
-      "For cancellations and refund-related queries, please contact our customer support at contact@traveltraces.in or +91 90 99 599 336.",
-    ],
-  },
-  {
-    title: "Credit Voucher",
-    paragraphs: [
-      "Credit Vouchers are valid for 12 months from the date of issuance and can be used for future bookings with TravelTraces.",
-      "Credit Vouchers are non-transferable and cannot be sold or redeemed for cash.",
-      "Credit Vouchers can be redeemed only for package bookings with TravelTraces and cannot be used for flights, trains, buses, visa fees, permits, or other independent arrangements.",
-      "The entire Credit Voucher amount must be used in a single transaction and cannot be split across multiple bookings. Carryover or partial usage is allowed only in specific cases with prior written approval from TravelTraces.",
+      "Booking token of INR 500 per person is non-refundable.",
+      "Refunds are partial or full based on cancellation date.",
+      "Train and flight ticket refunds follow external provider timelines.",
+      "Wallet refunds are non-transferable and valid for future Travel Traces bookings only.",
+      "Rescheduling incurs a 25% charge and forfeits cancellation rights post-change.",
+      "GST is non-refundable under any circumstances.",
+      "If you have any questions, please do not hesitate to reach out.",
+      "We are here to help you travel with ease and clarity.",
     ],
   },
 ];
@@ -255,7 +189,7 @@ const bulletListClass = "mt-2 list-disc space-y-1 pl-5";
 
 export default function TermsAndConditionsContent() {
   return (
-    <main className="w-full bg-[#efefef] py-8 sm:py-10">
+    <main className="w-full bg-[#dfdfdf] py-8 sm:py-10">
       <section className="mx-auto w-full max-w-[1200px] px-4 sm:px-6">
         <h1 className="mb-3 text-lg font-bold text-secondary sm:text-xl">Terms & Conditions</h1>
 
