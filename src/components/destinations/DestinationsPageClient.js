@@ -76,14 +76,41 @@ export default function DestinationsPageClient() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pt-20">
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center">
-            <div className="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-secondary"></div>
-            <p className="mt-4 text-gray-600">Loading destinations...</p>
+      <main className="min-h-screen bg-[#dfdfdf] pb-16 pt-6 sm:pt-10">
+        <section className="mx-auto w-full md:w-[90%] px-4 md:px-0">
+          <div className="mx-auto mb-6 sm:mb-10 max-w-[90%] md:max-w-[700px]">
+            <div className="flex flex-wrap justify-center gap-2 sm:hidden">
+              {Array.from({ length: 4 }).map((_, idx) => (
+                <div
+                  key={`mobile-tab-skeleton-${idx}`}
+                  className="basis-[calc(50%-0.25rem)] h-11 rounded-full bg-white/70 animate-pulse"
+                />
+              ))}
+            </div>
+            <div className="hidden sm:grid sm:grid-cols-4 sm:rounded-full sm:border sm:border-[#c7c7c7] sm:bg-[#dcdcdc] sm:text-center sm:p-1">
+              {Array.from({ length: 4 }).map((_, idx) => (
+                <div
+                  key={`desktop-tab-skeleton-${idx}`}
+                  className="h-11 rounded-full bg-white/70 animate-pulse"
+                />
+              ))}
+            </div>
           </div>
-        </div>
-      </div>
+
+          <div className="gap-5 md:gap-6 pb-3 flex flex-wrap justify-center items-center w-full">
+            {Array.from({ length: 8 }).map((_, idx) => (
+              <div
+                key={`destination-card-skeleton-${idx}`}
+                className="w-[170px] sm:w-[200px] md:w-[250px]"
+              >
+                <div className="h-[250px] sm:h-[300px] md:h-[360px] rounded-2xl md:rounded-3xl bg-white/70 animate-pulse" />
+                <div className="mt-3 h-4 w-3/4 rounded bg-white/70 animate-pulse" />
+                <div className="mt-2 h-3 w-1/2 rounded bg-white/70 animate-pulse" />
+              </div>
+            ))}
+          </div>
+        </section>
+      </main>
     );
   }
 

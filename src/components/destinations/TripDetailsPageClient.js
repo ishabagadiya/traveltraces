@@ -208,7 +208,52 @@ export default function TripDetailsPageClient() {
     return () => el.removeEventListener("scroll", onScroll);
   }, [tripGalleryImages.length]);
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  if (loading) {
+    return (
+      <div className="w-full bg-[#dfdfdf]">
+        <main className="min-h-screen">
+          <section className="w-full mt-0 mb-4">
+            <div className="h-[400px] md:h-[550px] bg-white/70 animate-pulse" />
+          </section>
+
+          <section className="pb-20 w-full md:w-[90%] mx-auto px-4 md:px-0 flex flex-col md:flex-row gap-2">
+            <aside className="flex flex-col gap-2 w-full md:w-1/2">
+              <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 space-y-3">
+                <div className="h-4 w-28 rounded bg-gray-200 animate-pulse" />
+                <div className="h-8 w-3/4 rounded bg-gray-200 animate-pulse" />
+                <div className="h-3 w-full rounded bg-gray-200 animate-pulse" />
+                <div className="h-3 w-[90%] rounded bg-gray-200 animate-pulse" />
+                <div className="h-3 w-[70%] rounded bg-gray-200 animate-pulse" />
+                <div className="flex justify-end gap-3 pt-2">
+                  <div className="h-9 w-36 rounded-full bg-gray-200 animate-pulse" />
+                  <div className="h-9 w-24 rounded-full bg-gray-200 animate-pulse" />
+                </div>
+              </div>
+              <div className="bg-white rounded-2xl shadow-lg p-6 space-y-3">
+                <div className="h-6 w-48 rounded bg-gray-200 animate-pulse" />
+                <div className="h-3 w-full rounded bg-gray-200 animate-pulse" />
+                <div className="grid grid-cols-2 gap-3 pt-2">
+                  <div className="h-10 rounded-full bg-gray-200 animate-pulse" />
+                  <div className="h-10 rounded-full bg-gray-200 animate-pulse" />
+                </div>
+              </div>
+            </aside>
+
+            <main className="flex flex-col gap-2 w-full md:w-1/2">
+              {Array.from({ length: 4 }).map((_, idx) => (
+                <div key={idx} className="bg-white rounded-xl shadow-md border border-secondary/10 p-4 md:p-5 space-y-3">
+                  <div className="h-6 w-40 rounded bg-gray-200 animate-pulse" />
+                  <div className="h-3 w-full rounded bg-gray-200 animate-pulse" />
+                  <div className="h-3 w-[85%] rounded bg-gray-200 animate-pulse" />
+                  <div className="h-3 w-[70%] rounded bg-gray-200 animate-pulse" />
+                </div>
+              ))}
+            </main>
+          </section>
+        </main>
+      </div>
+    );
+  }
   if (error) return <div className="min-h-screen flex items-center justify-center text-red-600">{error}</div>;
   if (!trip) return <div className="min-h-screen flex items-center justify-center">Not found</div>;
 
@@ -532,10 +577,13 @@ export default function TripDetailsPageClient() {
 
             {trip.inclusions?.length > 0 && (
               <div className="bg-white rounded-xl shadow-md border border-secondary/10 p-4 md:p-5">
-                <h2 className="text-lg md:text-xl font-bold text-secondary mb-3">Included</h2>
-                <ul className="space-y-2 list-disc list-inside marker:text-secondary">
+                <h2 className="text-lg md:text-xl font-bold text-secondary mb-3">Inclusions</h2>
+                <ul className="space-y-2">
                   {trip.inclusions.map((item, idx) => (
-                    <li key={`inclusion-${idx}`} className="text-sm text-gray-800 leading-relaxed">{item}</li>
+                    <li key={`inclusion-${idx}`} className="flex items-start gap-2 text-sm text-gray-800 leading-relaxed">
+                      <FaCheck className="mt-1.5 shrink-0 text-[12px] text-emerald-600" />
+                      <span>{item}</span>
+                    </li>
                   ))}
                 </ul>
               </div>
@@ -543,10 +591,13 @@ export default function TripDetailsPageClient() {
 
             {trip.exclusions?.length > 0 && (
               <div className="bg-white rounded-xl shadow-md border border-secondary/10 p-4 md:p-5">
-                <h2 className="text-lg md:text-xl font-bold text-secondary mb-3">Not Included</h2>
-                <ul className="space-y-2 list-disc list-inside marker:text-secondary">
+                <h2 className="text-lg md:text-xl font-bold text-secondary mb-3">Exclusions</h2>
+                <ul className="space-y-2">
                   {trip.exclusions.map((item, idx) => (
-                    <li key={`exclusion-${idx}`} className="text-sm text-gray-800 leading-relaxed">{item}</li>
+                    <li key={`exclusion-${idx}`} className="flex items-start gap-2 text-sm text-gray-800 leading-relaxed">
+                      <FiX className="mt-1.5 shrink-0 text-[13px] text-red-600" />
+                      <span>{item}</span>
+                    </li>
                   ))}
                 </ul>
               </div>

@@ -50,7 +50,14 @@ const Destinations = () => {
 
   if (destinations.length === 0) {
     return (
-      <section className="w-full h-[220px] sm:h-[300px] md:h-[360px] lg:h-[430px] animate-pulse bg-gray-200" />
+      <section className="relative w-[90%] mx-auto h-[400px] md:h-[500px] overflow-hidden rounded-2xl shadow-lg mt-5 bg-white/70 animate-pulse">
+        <div className="absolute inset-0 bg-linear-to-t from-black/20 via-black/10 to-transparent" />
+        <div className="absolute top-[50%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-full px-4">
+          <div className="mx-auto h-10 w-52 rounded-md bg-white/60 md:h-14 md:w-80" />
+          <div className="mx-auto mt-4 h-4 w-64 rounded bg-white/50 md:w-96" />
+          <div className="mx-auto mt-2 h-4 w-48 rounded bg-white/50 md:w-72" />
+        </div>
+      </section>
     );
   }
 

@@ -102,7 +102,42 @@ export default function EditorialReviews({
     };
   }, [activeReview]);
 
-  if (loading || reviews.length === 0) return null;
+  if (loading) {
+    return (
+      <section className={`bg-[#dfdfdf] px-4 md:px-0 ${isReviewsPage ? "pt-0 pb-15 " : "pt-[200px] pb-5"}`}>
+        <div className="mx-auto w-full md:w-[90%]">
+          <div className="mb-8 flex gap-4 items-end justify-between">
+            <div className="h-8 w-40 rounded-md bg-white/70 animate-pulse md:h-10 md:w-56" />
+            {!isReviewsPage ? <div className="h-9 w-24 rounded-full bg-white/70 animate-pulse" /> : null}
+          </div>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 3 }).map((_, idx) => (
+              <div key={idx} className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm md:rounded-3xl">
+                <div className="mb-4 flex items-start gap-3">
+                  <div className="h-10 w-10 rounded-full bg-gray-200 animate-pulse" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 w-28 rounded bg-gray-200 animate-pulse" />
+                    <div className="h-3 w-36 rounded bg-gray-200 animate-pulse" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="h-3 w-full rounded bg-gray-200 animate-pulse" />
+                  <div className="h-3 w-[85%] rounded bg-gray-200 animate-pulse" />
+                  <div className="h-3 w-[70%] rounded bg-gray-200 animate-pulse" />
+                </div>
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                  <div className="aspect-4/3 rounded-2xl bg-gray-200 animate-pulse" />
+                  <div className="aspect-4/3 rounded-2xl bg-gray-200 animate-pulse" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (reviews.length === 0) return null;
 
   const homePreviewCount = isLgUp ? 3 : 4;
 

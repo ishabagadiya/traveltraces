@@ -194,19 +194,56 @@ export default function MoreThanAVisit() {
 
   if (loading) {
     return (
-      <section className="relative w-full mx-auto min-h-[500px] flex items-center justify-center bg-white py-16 md:py-24 px-6 md:px-12">
-        <div className="relative z-10 flex flex-col w-full max-w-7xl mx-auto">
-          <div className="mb-12 text-center">
-            <div className="h-10 md:h-14 w-64 md:w-96 bg-gray-200 rounded-lg animate-pulse mx-auto mb-4" />
-            <div className="h-1 w-48 bg-gray-200 rounded-full animate-pulse mx-auto" />
+      <section className="relative w-full mx-auto bg-[#dfdfdf] py-8 sm:py-12 px-4 md:px-0">
+        <div className="relative z-10 flex flex-col gap-8 sm:gap-12 w-full">
+          {["Upcoming Trips", "Domestic Destinations"].map((title) => (
+            <div key={title} className="w-full md:w-[90%] mx-auto">
+              <div className="mb-4 md:mb-8">
+                <div className="h-8 w-44 rounded-md bg-white/70 animate-pulse md:h-10 md:w-64" />
+              </div>
+              <div className="flex gap-4 md:gap-8 overflow-hidden pb-2">
+                {Array.from({ length: visibleCount }).map((_, idx) => (
+                  <div
+                    key={`${title}-${idx}`}
+                    className="rounded-2xl md:rounded-3xl w-[170px] sm:w-[200px] md:w-[250px] h-[250px] sm:h-[290px] md:h-[360px] bg-white/70 animate-pulse shrink-0"
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+
+          <div className="relative z-20 -mb-[120px] md:-mb-[170px]">
+            <div className="mx-auto w-full md:w-[90%] h-[200px] md:h-[300px] overflow-hidden rounded-2xl bg-white/70 animate-pulse" />
           </div>
-          <div className="flex gap-8 justify-center">
-            {Array.from({ length: visibleCount }).map((_, idx) => (
-              <div
-                key={idx}
-                className="rounded-3xl overflow-hidden w-[320px] h-[420px] bg-gray-200 animate-pulse"
-              />
-            ))}
+
+          <div className="relative left-1/2 right-1/2 w-screen -translate-x-1/2 bg-[#dfdfdf] pt-[120px] pb-8 md:pt-[200px] sm:pb-10 px-4 md:px-0">
+            <div className="w-full md:w-[90%] mx-auto">
+              <div className="mb-4 md:mb-8">
+                <div className="h-8 w-24 rounded-md bg-white/70 animate-pulse md:h-10 md:w-36" />
+              </div>
+              <div className="flex gap-4 md:gap-8 overflow-hidden pb-2">
+                {Array.from({ length: visibleCount }).map((_, idx) => (
+                  <div
+                    key={`treks-${idx}`}
+                    className="rounded-2xl md:rounded-3xl w-[170px] sm:w-[200px] md:w-[250px] h-[250px] sm:h-[290px] md:h-[360px] bg-white/70 animate-pulse shrink-0"
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="w-full md:w-[90%] mx-auto">
+            <div className="mb-4 md:mb-8">
+              <div className="h-8 w-44 rounded-md bg-white/70 animate-pulse md:h-10 md:w-64" />
+            </div>
+            <div className="flex gap-4 md:gap-8 overflow-hidden pb-2">
+              {Array.from({ length: visibleCount }).map((_, idx) => (
+                <div
+                  key={`international-${idx}`}
+                  className="rounded-2xl md:rounded-3xl w-[170px] sm:w-[200px] md:w-[250px] h-[250px] sm:h-[290px] md:h-[360px] bg-white/70 animate-pulse shrink-0"
+                />
+              ))}
+            </div>
           </div>
         </div>
       </section>

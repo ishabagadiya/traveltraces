@@ -1,45 +1,66 @@
 const introText =
-  "At TravelTraces, we are committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy outlines how we collect, use, disclose, and safeguard your data when you access and use our website for travel booking services. By using our website, you consent to the practices described in this policy.";
+  "At Travel Traces, we are committed to protecting your privacy and ensuring that your personal information is handled securely and responsibly. This Privacy Policy outlines how we collect, use, and safeguard the data you share with us. All clauses mentioned herein are in accordance with the Information Technology Act, 2025. This document is subject to periodic updates to ensure continual improvement.";
 
 const policySections = [
   {
-    title: "Information We Collect:",
+    title: "Last Updated:",
     paragraphs: [
-      "Personal Information: We may collect personal information such as your name, email address, phone number, and billing details when you make a booking or interact with our website's features. Booking Information: We gather information related to your travel preferences, including destination choices, travel dates, accommodation preferences, and other relevant details to facilitate your booking experience.",
-      "Log Data: Our servers automatically collect log data, including your IP address, browser type, device information, access times, and pages visited. This information is used for website analytics and to enhance your browsing experience.",
+      "10th July 2025",
     ],
   },
   {
-    title: "How We Use Your Information:",
+    title: "DECLARATION",
     paragraphs: [
-      "Booking and Reservation: We use the collected information to process and manage your bookings, send confirmations, and provide customer support throughout your travel journey. Communication: We may contact you via email or phone to update you about your bookings, share relevant travel information, and inform you about promotions or special offers if you opt-in to receive such communications. Improve User Experience: Your data helps us analyze website performance, identify trends, and make improvements to our services and user interface to enhance your overall experience.",
-      "Legal Compliance: We may use your information to comply with legal obligations, enforce our terms of service, and protect our rights, privacy, safety, and property.",
+      "Travel Traces hereby declares that we will never misuse, sell, or exploit any user data for any malicious purpose. Your privacy and trust are of utmost importance to us. However, if required by law, or upon receiving a legal notice, we are obligated to share relevant user data under the Right to Information Act or as per any legal mandate.",
+      "All legal matters shall fall under the jurisdiction of Ahmedabad, Gujarat, where our firm is registered.",
     ],
   },
   {
-    title: "Data Sharing:",
+    title: "WEBSITE PRIVACY",
     paragraphs: [
-      "Third-Party Service Providers: We may share your information with trusted third-party partners who assist us in delivering our services, such as airlines, hotels, tour operators, and payment processors. These partners have access to the data required to fulfill your bookings but are not allowed to use it for other purposes.",
-      "Legal Requirements: We may disclose your information in response to legal requests or to comply with applicable laws, regulations, or government orders.",
+      "Our website is designed to provide seamless travel services and information to our users. To facilitate this, we may collect personal data such as name, phone number, email address, etc. This information is used solely for service facilitation and is accessed only by authorized personnel of Travel Traces.",
     ],
   },
   {
-    title: "Data Security:",
+    title: "DATA COLLECTION",
     paragraphs: [
-      "We implement strict security measures to protect your data from unauthorized access, alteration, or disclosure. However, no data transmission over the internet can be guaranteed to be 100% secure. Therefore, while we strive to protect your information, we cannot guarantee its absolute security.",
+      "We collect personal information including (but not limited to) your:",
+      "Name",
+      "Email address",
+      "Contact number",
+      "Travel preferences",
+      "Location/IP data (in some cases for analytics)",
+      "This data is collected only to help us serve you better and ensure efficient delivery of our services.",
     ],
   },
   {
-    title: "Cookies and Tracking Technologies:",
+    title: "COOKIES USAGE POLICY",
     paragraphs: [
-      "We use cookies and similar tracking technologies to enhance your browsing experience and collect data about how you interact with our website. You can adjust your browser settings to refuse cookies, but it may limit some website functionalities.",
+      "We use cookies to enhance your browsing experience, reduce loading times, and understand user behavior. You can choose to disable cookies through your browser settings if you prefer not to share this data. However, disabling cookies may affect your overall experience on our site.",
     ],
   },
   {
-    title: "Changes to Privacy Policy:",
+    title: "THIRD-PARTY LINKS",
     paragraphs: [
-      "We may update this Privacy Policy periodically to reflect changes in our practices. We will post the revised version with the effective date on our website. Your continued use of the website constitutes your acceptance of the updated policy. For any questions, concerns, or requests related to your privacy, please contact us.",
-      "Thank you for choosing TravelTraces. We are dedicated to ensuring a safe and enjoyable journey for all our valued users.",
+      "Our website may contain links to third-party websites for your convenience or reference. Travel Traces does not control or endorse these websites. Therefore, we are not responsible for any data breaches, losses, or issues that may arise from accessing these external links.",
+    ],
+  },
+  {
+    title: "USER DATA PROTECTION",
+    paragraphs: [
+      "All personal data shared with Travel Traces is:",
+      "Collected transparently",
+      "Stored securely",
+      "Shared only with internal team members involved in your travel planning",
+      "Never sold, rented, or misused",
+      "We have robust digital safeguards in place to protect user information from unauthorized access or leaks.",
+    ],
+  },
+  {
+    title: "GRIEVANCE OFFICER",
+    paragraphs: [
+      "If you have any concerns, questions, or grievances regarding our Privacy Policy or the handling of your data, please contact our Grievance Officer:",
+      "Email: contact@traveltraces.in",
     ],
   },
 ];
@@ -75,11 +96,33 @@ export default function PrivacyPolicyContent() {
         {policySections.map((section) => (
           <div key={section.title}>
             <h2 className={sectionHeadingClass}>{section.title}</h2>
-            {section.paragraphs.map((paragraph, idx) => (
-              <p key={`${section.title}-${idx}`} className={`${paragraphClass} ${idx === 0 ? "mt-2" : "mt-1"}`}>
-                {formatParagraph(paragraph)}
-              </p>
-            ))}
+            {section.title === "USER DATA PROTECTION" ? (
+              <>
+                <p className={`${paragraphClass} mt-2`}>{formatParagraph(section.paragraphs[0])}</p>
+                <ul className={`${paragraphClass} mt-1 list-disc pl-6`}>
+                  {section.paragraphs.slice(1, 5).map((point, idx) => (
+                    <li key={`${section.title}-point-${idx}`}>{point}</li>
+                  ))}
+                </ul>
+                <p className={`${paragraphClass} mt-1`}>{formatParagraph(section.paragraphs[5])}</p>
+              </>
+            ) : section.title === "DATA COLLECTION" ? (
+              <>
+                <p className={`${paragraphClass} mt-2`}>{formatParagraph(section.paragraphs[0])}</p>
+                <ul className={`${paragraphClass} mt-1 list-disc pl-6`}>
+                  {section.paragraphs.slice(1, 6).map((point, idx) => (
+                    <li key={`${section.title}-point-${idx}`}>{point}</li>
+                  ))}
+                </ul>
+                <p className={`${paragraphClass} mt-1`}>{formatParagraph(section.paragraphs[6])}</p>
+              </>
+            ) : (
+              section.paragraphs.map((paragraph, idx) => (
+                <p key={`${section.title}-${idx}`} className={`${paragraphClass} ${idx === 0 ? "mt-2" : "mt-1"}`}>
+                  {formatParagraph(paragraph)}
+                </p>
+              ))
+            )}
           </div>
         ))}
       </section>
