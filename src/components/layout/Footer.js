@@ -40,21 +40,9 @@ export default function Footer() {
               <Link href="/reviews" className="text-xs sm:text-sm md:text-xs lg:text-sm text-[#fcf3d8]/90 transition-colors hover:text-white">
                 Reviews
               </Link>
-              <span
-                title="Available soon"
-                className="text-xs sm:text-sm md:text-xs lg:text-sm text-[#fcf3d8]/70 cursor-default"
-              >
-                Team
-              </span>
             </div>
 
             <div className="w-full sm:w-[80%] md:w-full mx-auto flex flex-wrap gap-x-3 sm:gap-x-7 justify-center md:justify-end">
-              <span
-                title="Available soon"
-                className="text-xs sm:text-sm md:text-xs lg:text-sm text-[#fcf3d8]/70 cursor-default"
-              >
-                Career
-              </span>
               <Link href="/about" className="text-xs sm:text-sm md:text-xs lg:text-sm text-[#fcf3d8]/90 transition-colors hover:text-white">
                 About Us
               </Link>
