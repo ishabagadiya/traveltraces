@@ -8,42 +8,19 @@ export const metadata = {
 };
 
 async function getReelsPageData() {
-  const collections = await client.fetch(
-    `*[_type == "reelCollection" && isActive == true] | order(_updatedAt desc){
-      title,
+  const reels = await client.fetch(
+    `*[_type == "reelCollection" && defined(video.asset)] | order(_updatedAt desc){
+      _id,
       _updatedAt,
-      reels[]{
-        _key,
-        title,
-        "videoUrl": video.asset->url,
-        "thumbnailUrl": thumbnail.asset->url
-      }
+      "title": description,
+      "videoUrl": video.asset->url
     }`
   );
 
-  const title = collections?.[0]?.title || "Reels";
-
-  const flattened = (collections || [])
-    .flatMap((doc) =>
-      (doc?.reels || []).map((reel) => ({
-        ...reel,
-        _docUpdatedAt: doc?._updatedAt,
-      }))
-    )
-    .filter((item) => item?.videoUrl);
-
-  const byUrl = new Map();
-  for (const item of flattened) {
-    if (!byUrl.has(item.videoUrl)) byUrl.set(item.videoUrl, item);
-  }
-
-  const reels = Array.from(byUrl.values()).sort((a, b) => {
-    const aT = a?._docUpdatedAt ? Date.parse(a._docUpdatedAt) : 0;
-    const bT = b?._docUpdatedAt ? Date.parse(b._docUpdatedAt) : 0;
-    return bT - aT;
-  });
-
-  return { title, reels };
+  return {
+    title: "Reels",
+    reels: (reels || []).filter((item) => item?.videoUrl),
+  };
 }
 
 export default async function ReelsPage() {
