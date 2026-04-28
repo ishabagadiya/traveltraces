@@ -137,7 +137,7 @@ export default function ReelsPageContent({
   }
 
   return (
-    <section className="relative h-screen w-full bg-black">
+    <section className="relative h-dvh w-full bg-black">
       <button
         type="button"
         onClick={() => router.back()}
@@ -154,8 +154,8 @@ export default function ReelsPageContent({
         {reels.map((reel, index) => (
           <article
             key={reel._key || reel.videoUrl}
-            className="flex h-screen w-full snap-start snap-always items-center justify-center"
-            style={{ minHeight: "100vh" }}
+            className="flex h-dvh w-full snap-start snap-always items-center justify-center"
+            style={{ minHeight: "100dvh" }}
           >
             <div className="relative aspect-9/16 h-full w-full max-w-[500px]">
               <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-black">
@@ -187,7 +187,7 @@ export default function ReelsPageContent({
                 ) : null}
 
                 {/* Instagram-like bottom overlay */}
-                <div className="absolute inset-x-0 bottom-0 z-10 bg-linear-to-t from-black/85 via-black/45 to-transparent px-4 pb-6 pt-14">
+                <div className="absolute inset-x-0 bottom-10 z-10 bg-linear-to-t from-black/85 via-black/45 to-transparent px-4 pb-[calc(env(safe-area-inset-bottom)+1.25rem)] pt-14">
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex min-w-0 items-center gap-3">
                       <div className="h-10 w-10 shrink-0 rounded-full">
