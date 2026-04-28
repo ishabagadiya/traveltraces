@@ -187,7 +187,7 @@ export default function ReelsPageContent({
                 ) : null}
 
                 {/* Instagram-like bottom overlay */}
-                <div className="absolute inset-x-0 bottom-10 z-10 bg-linear-to-t from-black/85 via-black/45 to-transparent px-4 pb-[calc(env(safe-area-inset-bottom)+1.25rem)] pt-14">
+                <div className="absolute inset-x-0 bottom-0 z-10 bg-linear-to-t from-black/85 via-black/45 to-transparent px-4 pb-[calc(env(safe-area-inset-bottom)+1.25rem)] pt-14">
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex min-w-0 items-center gap-3">
                       <div className="h-10 w-10 shrink-0 rounded-full">
