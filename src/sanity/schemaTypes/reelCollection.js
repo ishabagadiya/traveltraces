@@ -7,8 +7,8 @@ export default {
       name: "description",
       title: "Description",
       type: "text",
-      rows: 4,
-      validation: (Rule) => Rule.required().max(500),
+      rows: 10,
+      validation: (Rule) => Rule.required(),
     },
     {
       name: "video",
