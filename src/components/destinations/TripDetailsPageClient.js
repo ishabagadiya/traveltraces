@@ -363,7 +363,7 @@ export default function TripDetailsPageClient() {
               ) : null}
             </div>
 
-            <div className="bg-white rounded-2xl shadow-lg p-6">
+            <div className="hidden md:block bg-white rounded-2xl shadow-lg p-6">
               <h3 className="text-xl font-bold text-secondary mb-2">Still Got Queries ?</h3>
               <p className="text-sm text-secondary/70 mb-5">
                 Talk to Travel Traces experts for availability, pricing, and custom options.
@@ -656,6 +656,31 @@ export default function TripDetailsPageClient() {
             )}
 
           </main>
+
+          <div className="md:hidden bg-white rounded-2xl shadow-lg p-6">
+            <h3 className="text-xl font-bold text-secondary mb-2">Still Got Queries ?</h3>
+            <p className="text-sm text-secondary/70 mb-5">
+              Talk to Travel Traces experts for availability, pricing, and custom options.
+            </p>
+            <div className="grid grid-cols-2 gap-1 sm:gap-3">
+              <a
+                href="https://wa.me/918460146012"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-full border border-secondary px-2 md:px-6 py-2 md:py-2.5 md:text-xs text-sm font-semibold text-secondary transition-colors hover:bg-secondary hover:text-white text-nowrap"
+              >
+                <FaWhatsapp className="text-xs md:text-base" />
+                <span>WhatsApp</span>
+              </a>
+              <a
+                href="tel:8460146012"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-full border border-secondary px-2 md:px-6 py-2 md:py-2.5 md:text-xs text-sm font-semibold text-secondary transition-colors hover:bg-secondary hover:text-white text-nowrap"
+              >
+                <FaPhoneAlt className="text-xs md:text-base" />
+                <span>Call</span>
+              </a>
+            </div>
+          </div>
         </section>
 
         {tripGalleryImages.length > 0 && (
