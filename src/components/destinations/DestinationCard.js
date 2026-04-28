@@ -34,7 +34,7 @@ export default function DestinationCard({ destination }) {
   return (
     <Link
       href={`/destinations/${destination.slug?.current}`}
-      className="group relative flex items-start justify-start rounded-2xl md:rounded-3xl overflow-hidden w-[300px] h-max"
+      className="group relative flex items-start justify-start rounded-2xl md:rounded-3xl overflow-hidden sm:w-[300px] sm:h-[370px] w-[270px] h-[320px]"
     >
       <Image
         src={destinationImage}

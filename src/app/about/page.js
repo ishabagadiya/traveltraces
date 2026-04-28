@@ -1,4 +1,4 @@
-import AboutPageContent from "@/components/about/AboutPageContent";
+import AboutPageContent from "@/components/about-us/AboutPageContent";
 
 export const metadata = {
   title: "About Us | Travel Traces",

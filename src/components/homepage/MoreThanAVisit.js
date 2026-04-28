@@ -39,7 +39,7 @@ function CategoryCarousel({ title, destinations, visibleCount }) {
       <div className="relative">
         <div
           ref={scrollRef}
-          className="flex gap-5 md:gap-8 w-full overflow-x-auto overflow-y-hidden pb-2 touch-pan-x [&::-webkit-scrollbar]:hidden"
+          className="flex gap-5 md:gap-8 w-full overflow-x-auto overflow-y-hidden pb-2 [&::-webkit-scrollbar]:hidden"
           style={{
             WebkitOverflowScrolling: "touch",
             scrollbarWidth: "none",
@@ -163,7 +163,7 @@ export default function MoreThanAVisit() {
             </div>
           ))}
 
-          <div className="relative z-20 -mb-[120px] md:-mb-[170px]">
+          <div className="relative z-20 mb-[-120px] md:mb-[-170px]">
             <div className="mx-auto w-full md:w-[90%] h-[200px] md:h-[300px] overflow-hidden rounded-2xl bg-white/70 animate-pulse" />
           </div>
 
@@ -226,7 +226,7 @@ export default function MoreThanAVisit() {
           visibleCount={visibleCount}
         />
 
-        <div className="relative z-20 -mb-[120px] md:-mb-[170px]">
+        <div className="relative z-20 mb-[-120px] md:mb-[-170px]">
           <div className="mx-auto w-full md:w-[90%] h-[200px] md:h-[300px] overflow-hidden rounded-2xl shadow-lg">
             {featureVideoUrl && (
             <video

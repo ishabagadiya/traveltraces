@@ -1,10 +1,16 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { FaPhoneAlt } from "react-icons/fa";
-import { IoSearch } from "react-icons/io5";
-import { HiMenu, HiX } from "react-icons/hi";
+import {
+  IoCompassOutline,
+  IoHomeOutline,
+  IoInformationCircleOutline,
+  IoSearch,
+  IoStarOutline,
+  IoVideocamOutline,
+} from "react-icons/io5";
 import { client } from "../../sanity/lib/client";
 import logo from "@/assets/logo-dark.png";
 import Image from "next/image";
@@ -12,11 +18,26 @@ import SearchResultsDropdown from "../SearchResultsDropdown";
 
 const Header = () => {
   const router = useRouter();
+  const pathname = usePathname();
   const [searchTerm, setSearchTerm] = useState("");
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [allDestinations, setAllDestinations] = useState([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [filteredDestinations, setFilteredDestinations] = useState([]);
+  const navItems = [
+    { label: "home", href: "/", icon: IoHomeOutline },
+    {
+      label: "explore",
+      href: "/destinations",
+      icon: IoCompassOutline,
+    },
+    { label: "testimonials", href: "/reviews", icon: IoStarOutline },
+    { label: "about us", href: "/about-us", icon: IoInformationCircleOutline },
+    { label: "reels", href: "/reels", icon: IoVideocamOutline },
+  ];
+  const isNavItemActive = (href) => {
+    if (href === "/") return pathname === "/";
+    return pathname?.startsWith(href);
+  };
 
   useEffect(() => {
     // Fetch all destinations for search
@@ -86,32 +107,15 @@ const Header = () => {
     setTimeout(() => setShowSearchResults(false), 200);
   };
 
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
-
-  const closeMobileMenu = () => {
-    setIsMobileMenuOpen(false);
-  };
-
   return (
     <header className="w-full md:w-[90%] mx-auto bg-white px-4 py-4 md:px-0">
       {/* Bottom Row: Main Navigation */}
       <div className="flex justify-between items-center">
-        {/* Left: Hamburger & Logo */}
+        {/* Left: Logo */}
         <div className="flex items-center">
-          {/* Hamburger Menu Button - All Screen Sizes */}
-          <button
-            onClick={toggleMobileMenu}
-            className="p-2 text-secondary hover:bg-secondary/10 rounded-lg transition-colors duration-200"
-            aria-label="Toggle menu"
-          >
-            {isMobileMenuOpen ? <HiX size={24} /> : <HiMenu size={24} />}
-          </button>
-
           {/* Logo */}
           <div className="relative h-10 w-[120px] md:h-14 md:w-[200px] overflow-hidden">
-            <Link href="/" className="block h-full w-full">
+            <Link href="/" className="block h-full w-full -ml-6">
               <Image
                 src={logo}
                 alt="traveltraces"
@@ -131,7 +135,7 @@ const Header = () => {
           <div className="hidden md:block relative">
             <form
               onSubmit={handleSearch}
-              className="!my-0 flex items-center border border-secondary bg-white/90 backdrop-blur-sm shadow-sm rounded-full pl-2 transition-all duration-200 text-sm text-secondary"
+              className="my-0! flex items-center border border-secondary bg-white/90 backdrop-blur-sm shadow-sm rounded-full pl-2 transition-all duration-200 text-sm text-secondary"
             >
               <input
                 type="text"
@@ -172,41 +176,6 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Navigation Menu - Hamburger Menu for All Screens */}
-      <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isMobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-        }`}>
-        <nav className="flex flex-col items-center space-y-4 py-4 text-sm border-t border-secondary/10 mt-4">
-          <Link
-            href="/"
-            className="text-secondary/90 hover:text-secondary font-medium transition-colors duration-200 w-full text-center py-2 hover:bg-secondary/10 rounded-lg"
-            onClick={closeMobileMenu}
-          >
-            Home
-          </Link>
-          <Link
-            href="/destinations"
-            className="text-secondary/90 hover:text-secondary font-medium transition-colors duration-200 w-full text-center py-2 hover:bg-secondary/10 rounded-lg"
-            onClick={closeMobileMenu}
-          >
-            Destinations
-          </Link>
-          <Link
-            href="/about"
-            className="text-secondary/90 hover:text-secondary font-medium transition-colors duration-200 w-full text-center py-2 hover:bg-secondary/10 rounded-lg"
-            onClick={closeMobileMenu}
-          >
-            About us
-          </Link>
-          <Link
-            href="/policy"
-            className="text-secondary/90 hover:text-secondary font-medium transition-colors duration-200 w-full text-center py-2 hover:bg-secondary/10 rounded-lg"
-            onClick={closeMobileMenu}
-          >
-            Cancellation Policy
-          </Link>
-        </nav>
-      </div>
-
       {/* Mobile Search Bar with Dropdown */}
       <div className="md:hidden relative">
         <form
@@ -238,6 +207,39 @@ const Header = () => {
           onDestinationClick={handleDestinationClick}
         />
       </div>
+
+      {/* Desktop Secondary Navigation */}
+      <nav className="hidden md:flex items-center justify-center gap-6 border-t border-secondary/10 mt-4 pt-3 text-sm text-secondary/60">
+        {navItems.map((item) => (
+          <Link
+            key={item.label}
+            href={item.href}
+            className={`inline-flex items-center gap-1 leading-none capitalize transition-colors duration-200 hover:text-secondary ${
+              isNavItemActive(item.href) ? "text-secondary font-semibold" : ""
+            }`}
+          >
+            <span>{item.label}</span>
+          </Link>
+        ))}
+      </nav>
+
+      {/* Mobile Bottom Fixed Navigation */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-secondary/15 bg-white/95 backdrop-blur-sm shadow-[0_-4px_16px_rgba(0,0,0,0.06)]">
+        <div className="mx-auto grid max-w-screen-sm grid-cols-5 px-2 py-2">
+          {navItems.map((item) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              className={`flex flex-col items-center justify-center text-[10px] font-medium capitalize transition-colors duration-200 ${
+                isNavItemActive(item.href) ? "text-secondary" : "text-secondary/50"
+              }`}
+            >
+              {item.icon && <item.icon size={16} />}
+              <span className="truncate max-w-full">{item.label}</span>
+            </Link>
+          ))}
+        </div>
+      </nav>
     </header>
   );
 };

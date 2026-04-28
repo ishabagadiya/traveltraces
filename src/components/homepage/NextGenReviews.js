@@ -9,6 +9,17 @@ import { urlFor } from "@/sanity/lib/image";
 import { FaAngleRight } from "react-icons/fa";
 
 const COMMENT_PREVIEW_LEN = 100;
+const FALLBACK_REVIEW_IMAGE = "/HeroImages/andharban.jpeg";
+
+const getSanityImageUrl = (image) => {
+  if (!image?.asset?._ref) return null;
+
+  try {
+    return urlFor(image).url();
+  } catch {
+    return null;
+  }
+};
 
 export default function EditorialReviews({
   maxReviews: maxReviewsProp,
@@ -48,13 +59,15 @@ export default function EditorialReviews({
             ...r,
             photos:
               (Array.isArray(r.photos) ? r.photos : [])
+                .map(getSanityImageUrl)
                 .filter(Boolean)
-                .map((img) => urlFor(img).url())
                 .slice(0, 4),
             photo:
-              (r.photos && r.photos[0] ? urlFor(r.photos[0]).url() : null) ||
-              (r.photo ? urlFor(r.photo).url() : null) ||
-              "/HeroImages/andharban.jpeg",
+              (Array.isArray(r.photos)
+                ? r.photos.map(getSanityImageUrl).find(Boolean)
+                : null) ||
+              getSanityImageUrl(r.photo) ||
+              FALLBACK_REVIEW_IMAGE,
           }))
           .map((r) => ({
             ...r,
@@ -63,12 +76,13 @@ export default function EditorialReviews({
                 ? r.photos
                 : r.photo
                   ? [r.photo]
-                  : ["/HeroImages/andharban.jpeg"],
+                  : [FALLBACK_REVIEW_IMAGE],
           }))
         );
         setLoading(false);
       })
-      .catch(() => {
+      .catch((error) => {
+        console.error("Error fetching traveler reviews:", error);
         if (isMounted) setLoading(false);
       });
 

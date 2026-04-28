@@ -8,6 +8,7 @@ import ContactSocialBanner from "@/components/layout/ContactSocialBanner";
 export default function SiteChrome({ children }) {
   const pathname = usePathname();
   const isStudioRoute = pathname?.startsWith("/studio");
+  const isReelsRoute = pathname?.startsWith("/reels");
 
   if (isStudioRoute) {
     return <>{children}</>;
@@ -15,10 +16,10 @@ export default function SiteChrome({ children }) {
 
   return (
     <>
-      <Header />
+      {!isReelsRoute && <Header />}
       {children}
-      <ContactSocialBanner />
-      <Footer />
+      {!isReelsRoute && <ContactSocialBanner />}
+      {!isReelsRoute && <Footer />}
     </>
   );
 }

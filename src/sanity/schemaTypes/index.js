@@ -4,6 +4,7 @@ import travelerReview from './travelerReview';
 import homepageMedia from "./homepageMedia";
 import homepageFaq from "./homepageFaq";
 import contactSocialLinks from "./contactSocialLinks";
+import reelCollection from "./reelCollection";
 
 export const schema = {
   types: [
@@ -13,5 +14,6 @@ export const schema = {
     homepageMedia,
     homepageFaq,
     contactSocialLinks,
+    reelCollection,
   ],
 }

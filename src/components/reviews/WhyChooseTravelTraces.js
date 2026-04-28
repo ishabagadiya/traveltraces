@@ -32,7 +32,7 @@ const features = [
 export default function WhyChooseTravelTraces() {
   return (
     <section className="bg-[#dfdfdf] px-4 pb-16 md:px-8">
-      <div className="mx-auto w-full md:w-[90%] border-t-2 border-[#0000001d] pt-10">
+      <div className="mx-auto w-full md:w-[90%] pt-10">
         <h2 className="mb-8 text-xl md:text-2xl font-bold text-secondary">Why Choose TravelTraces?</h2>
 
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
