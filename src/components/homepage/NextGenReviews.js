@@ -191,7 +191,7 @@ export default function EditorialReviews({
 
   return (
     <>
-      <section className={`bg-[#dfdfdf] px-4 md:px-0 ${isReviewsPage ? "pt-0 pb-15 " : "pt-[200px] pb-5"}`}>
+      <section className={`bg-[#dfdfdf] px-4 md:px-0 ${isReviewsPage ? "pt-0 pb-15 " : "pt-[200px] pb-10"}`}>
         <div className="mx-auto w-full md:w-[90%]">
           <div className="mb-8 flex gap-4 items-end justify-between">
             <h2 className="text-2xl md:text-4xl font-bold text-secondary">{sectionTitle}</h2>

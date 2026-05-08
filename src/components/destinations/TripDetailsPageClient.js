@@ -7,6 +7,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { FiX } from "react-icons/fi";
 import {
+  FaClock,
   FaCalendarAlt,
   FaWhatsapp,
   FaPhoneAlt,
@@ -14,11 +15,11 @@ import {
   FaBus,
   FaPlane,
   FaTrain,
+  FaShare,
+  FaPaperPlane,
   FaCheck,
   FaChevronDown,
   FaChevronUp,
-  FaChevronLeft,
-  FaChevronRight,
 } from "react-icons/fa";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
@@ -36,12 +37,7 @@ export default function TripDetailsPageClient() {
   const [expandedDays, setExpandedDays] = useState({});
   const [heroImageStartIndex, setHeroImageStartIndex] = useState(0);
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
-  const [openTripFaqIndex, setOpenTripFaqIndex] = useState(null);
   const cardRefs = useRef([]);
-  const galleryScrollRef = useRef(null);
-  const isGalleryDraggingRef = useRef(false);
-  const galleryDragStartXRef = useRef(0);
-  const galleryStartScrollLeftRef = useRef(0);
 
   useEffect(() => {
     if (!slug) return;
@@ -64,13 +60,6 @@ export default function TripDetailsPageClient() {
           image,
           price,
           category,
-          inclusions,
-          exclusions,
-          tripGallery,
-          faqs[]{
-            question,
-            answer
-          },
           brochures[]{
             buttonName,
             pdf{
@@ -127,135 +116,50 @@ export default function TripDetailsPageClient() {
     };
   }, [isAboutModalOpen]);
 
-  const selectedDuration = trip?.joinUsFrom?.[selectedPlaceIdx]?.duration || trip?.joinUsFrom?.[0]?.duration;
+  const handleShare = async () => {
+    const url = `${window.location.origin}${pathname}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: trip?.name || "Travel Destination",
+          text: trip?.tagline || "Check out this amazing destination!",
+          url,
+        });
+      } else {
+        await navigator.clipboard.writeText(url);
+        alert("Link copied to clipboard!");
+      }
+    } catch {
+      try {
+        await navigator.clipboard.writeText(url);
+        alert("Link copied to clipboard!");
+      } catch (clipboardErr) {
+        console.error("Failed to copy link:", clipboardErr);
+      }
+    }
+  };
+
+  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  if (error) return <div className="min-h-screen flex items-center justify-center text-red-600">{error}</div>;
+  if (!trip) return <div className="min-h-screen flex items-center justify-center">Not found</div>;
+
+  const selectedDuration = trip.joinUsFrom?.[selectedPlaceIdx]?.duration || trip.joinUsFrom?.[0]?.duration;
   const durationText =
     selectedDuration?.days != null
       ? `${selectedDuration.days} Days ${selectedDuration.nights ?? 0} Nights`
       : "N/A";
-  const selectedSchedule = trip?.joinUsFrom?.[selectedPlaceIdx]?.schedule || [];
-  const tripFaqs = Array.isArray(trip?.faqs) ? trip.faqs.filter((faq) => faq?.question && faq?.answer) : [];
-  const aboutDescription = String(trip?.description || "").trim();
+  const selectedSchedule = trip.joinUsFrom?.[selectedPlaceIdx]?.schedule || [];
+  const aboutDescription = String(trip.description || "").trim();
   const shouldTruncateAbout = aboutDescription.length > 180;
   const visibleAboutDescription = shouldTruncateAbout
     ? `${aboutDescription.slice(0, 150).trim()}...`
     : aboutDescription || "No description available.";
 
-  const rotatingImages = Array.isArray(trip?.images) ? trip.images : [];
-  const tripGalleryImages = Array.isArray(trip?.tripGallery) && trip.tripGallery.length > 0
-    ? trip.tripGallery.filter(Boolean)
-    : rotatingImages;
-  const loopedTripGalleryImages =
-    tripGalleryImages.length > 1
-      ? [...tripGalleryImages, ...tripGalleryImages, ...tripGalleryImages]
-      : tripGalleryImages;
+  const rotatingImages = Array.isArray(trip.images) ? trip.images : [];
   const activeHeroImage =
     rotatingImages.length > 0
       ? rotatingImages[heroImageStartIndex % rotatingImages.length]
-      : trip?.image;
-
-  const normalizeGalleryLoop = () => {
-    const el = galleryScrollRef.current;
-    if (!el || tripGalleryImages.length <= 1) return;
-    const oneSetWidth = el.scrollWidth / 3;
-    if (el.scrollLeft < oneSetWidth * 0.5) {
-      el.scrollLeft += oneSetWidth;
-    } else if (el.scrollLeft > oneSetWidth * 1.5) {
-      el.scrollLeft -= oneSetWidth;
-    }
-  };
-
-  const scrollGallery = (direction) => {
-    if (!galleryScrollRef.current) return;
-    const scrollAmount = 320;
-    galleryScrollRef.current.scrollBy({
-      left: direction === "left" ? -scrollAmount : scrollAmount,
-      behavior: "smooth",
-    });
-    setTimeout(normalizeGalleryLoop, 360);
-  };
-
-  const startGalleryDrag = (clientX) => {
-    if (!galleryScrollRef.current) return;
-    isGalleryDraggingRef.current = true;
-    galleryDragStartXRef.current = clientX;
-    galleryStartScrollLeftRef.current = galleryScrollRef.current.scrollLeft;
-  };
-
-  const moveGalleryDrag = (clientX) => {
-    if (!isGalleryDraggingRef.current || !galleryScrollRef.current) return;
-    const distance = clientX - galleryDragStartXRef.current;
-    galleryScrollRef.current.scrollLeft = galleryStartScrollLeftRef.current - distance;
-  };
-
-  const endGalleryDrag = () => {
-    isGalleryDraggingRef.current = false;
-    normalizeGalleryLoop();
-  };
-
-  useEffect(() => {
-    const el = galleryScrollRef.current;
-    if (!el || tripGalleryImages.length <= 1) return;
-
-    const oneSetWidth = el.scrollWidth / 3;
-    el.scrollLeft = oneSetWidth;
-
-    const onScroll = () => {
-      if (isGalleryDraggingRef.current) return;
-      normalizeGalleryLoop();
-    };
-
-    el.addEventListener("scroll", onScroll, { passive: true });
-    return () => el.removeEventListener("scroll", onScroll);
-  }, [tripGalleryImages.length]);
-
-  if (loading) {
-    return (
-      <div className="w-full bg-[#dfdfdf]">
-        <main className="min-h-screen">
-          <section className="w-full mt-0 mb-4">
-            <div className="h-[400px] md:h-[550px] bg-white/70 animate-pulse" />
-          </section>
-
-          <section className="pb-20 w-full md:w-[90%] mx-auto px-4 md:px-0 flex flex-col md:flex-row gap-2">
-            <aside className="flex flex-col gap-2 w-full md:w-1/2">
-              <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 space-y-3">
-                <div className="h-4 w-28 rounded bg-gray-200 animate-pulse" />
-                <div className="h-8 w-3/4 rounded bg-gray-200 animate-pulse" />
-                <div className="h-3 w-full rounded bg-gray-200 animate-pulse" />
-                <div className="h-3 w-[90%] rounded bg-gray-200 animate-pulse" />
-                <div className="h-3 w-[70%] rounded bg-gray-200 animate-pulse" />
-                <div className="flex justify-end gap-3 pt-2">
-                  <div className="h-9 w-36 rounded-full bg-gray-200 animate-pulse" />
-                  <div className="h-9 w-24 rounded-full bg-gray-200 animate-pulse" />
-                </div>
-              </div>
-              <div className="bg-white rounded-2xl shadow-lg p-6 space-y-3">
-                <div className="h-6 w-48 rounded bg-gray-200 animate-pulse" />
-                <div className="h-3 w-full rounded bg-gray-200 animate-pulse" />
-                <div className="grid grid-cols-2 gap-3 pt-2">
-                  <div className="h-10 rounded-full bg-gray-200 animate-pulse" />
-                  <div className="h-10 rounded-full bg-gray-200 animate-pulse" />
-                </div>
-              </div>
-            </aside>
-
-            <main className="flex flex-col gap-2 w-full md:w-1/2">
-              {Array.from({ length: 4 }).map((_, idx) => (
-                <div key={idx} className="bg-white rounded-xl shadow-md border border-secondary/10 p-4 md:p-5 space-y-3">
-                  <div className="h-6 w-40 rounded bg-gray-200 animate-pulse" />
-                  <div className="h-3 w-full rounded bg-gray-200 animate-pulse" />
-                  <div className="h-3 w-[85%] rounded bg-gray-200 animate-pulse" />
-                  <div className="h-3 w-[70%] rounded bg-gray-200 animate-pulse" />
-                </div>
-              ))}
-            </main>
-          </section>
-        </main>
-      </div>
-    );
-  }
-  if (error) return <div className="min-h-screen flex items-center justify-center text-red-600">{error}</div>;
-  if (!trip) return <div className="min-h-screen flex items-center justify-center">Not found</div>;
+      : trip.image;
 
   return (
     <div className="w-full bg-[#dfdfdf]">
@@ -338,62 +242,62 @@ export default function TripDetailsPageClient() {
                   ) : null}
                 </p>
               )}
-              {Array.isArray(trip.brochures) && trip.brochures.length > 0 ? (
-                <div className="flex flex-wrap items-center justify-end gap-3 mt-4">
-                  {trip.brochures.map((brochure, index) => {
-                    const fileUrl = brochure?.pdf?.asset?.url;
-                    if (!fileUrl) return null;
-
-                    const fileName = brochure?.pdf?.asset?.originalFilename || "brochure.pdf";
-                    const buttonLabel = brochure?.buttonName || "Download Brochure";
-
-                    return (
-                      <a
-                        key={`brochure-${index}`}
-                        href={`${fileUrl}?dl=${encodeURIComponent(fileName)}`}
-                        download
-                        className="flex items-center gap-2 px-4 py-2 border border-secondary/30 rounded-full text-secondary hover:bg-secondary/5 transition"
-                      >
-                        <FaDownload className="text-xs md:text-base" />
-                        <span className="text-xs md:text-sm">{buttonLabel}</span>
-                      </a>
-                    );
-                  })}
-                </div>
-              ) : null}
+              <div className="flex items-center justify-end gap-3">
+                <a
+                  href={
+                    trip.brochure?.asset?.url
+                      ? `${trip.brochure.asset.url}?dl=${encodeURIComponent(trip.brochure.asset.originalFilename || "brochure")}`
+                      : "#"
+                  }
+                  download
+                  className="flex items-center gap-2 px-4 py-2 border border-secondary/30 rounded-full text-secondary hover:bg-secondary/5 transition"
+                >
+                  <FaDownload className="text-secondary" />
+                  <span className="text-sm font-medium">Download Brochure</span>
+                </a>
+                <button
+                  onClick={handleShare}
+                  className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-full text-gray-700 hover:bg-gray-50 transition"
+                >
+                  <FaShare className="text-gray-500" />
+                  <span className="text-sm font-medium">Share</span>
+                </button>
+              </div>
             </div>
 
-            <div className="hidden md:block bg-white rounded-2xl shadow-lg p-6">
+            <div className="bg-white rounded-2xl shadow-lg p-6">
               <h3 className="text-xl font-bold text-secondary mb-2">Still Got Queries ?</h3>
               <p className="text-sm text-secondary/70 mb-5">
                 Talk to Travel Traces experts for availability, pricing, and custom options.
               </p>
-              <div className="grid grid-cols-2 gap-1 sm:gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 <a
                   href="https://wa.me/918460146012"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full inline-flex items-center justify-center gap-2 rounded-full border border-secondary px-2 md:px-6 py-2 md:py-2.5 md:text-xs text-sm font-semibold text-secondary transition-colors hover:bg-secondary hover:text-white text-nowrap"
+                  className="w-full flex items-center justify-center gap-2 border-2 border-secondary/30 hover:border-secondary text-secondary font-semibold py-3 px-3 rounded-full transition bg-secondary/5 hover:bg-secondary/10"
                 >
-                  <FaWhatsapp className="text-xs md:text-base" />
+                  <FaWhatsapp className="text-green-500 text-xl" />
                   <span>WhatsApp</span>
                 </a>
                 <a
                   href="tel:8460146012"
-                  className="w-full inline-flex items-center justify-center gap-2 rounded-full border border-secondary px-2 md:px-6 py-2 md:py-2.5 md:text-xs text-sm font-semibold text-secondary transition-colors hover:bg-secondary hover:text-white text-nowrap"
+                  className="w-full flex items-center justify-center gap-2 border-2 border-secondary/30 hover:border-secondary text-secondary font-semibold py-3 px-3 rounded-full transition bg-secondary/5 hover:bg-secondary/10"
                 >
-                  <FaPhoneAlt className="text-xs md:text-base" />
-                  <span>Call</span>
+                  <FaPhoneAlt className="text-secondary text-lg" />
+                  <span>Call Now</span>
                 </a>
               </div>
             </div>
+
           </aside>
 
           <main className="flex flex-col gap-2 w-full md:w-1/2">
             {/* join us from section */}
             <div className="bg-white rounded-xl shadow-md border border-secondary/10 p-4">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-lg md:text-xl font-bold text-secondary flex items-center gap-2">
+                <h3 className="text-sm font-semibold text-secondary flex items-center gap-2">
+                  <FaPaperPlane className="text-xs" />
                   Join Us From
                 </h3>
               </div>
@@ -430,7 +334,8 @@ export default function TripDetailsPageClient() {
             {/* dates section */}
             <div className="bg-white rounded-xl shadow-md border border-secondary/10 p-4">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-lg md:text-xl font-bold text-secondary flex items-center gap-2">
+                <h3 className="text-sm font-semibold text-secondary flex items-center gap-2">
+                  <FaCalendarAlt className="text-xs" />
                   Available Dates
                 </h3>
                 {trip.joinUsFrom?.[selectedPlaceIdx]?.place && (
@@ -473,7 +378,7 @@ export default function TripDetailsPageClient() {
 
             {/* itinerary section */}
             {selectedSchedule.length > 0 && (
-              <div className="rounded-xl px-0">
+              <div className="bg-white rounded-xl shadow-md border border-secondary/10 p-4 md:p-5">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg md:text-xl font-bold text-secondary">Itinerary</h2>
                   {(() => {
@@ -495,14 +400,14 @@ export default function TripDetailsPageClient() {
                       >
                         {allExpanded ? (
                           <>
-                            <svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+                            <svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
                               <line x1="8" y1="1" x2="8" y2="4" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" />
                               <path d="M6 4 L8 6 L10 4" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
                               <line x1="2" y1="6" x2="14" y2="6" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" />
                               <line x1="8" y1="8" x2="8" y2="11" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" />
                               <path d="M6 8 L8 6 L10 8" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
                             </svg>
-                            <span className="text-xs md:text-sm">Collapse All</span>
+                            <span>Collapse All</span>
                           </>
                         ) : (
                           <>
@@ -510,7 +415,7 @@ export default function TripDetailsPageClient() {
                               <FaChevronUp className="text-[8px]" />
                               <FaChevronDown className="text-[8px]" />
                             </div>
-                            <span className="text-xs md:text-sm">Expand All</span>
+                            <span>Expand All</span>
                           </>
                         )}
                       </button>
@@ -546,9 +451,12 @@ export default function TripDetailsPageClient() {
                           <div className="bg-white">
                             <div className="px-4 pt-4 pb-4 space-y-4">
                               {s.description && Array.isArray(s.description) && s.description.length > 0 ? (
-                                <ul className="space-y-2 list-disc list-inside marker:text-secondary">
+                                <ul className="space-y-2 list-none">
                                   {s.description.map((point, idx) => (
-                                    <li key={idx} className="text-sm text-gray-800 leading-relaxed">{point}</li>
+                                    <li key={idx} className="flex items-start gap-2 text-sm text-gray-800">
+                                      <span className="text-secondary mt-1.5 flex-shrink-0">•</span>
+                                      <span className="leading-relaxed">{point}</span>
+                                    </li>
                                   ))}
                                 </ul>
                               ) : typeof s.description === "string" && s.description ? (
@@ -575,165 +483,8 @@ export default function TripDetailsPageClient() {
               </div>
             )}
 
-            {trip.inclusions?.length > 0 && (
-              <div className="bg-white rounded-xl shadow-md border border-secondary/10 p-4 md:p-5">
-                <h2 className="text-lg md:text-xl font-bold text-secondary mb-3">Inclusions</h2>
-                <ul className="space-y-2">
-                  {trip.inclusions.map((item, idx) => (
-                    <li key={`inclusion-${idx}`} className="flex items-start gap-2 text-sm text-gray-800 leading-relaxed">
-                      <FaCheck className="mt-1.5 shrink-0 text-[12px] text-emerald-600" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {trip.exclusions?.length > 0 && (
-              <div className="bg-white rounded-xl shadow-md border border-secondary/10 p-4 md:p-5">
-                <h2 className="text-lg md:text-xl font-bold text-secondary mb-3">Exclusions</h2>
-                <ul className="space-y-2">
-                  {trip.exclusions.map((item, idx) => (
-                    <li key={`exclusion-${idx}`} className="flex items-start gap-2 text-sm text-gray-800 leading-relaxed">
-                      <FiX className="mt-1.5 shrink-0 text-[13px] text-red-600" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {tripFaqs.length > 0 && (
-              <div className="bg-white rounded-xl shadow-md border border-secondary/10 p-4 md:p-5">
-                <h2 className="mb-4 text-lg md:text-xl font-bold text-secondary">FAQs</h2>
-                <div className="border-y border-secondary/30">
-                  {tripFaqs.map((faq, index) => {
-                    const isOpen = openTripFaqIndex === index;
-                    const itemIndex = String(index + 1).padStart(2, "0");
-
-                    return (
-                      <div key={`trip-faq-${index}`} className="border-b border-secondary/20 last:border-b-0">
-                        <div
-                          onClick={() => setOpenTripFaqIndex((prev) => (prev === index ? -1 : index))}
-                          className="grid cursor-pointer grid-cols-[56px_1fr_auto] items-start gap-3 px-3 py-4 md:grid-cols-[72px_1fr_auto] md:px-5"
-                          role="button"
-                          tabIndex={0}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter" || e.key === " ") {
-                              e.preventDefault();
-                              setOpenTripFaqIndex((prev) => (prev === index ? -1 : index));
-                            }
-                          }}
-                          aria-expanded={isOpen}
-                          aria-controls={`trip-faq-answer-${index}`}
-                        >
-                          <span className="pt-1 text-[11px] text-gray-500 md:text-xs">[{itemIndex}]</span>
-
-                          <div className="pr-2">
-                            <p className="text-xs font-semibold leading-tight text-gray-900 sm:text-base">{faq.question}</p>
-                            {isOpen ? (
-                              <p id={`trip-faq-answer-${index}`} className="mt-2 max-w-3xl text-xs leading-relaxed text-gray-700 md:text-sm">
-                                {faq.answer}
-                              </p>
-                            ) : null}
-                          </div>
-
-                          <div className="flex items-start pt-1">
-                            <span
-                              className={`inline-flex h-5 w-5 items-center justify-center rounded-full border text-xs transition-all ${isOpen ? "border-secondary bg-secondary text-white" : "border-gray-400 text-gray-500"
-                                }`}
-                              aria-hidden
-                            >
-                              {isOpen ? "-" : "+"}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
           </main>
-
-          <div className="md:hidden bg-white rounded-2xl shadow-lg p-6">
-            <h3 className="text-xl font-bold text-secondary mb-2">Still Got Queries ?</h3>
-            <p className="text-sm text-secondary/70 mb-5">
-              Talk to Travel Traces experts for availability, pricing, and custom options.
-            </p>
-            <div className="grid grid-cols-2 gap-1 sm:gap-3">
-              <a
-                href="https://wa.me/918460146012"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full inline-flex items-center justify-center gap-2 rounded-full border border-secondary px-2 md:px-6 py-2 md:py-2.5 md:text-xs text-sm font-semibold text-secondary transition-colors hover:bg-secondary hover:text-white text-nowrap"
-              >
-                <FaWhatsapp className="text-xs md:text-base" />
-                <span>WhatsApp</span>
-              </a>
-              <a
-                href="tel:8460146012"
-                className="w-full inline-flex items-center justify-center gap-2 rounded-full border border-secondary px-2 md:px-6 py-2 md:py-2.5 md:text-xs text-sm font-semibold text-secondary transition-colors hover:bg-secondary hover:text-white text-nowrap"
-              >
-                <FaPhoneAlt className="text-xs md:text-base" />
-                <span>Call</span>
-              </a>
-            </div>
-          </div>
         </section>
-
-        {tripGalleryImages.length > 0 && (
-          <section className="w-full md:w-[80%] mx-auto px-4 md:px-0 pb-20 overflow-hidden">
-            <div className="relative flex flex-col items-center justify-center w-full">
-              <h2 className="text-lg md:text-2xl font-bold text-secondary text-center w-full z-30">Journey in Frames</h2>
-              <p className="mt-1 text-sm text-gray-600 text-center z-30">Pictures Perfect Moments</p>
-            </div>
-            <div className="relative mt-5">
-              <button
-                type="button"
-                onClick={() => scrollGallery("left")}
-                className="absolute left-2 top-1/2 z-30 inline-flex h-7 md:h-10 w-7 md:w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/40 bg-secondary/65 text-white shadow-lg backdrop-blur-sm transition hover:bg-secondary/80"
-                aria-label="Scroll gallery left"
-              >
-                <FaChevronLeft className="text-xs md:text-base" />
-              </button>
-              <div className="pointer-events-none absolute top-[-80px] z-10 m-0 h-[102px] w-full shrink-0 scale-110 rounded-[50%/40%] bg-[#dfdfdf] p-0 box-border" />
-              <div
-                ref={galleryScrollRef}
-                className="overflow-x-auto overflow-y-hidden px-8 cursor-grab active:cursor-grabbing [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden flex gap-2"
-                onMouseDown={(e) => startGalleryDrag(e.clientX)}
-                onMouseMove={(e) => moveGalleryDrag(e.clientX)}
-                onMouseUp={endGalleryDrag}
-                onMouseLeave={endGalleryDrag}
-                onTouchStart={(e) => startGalleryDrag(e.touches[0].clientX)}
-                onTouchMove={(e) => moveGalleryDrag(e.touches[0].clientX)}
-                onTouchEnd={endGalleryDrag}
-              >
-                {loopedTripGalleryImages.map((photo, idx) => (
-                  <div key={`trip-gallery-${idx}`} className="relative md:h-[400px] md:w-[300px] h-[200px] w-[150px] shrink-0 overflow-hidden">
-                    <Image
-                      src={urlFor(photo).url()}
-                      alt={`${trip.name} gallery photo ${idx + 1}`}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 640px) 176px, 208px"
-                    />
-                  </div>
-                ))}
-              </div>
-              <div className="pointer-events-none absolute bottom-[-70px] z-10 m-0 h-[102px] w-full shrink-0 scale-110 rounded-[50%/40%] bg-[#dfdfdf] p-0 box-border" />
-              <button
-                type="button"
-                onClick={() => scrollGallery("right")}
-                className="absolute right-2 top-1/2 z-30 inline-flex h-7 md:h-10 w-7 md:w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/40 bg-secondary/65 text-white shadow-lg backdrop-blur-sm transition hover:bg-secondary/80"
-                aria-label="Scroll gallery right"
-              >
-                <FaChevronRight className="text-xs md:text-base" />
-              </button>
-            </div>
-          </section>
-        )}
       </main>
 
       {isAboutModalOpen ? (

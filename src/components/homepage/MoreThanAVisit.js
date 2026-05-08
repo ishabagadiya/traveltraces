@@ -136,6 +136,9 @@ export default function MoreThanAVisit() {
     (dest) => dest.category === "Domestic Destinations"
   );
   const upcomingTrips = allDestinations.filter((dest) => dest.showOnUpcomingTrips);
+  const weekendTrips = allDestinations.filter(
+    (dest) => dest.category === "Weekend Trips"
+  );
   const internationalTrips = allDestinations.filter(
     (dest) => dest.category === "International Trips"
   );
@@ -147,7 +150,7 @@ export default function MoreThanAVisit() {
     return (
       <section className="relative w-full mx-auto bg-[#dfdfdf] py-8 sm:py-12 px-4 md:px-0">
         <div className="relative z-10 flex flex-col gap-8 sm:gap-12 w-full">
-          {["Upcoming Trips", "Domestic Destinations"].map((title) => (
+          {["Upcoming Trips", "Weekend Trips", "Domestic Destinations"].map((title) => (
             <div key={title} className="w-full md:w-[90%] mx-auto">
               <div className="mb-4 md:mb-8">
                 <div className="h-8 w-44 rounded-md bg-white/70 animate-pulse md:h-10 md:w-64" />
@@ -221,30 +224,35 @@ export default function MoreThanAVisit() {
         />
 
         <CategoryCarousel
-          title="Domestic Destinations"
-          destinations={domesticDestinations}
+          title="Weekend Getaways"
+          destinations={weekendTrips}
           visibleCount={visibleCount}
         />
 
         <div className="relative z-20 mb-[-120px] md:mb-[-170px]">
           <div className="mx-auto w-full md:w-[90%] h-[200px] md:h-[300px] overflow-hidden rounded-2xl shadow-lg">
             {featureVideoUrl && (
-            <video
-              src={featureVideoUrl}
-              playsInline
-              autoPlay
-              muted
-              loop
-              preload="metadata"
-              className="block w-full h-full object-cover object-center"
-            >
+              <video
+                src={featureVideoUrl}
+                playsInline
+                autoPlay
+                muted
+                loop
+                preload="metadata"
+                className="block w-full h-full object-cover object-center"
+              >
                 Your browser does not support the video tag.
               </video>
             )}
           </div>
         </div>
 
-        <div className="relative left-1/2 right-1/2 w-screen -translate-x-1/2 bg-[#dfdfdf] pt-[120px] pb-8 md:pt-[200px] sm:pb-10 px-6 md:px-0">
+        <div className="relative left-1/2 right-1/2 w-screen -translate-x-1/2 bg-[#dfdfdf] pt-[120px] pb-8 md:pt-[200px] sm:pb-10 px-6 md:px-0 flex flex-col gap-8 sm:gap-12">
+          <CategoryCarousel
+            title="Domestic Destinations"
+            destinations={domesticDestinations}
+            visibleCount={visibleCount}
+          />
           <CategoryCarousel
             title="Treks"
             destinations={treks}
