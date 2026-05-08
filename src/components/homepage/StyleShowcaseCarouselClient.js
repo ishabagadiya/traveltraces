@@ -8,10 +8,12 @@ import { FaArrowLeft, FaArrowRight, FaTimes, FaDownload } from "react-icons/fa";
 export default function FixedGallery({ photos = [] }) {
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [touchStartX, setTouchStartX] = useState(null);
+  const [direction, setDirection] = useState(1);
 
   const closePopup = () => setSelectedIndex(null);
 
   const showNext = () => {
+    setDirection(1);
     setSelectedIndex((prev) => {
       if (prev === null) return prev;
       return (prev + 1) % photos.length;
@@ -19,6 +21,7 @@ export default function FixedGallery({ photos = [] }) {
   };
 
   const showPrevious = () => {
+    setDirection(-1);
     setSelectedIndex((prev) => {
       if (prev === null) return prev;
       return (prev - 1 + photos.length) % photos.length;
@@ -44,6 +47,21 @@ export default function FixedGallery({ photos = [] }) {
   };
 
   const selectedPhoto = selectedIndex !== null ? photos[selectedIndex] : null;
+
+  const slideVariants = {
+    enter: (dir) => ({
+      x: dir > 0 ? 120 : -120,
+      opacity: 0,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+    },
+    exit: (dir) => ({
+      x: dir > 0 ? -120 : 120,
+      opacity: 0,
+    }),
+  };
 
   const handleDownload = async () => {
     if (!selectedPhoto?.src) return;
@@ -134,12 +152,25 @@ export default function FixedGallery({ photos = [] }) {
               </div>
 
               <div className="relative w-full h-[70%] sm:h-[70%] rounded-lg bg-gray-50 overflow-hidden touch-pan-y">
-                <Image
-                  src={selectedPhoto.src}
-                  alt={selectedPhoto.alt || "Enlarged view"}
-                  fill
-                  className="object-contain"
-                />
+                <AnimatePresence initial={false} custom={direction} mode="wait">
+                  <motion.div
+                    key={selectedPhoto.src}
+                    custom={direction}
+                    variants={slideVariants}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
+                    transition={{ duration: 0.24, ease: "easeInOut" }}
+                    className="absolute inset-0"
+                  >
+                    <Image
+                      src={selectedPhoto.src}
+                      alt={selectedPhoto.alt || "Enlarged view"}
+                      fill
+                      className="object-contain"
+                    />
+                  </motion.div>
+                </AnimatePresence>
 
                 {/* Previous button */}
                 <button
@@ -167,7 +198,12 @@ export default function FixedGallery({ photos = [] }) {
                   <button
                     key={photo.key || index}
                     type="button"
-                    onClick={() => setSelectedIndex(index)}
+                    onClick={() => {
+                      if (selectedIndex !== null) {
+                        setDirection(index >= selectedIndex ? 1 : -1);
+                      }
+                      setSelectedIndex(index);
+                    }}
                     className={`relative shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-md overflow-hidden border-2 transition-all ${
                       index === selectedIndex ? "border-secondary scale-[1.03]" : "border-transparent opacity-80 hover:opacity-100"
                     }`}
