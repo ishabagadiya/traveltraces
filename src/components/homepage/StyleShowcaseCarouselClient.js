@@ -1,116 +1,192 @@
 "use client";
 
-import { useRef, useEffect, useMemo } from "react";
+import { useState } from "react";
 import Image from "next/image";
-import {
-  motion,
-  useScroll,
-  useTransform,
-  useVelocity,
-  useSpring,
-} from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaArrowLeft, FaArrowRight, FaTimes, FaDownload } from "react-icons/fa";
 
-export default function InfiniteNativeScrollGallery({ photos = [], fallbackImage }) {
-  const containerRef = useRef(null);
+export default function FixedGallery({ photos = [] }) {
+  const [selectedIndex, setSelectedIndex] = useState(null);
+  const [touchStartX, setTouchStartX] = useState(null);
 
-  // 1. Triple the photos to create the illusion of infinity
-  const infinitePhotos = useMemo(() => [...photos, ...photos, ...photos], [photos]);
+  const closePopup = () => setSelectedIndex(null);
 
-  // 2. Track Native Scroll position
-  const { scrollX } = useScroll({
-    container: containerRef,
-  });
+  const showNext = () => {
+    setSelectedIndex((prev) => {
+      if (prev === null) return prev;
+      return (prev + 1) % photos.length;
+    });
+  };
 
-  // 3. Track velocity of the scroll for the "Lean/Skew" effect
-  const scrollVelocity = useVelocity(scrollX);
-  const skew = useTransform(scrollVelocity, [-1000, 1000], [20, -20]);
-  const smoothSkew = useSpring(skew, { stiffness: 400, damping: 30 });
+  const showPrevious = () => {
+    setSelectedIndex((prev) => {
+      if (prev === null) return prev;
+      return (prev - 1 + photos.length) % photos.length;
+    });
+  };
 
-  // 4. INFINITE LOOP LOGIC (Native Scroll Teleportation)
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
+  const handleTouchStart = (e) => {
+    setTouchStartX(e.touches[0].clientX);
+  };
 
-    const handleScroll = () => {
-      const { scrollLeft, scrollWidth, offsetWidth } = container;
-      const singleSetWidth = scrollWidth / 3;
+  const handleTouchEnd = (e) => {
+    if (touchStartX === null) return;
+    const endX = e.changedTouches[0].clientX;
+    const deltaX = touchStartX - endX;
+    const SWIPE_THRESHOLD = 40;
 
-      // If we scroll into the last set, jump back to the middle set
-      if (scrollLeft >= singleSetWidth * 2) {
-        container.scrollLeft = scrollLeft - singleSetWidth;
-      }
-      // If we scroll into the first set, jump forward to the middle set
-      else if (scrollLeft <= 0) {
-        container.scrollLeft = singleSetWidth;
-      }
-    };
+    if (Math.abs(deltaX) > SWIPE_THRESHOLD) {
+      if (deltaX > 0) showNext();
+      else showPrevious();
+    }
 
-    // Set initial scroll position to the start of the second (middle) set
-    container.scrollLeft = container.scrollWidth / 3;
+    setTouchStartX(null);
+  };
 
-    container.addEventListener("scroll", handleScroll);
-    return () => container.removeEventListener("scroll", handleScroll);
-  }, [photos]);
+  const selectedPhoto = selectedIndex !== null ? photos[selectedIndex] : null;
 
-  if (!photos.length) return null;
+  const handleDownload = async () => {
+    if (!selectedPhoto?.src) return;
+    try {
+      const response = await fetch(selectedPhoto.src);
+      const blob = await response.blob();
+      const fileUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = fileUrl;
+      link.download = `${selectedPhoto.title || "travel-photo"}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(fileUrl);
+    } catch {
+      // No-op: keep UI clean if download fails.
+    }
+  };
 
   return (
-    <div className="relative w-full h-[260px] sm:h-[280px] bg-transparent overflow-hidden">
-      <div
-        ref={containerRef}
-        className="flex gap-3 overflow-x-auto h-full items-center snap-x [&::-webkit-scrollbar]:hidden"
-        style={{ 
-          scrollbarWidth: "none", 
-          msOverflowStyle: "none",
-          perspective: "1000px" 
-        }}
-      >
-        {infinitePhotos.map((photo, index) => (
-          <CarouselItem 
-            key={`${photo.key || index}-${index}`} 
-            photo={photo} 
-            skew={smoothSkew} 
-            containerRef={containerRef}
-            fallbackImage={fallbackImage}
-          />
+    <div className="py-2">
+      {/* 1. Gallery Grid */}
+      <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-7 lg:grid-cols-8 gap-2 sm:gap-3">
+        {photos.map((photo, index) => (
+          <motion.div
+            key={photo.key || index}
+            whileHover={{ scale: 1.02 }}
+            onClick={() => setSelectedIndex(index)}
+            className="relative cursor-pointer overflow-hidden shadow-sm bg-gray-100 aspect-square w-full"
+          >
+            <Image
+              src={photo.src}
+              alt={photo.alt || "Gallery Item"}
+              fill
+              className="object-cover" // Ensures image fills box without stretching
+              sizes="(max-width: 640px) 25vw, (max-width: 768px) 20vw, (max-width: 1024px) 14vw, 12vw"
+            />
+          </motion.div>
         ))}
       </div>
+
+      {/* 2. Popup / Lightbox */}
+      <AnimatePresence>
+        {selectedPhoto && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={closePopup}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              className="relative w-full max-w-4xl h-[60vh] sm:h-[70vh] bg-white rounded-xl overflow-hidden shadow-2xl p-4 sm:p-5"
+              onClick={(e) => e.stopPropagation()}
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+            >
+              <div className="flex items-center justify-between gap-3 mb-3">
+                <div>
+                  <p className="text-xs sm:text-sm text-secondary font-semibold truncate max-w-[75vw] sm:max-w-lg">
+                    {selectedPhoto.title || selectedPhoto.alt || "Style showcase image"}
+                  </p>
+                  <p className="text-[11px] sm:text-xs text-gray-500 mt-0.5">
+                    {selectedIndex + 1} / {photos.length}
+                  </p>
+                </div>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={handleDownload}
+                    className="text-secondary hover:text-black/60 cursor-pointer p-2 rounded-full hover:bg-gray-100 transition-all"
+                    aria-label="Download image"
+                  >
+                    <FaDownload className="text-sm" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={closePopup}
+                    className="text-secondary hover:text-black/60 cursor-pointer p-2 rounded-full hover:bg-gray-100 transition-all"
+                    aria-label="Close popup"
+                  >
+                    <FaTimes className="text-sm" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="relative w-full h-[70%] sm:h-[70%] rounded-lg bg-gray-50 overflow-hidden touch-pan-y">
+                <Image
+                  src={selectedPhoto.src}
+                  alt={selectedPhoto.alt || "Enlarged view"}
+                  fill
+                  className="object-contain"
+                />
+
+                {/* Previous button */}
+                <button
+                  type="button"
+                  onClick={showPrevious}
+                  className="hidden sm:flex absolute left-2 top-1/2 -translate-y-1/2 text-white bg-black/35 hover:bg-black/55 p-2 rounded-full transition-all"
+                  aria-label="Previous image"
+                >
+                  <FaArrowLeft className="text-xs sm:text-sm" />
+                </button>
+
+                {/* Next button */}
+                <button
+                  type="button"
+                  onClick={showNext}
+                  className="hidden sm:flex absolute right-2 top-1/2 -translate-y-1/2 text-white bg-black/35 hover:bg-black/55 p-2 rounded-full transition-all"
+                  aria-label="Next image"
+                >
+                  <FaArrowRight className="text-xs sm:text-sm" />
+                </button>
+              </div>
+
+              <div className="mt-3 flex items-center gap-2 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+                {photos.map((photo, index) => (
+                  <button
+                    key={photo.key || index}
+                    type="button"
+                    onClick={() => setSelectedIndex(index)}
+                    className={`relative shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-md overflow-hidden border-2 transition-all ${
+                      index === selectedIndex ? "border-secondary scale-[1.03]" : "border-transparent opacity-80 hover:opacity-100"
+                    }`}
+                    aria-label={`View image ${index + 1}`}
+                  >
+                    <Image
+                      src={photo.src}
+                      alt={photo.alt || `Thumbnail ${index + 1}`}
+                      fill
+                      className="object-cover"
+                      sizes="56px"
+                    />
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
-  );
-}
-
-function CarouselItem({ photo, skew, containerRef, fallbackImage }) {
-  const itemRef = useRef(null);
-
-  // 5. Internal Parallax Calculation
-  const { scrollXProgress } = useScroll({
-    target: itemRef,
-    container: containerRef,
-    axis: "x",
-    offset: ["start end", "end start"]
-  });
-
-  const imageX = useTransform(scrollXProgress, [0, 1], ["-15%", "15%"]);
-
-  return (
-    <motion.div
-      ref={itemRef}
-      style={{ skewX: skew }}
-      className="relative shrink-0 w-[200px] h-[260px] sm:w-[220px] sm:h-[280px] overflow-hidden rounded-sm bg-transparent"
-    >
-      <motion.div 
-        className="relative w-[130%] h-full left-[-15%]"
-        style={{ x: imageX }}
-      >
-        <Image
-          src={photo.src || fallbackImage}
-          alt={photo.alt || "Gallery Item"}
-          fill
-          draggable={false}
-          className="object-cover"
-          sizes="220px"
-        />
-      </motion.div>
-    </motion.div>
   );
 }

@@ -36,6 +36,7 @@ async function getStyleShowcasePhotos() {
         return {
           key: item?._key || `style-showcase-${index}`,
           src,
+          title: item?.title || "Style showcase image",
           alt: item?.title || "Style showcase image",
         };
       })
