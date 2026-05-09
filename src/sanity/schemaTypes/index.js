@@ -6,6 +6,7 @@ import homepageFaq from "./homepageFaq";
 import contactSocialLinks from "./contactSocialLinks";
 import reelCollection from "./reelCollection";
 import styleShowcaseSection from "./styleShowcaseSection";
+import aboutUsTeamSection from "./aboutUsTeamSection";
 
 export const schema = {
   types: [
@@ -17,5 +18,6 @@ export const schema = {
     contactSocialLinks,
     reelCollection,
     styleShowcaseSection,
+    aboutUsTeamSection,
   ],
 }
