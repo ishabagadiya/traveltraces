@@ -46,6 +46,9 @@ export default function Footer() {
               <Link href="/about-us" className="text-xs sm:text-sm md:text-xs lg:text-sm text-[#fcf3d8]/90 transition-colors hover:text-white">
                 About Us
               </Link>
+              <Link href="/careers" className="text-xs sm:text-sm md:text-xs lg:text-sm text-[#fcf3d8]/90 transition-colors hover:text-white">
+                Careers
+              </Link>
               <Link href="/terms-and-conditions" className="text-xs sm:text-sm md:text-xs lg:text-sm text-[#fcf3d8]/90 transition-colors hover:text-white">
                 Terms and Condition
               </Link>
