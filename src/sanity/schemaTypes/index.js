@@ -8,6 +8,7 @@ import reelCollection from "./reelCollection";
 import styleShowcaseSection from "./styleShowcaseSection";
 import aboutUsTeamSection from "./aboutUsTeamSection";
 import careerPage from "./careerPage";
+import blogsType from "./blogs";
 
 export const schema = {
   types: [
@@ -21,5 +22,6 @@ export const schema = {
     styleShowcaseSection,
     aboutUsTeamSection,
     careerPage,
+    blogsType,
   ],
 }
